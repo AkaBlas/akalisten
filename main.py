@@ -231,7 +231,7 @@ def md_to_html(md: str) -> str:
     return markdown.markdown(md)
 
 
-def build_html_page(tables: dict[str, tuple[str, str]]) -> str:
+def build_html_page(tables: dict[str, tuple[int, str, str]]) -> str:
     # build a html page with tha tables as tabs
     now = dtm.datetime.now(tz=zoneinfo.ZoneInfo("Europe/Berlin"))
     tabs = "".join(
@@ -243,8 +243,11 @@ def build_html_page(tables: dict[str, tuple[str, str]]) -> str:
     )
     html_tables = "".join(
         [
-            f'<div id="{title}" class="tab-content">{md_to_html(description)}{table}</div>'
-            for title, (description, table) in tables.items()
+            f'<div id="{title}" class="tab-content">'
+            f'<a href="https://cloud.akablas.de/index.php/apps/polls/vote/{poll_id}">'
+            f"Hier zur Mucke eintragen</a>"
+            f"{md_to_html(description)}{table}</div>"
+            for title, (poll_id, description, table) in tables.items()
         ]
     )
 
@@ -301,6 +304,7 @@ async def main() -> None:
         polls = (await client.get_polls())["polls"]
         html_tables = {
             poll["configuration"]["title"]: (
+                poll["id"],
                 poll["descriptionSafe"],
                 html_votes_table(await client.aggregate_poll_votes(poll["id"])),
             )
