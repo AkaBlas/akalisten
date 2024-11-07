@@ -244,8 +244,8 @@ def build_html_page(tables: dict[str, tuple[int, str, str]]) -> str:
     html_tables = "".join(
         [
             f'<div id="{title}" class="tab-content">'
-            f'<a href="https://cloud.akablas.de/index.php/apps/polls/vote/{poll_id}">'
-            f"Hier zur Mucke eintragen</a>"
+            f'<b>🔗 <a href="https://cloud.akablas.de/index.php/apps/polls/vote/{poll_id}">'
+            f"Hier zur Mucke eintragen</a></b>"
             f"{md_to_html(description)}{table}</div>"
             for title, (poll_id, description, table) in tables.items()
         ]
@@ -263,8 +263,10 @@ def build_html_page(tables: dict[str, tuple[int, str, str]]) -> str:
 <body>
     <div class="header">
         <h1>Muckenlisten</h1>
-        <h2><i>Erster, grober Entwurf</i></h2>
-        <p>Zuletzt aktualisiert: {now.strftime("%d.%m.%Y %H:%M:%S")}</p>
+        <h2>🚧 <i>Erster, grober Entwurf</i></h2>
+        <p>💡 Eingegangene Verbesserungsvorschläge sind
+        <a href="https://github.com/AkaBlas/akalisten/issues">hier</a> zu finden.</p>
+        <p>🕓 Zuletzt aktualisiert: {now.strftime("%d.%m.%Y %H:%M:%S")}</p>
     </div>
     <div class="tab-container">
         <div class="tab-buttons">
@@ -313,7 +315,9 @@ async def main() -> None:
             and poll["configuration"]["title"] != "Muckenliste: <Titel>"
         }
 
-        (Path(__file__).parent.resolve() / "index.html").write_text(build_html_page(html_tables))
+        (Path(__file__).parent.resolve() / "index.html").write_text(
+            build_html_page(html_tables), encoding="utf-8"
+        )
 
 
 if __name__ == "__main__":
