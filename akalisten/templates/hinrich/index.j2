@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Muckenlisten</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+        {% include 'style.css' %}
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Muckenlisten</h1>
+    <h2>🚧 <i>Erster, grober Entwurf</i></h2>
+    <p>💡 Eingegangene Verbesserungsvorschläge sind
+        <a href="https://github.com/AkaBlas/akalisten/issues">hier</a> zu finden.</p>
+    <p>🕓 Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}</p>
+</div>
+<div class="tab-container">
+    <div class="tab-buttons">
+        {% for poll in polls.values() %}
+            <button class="tab-button"
+                    data-tab="{{ poll.html_title }}">{{ poll.html_title }}</button>
+        {% endfor %}
+    </div>
+    {% for poll in polls.values() %}
+        <div id="{{ poll.html_title }}" class="tab-content">
+            <b>
+                🔗 <a href="{{ poll.url }}">Hier zur Mucke eintragen</a>
+            </b>
+            {{ poll.html_description }}
+            <div class='table-container'>
+                <table>
+                    <tr>
+                        <th>Register</th>
+                        <th>Ja</th>
+                        <th>Vielleicht</th>
+                        <th>Nein</th>
+                    </tr>
+                    {% for option, votes in poll_votes[poll.id].options.items() %}
+                        <tr>
+                            <td>{{ option }}</td>
+                            {% for names in (votes.sorted_yes(), votes.sorted_maybe(), votes.sorted_no()) %}
+                                <td>
+                                    <ul>
+                                        {% for name in names %}
+                                            <li>{{ name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    {% include 'script.j2' %}
+</script>
+</body>
+</html>

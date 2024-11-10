@@ -7,11 +7,12 @@ from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
 from dotenv import load_dotenv
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import FileSystemLoader
 from pydantic import BaseModel
 
 from akalisten.api_types.polls import Poll
 from akalisten.clients.polls import PollAPI
+from akalisten.jinja2 import RelImportEnvironment
 from akalisten.polls import PollVotes
 
 load_dotenv(override=True)
@@ -60,14 +61,14 @@ async def get_poll_data() -> tuple[dict[int, Poll], dict[int, PollVotes]]:
 async def main() -> None:
     polls, poll_votes = await get_poll_data()
 
-    environment = Environment(
+    environment = RelImportEnvironment(
         loader=FileSystemLoader(ROOT / Path("akalisten/templates")),
         lstrip_blocks=True,
         trim_blocks=True,
     )
     timezone = zoneinfo.ZoneInfo("Europe/Berlin")
     (ROOT / "index.html").write_text(
-        environment.get_template("hinrich.j2").render(
+        environment.get_template("hinrich/index.j2").render(
             polls=polls, poll_votes=poll_votes, now=dtm.datetime.now(timezone)
         ),
         encoding="utf-8",
