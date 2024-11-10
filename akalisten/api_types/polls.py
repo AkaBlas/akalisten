@@ -5,7 +5,7 @@ https://github.com/nextcloud/polls/blob/346f37964c53bb6cc132edbb1f113642d2bb2c39
 
 import datetime as dtm
 import html
-from typing import Optional
+from typing import Optional, Union
 
 import markdown
 from pydantic import BaseModel
@@ -66,7 +66,7 @@ class PollCurrentUserStatus(BaseModel):
     yesVotes: int
     countVotes: int
     shareToken: str
-    groupInvitations: dict[str, str]
+    groupInvitations: Union[dict[str, str], list[str]]
 
 
 class PollPermissions(BaseModel):
