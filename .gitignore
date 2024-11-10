@@ -163,3 +163,4 @@ cython_debug/
 .idea/
 
 tmp/
+dummy_data.json

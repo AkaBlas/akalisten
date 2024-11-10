@@ -139,12 +139,12 @@
 </div>
 <div class="tab-container">
     <div class="tab-buttons">
-        {% for poll in polls.values() -%}
+        {% for poll in polls.values() %}
             <button class="tab-button"
                     data-tab="{{ poll.html_title }}">{{ poll.html_title }}</button>
-        {%- endfor %}
+        {% endfor %}
     </div>
-    {% for poll in polls.values() -%}
+    {% for poll in polls.values() %}
         <div id="{{ poll.html_title }}" class="tab-content">
             <b>
                 🔗 <a href="{{ poll.url }}">Hier zur Mucke eintragen</a>
@@ -158,24 +158,24 @@
                         <th>Vielleicht</th>
                         <th>Nein</th>
                     </tr>
-                    {% for option, votes in poll_votes[poll.id].options.items() -%}
+                    {% for option, votes in poll_votes[poll.id].options.items() %}
                         <tr>
                             <td>{{ option }}</td>
-                            {% for names in (votes.sorted_yes(), votes.sorted_maybe(), votes.sorted_no()) -%}
+                            {% for names in (votes.sorted_yes(), votes.sorted_maybe(), votes.sorted_no()) %}
                                 <td>
                                     <ul>
-                                        {% for name in names -%}
+                                        {% for name in names %}
                                             <li>{{ name }}</li>
-                                        {%- endfor %}
+                                        {% endfor %}
                                     </ul>
                                 </td>
-                            {%- endfor %}
+                            {% endfor %}
                         </tr>
-                    {%- endfor %}
+                    {% endfor %}
                 </table>
             </div>
         </div>
-    {%- endfor %}
+    {% endfor %}
 </div>
 
 <script>

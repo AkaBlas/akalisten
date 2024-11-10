@@ -1,12 +1,13 @@
 import asyncio
 import datetime as dtm
 import logging
+import os
 import zoneinfo
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
 from dotenv import load_dotenv
-from jinja2 import Template
+from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel
 
 from akalisten.api_types.polls import Poll
@@ -36,19 +37,22 @@ async def get_poll_data() -> tuple[dict[int, Poll], dict[int, PollVotes]]:
         polls: dict[int, Poll]
         poll_votes: dict[int, PollVotes]
 
-    test_data = TestData(polls={}, poll_votes={})
+    if os.getenv("DUMMY_DATA") is not None:
+        test_data = TestData.model_validate_json(
+            Path("dummy_data.json").read_text(encoding="utf-8")
+        )
+    else:
+        test_data = TestData(polls={}, poll_votes={})
 
-    async with PollAPI() as client:
-        for poll in await client.get_polls():
-            if not poll.is_mucken_liste:
-                continue
-            votes = await client.aggregate_poll_votes(poll.id)
-            test_data.poll_votes[poll.id] = votes
-            test_data.polls[poll.id] = poll
+        async with PollAPI() as client:
+            for poll in await client.get_polls():
+                if not poll.is_mucken_liste:
+                    continue
+                votes = await client.aggregate_poll_votes(poll.id)
+                test_data.poll_votes[poll.id] = votes
+                test_data.polls[poll.id] = poll
 
-    # Path("data.json").write_text(test_data.model_dump_json(indent=2), encoding="utf-8")
-    #
-    # test_data = TestData.model_validate_json(Path("data.json").read_text(encoding="utf-8"))
+        # Path("dummy_data.json").write_text(test_data.model_dump_json(indent=2), encoding="utf-8")
 
     return test_data.polls, test_data.poll_votes
 
@@ -56,12 +60,18 @@ async def get_poll_data() -> tuple[dict[int, Poll], dict[int, PollVotes]]:
 async def main() -> None:
     polls, poll_votes = await get_poll_data()
 
-    template = Template(
-        (ROOT / Path("akalisten/templates/hinrich.j2")).read_text(encoding="utf-8")
+    environment = Environment(
+        loader=FileSystemLoader(ROOT / Path("akalisten/templates")),
+        lstrip_blocks=True,
+        trim_blocks=True,
     )
     timezone = zoneinfo.ZoneInfo("Europe/Berlin")
-    out = template.render(polls=polls, poll_votes=poll_votes, now=dtm.datetime.now(timezone))
-    (ROOT / "index.html").write_text(out, encoding="utf-8")
+    (ROOT / "index.html").write_text(
+        environment.get_template("hinrich.j2").render(
+            polls=polls, poll_votes=poll_votes, now=dtm.datetime.now(timezone)
+        ),
+        encoding="utf-8",
+    )
 
 
 if __name__ == "__main__":
