@@ -39,10 +39,14 @@ async def get_poll_data() -> tuple[dict[int, Poll], dict[int, PollVotes]]:
 async def main() -> None:
     polls, poll_votes = await get_poll_data()
 
-    template = Template(Path("akalisten/templates/hinrich.j2").read_text(encoding="utf-8"))
+    root = Path(__file__).parent
+
+    template = Template(
+        (root / Path("akalisten/templates/hinrich.j2")).read_text(encoding="utf-8")
+    )
     timezone = zoneinfo.ZoneInfo("Europe/Berlin")
     out = template.render(polls=polls, poll_votes=poll_votes, now=dtm.datetime.now(timezone))
-    (Path(__file__).parent / "index.html").write_text(out, encoding="utf-8")
+    (root / "index.html").write_text(out, encoding="utf-8")
 
 
 if __name__ == "__main__":
