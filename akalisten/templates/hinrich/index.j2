@@ -27,7 +27,7 @@
             <b>
                 🔗 <a href="{{ poll.url }}">Hier zur Mucke eintragen</a>
             </b>
-            {%  if poll.mucken_info.has_any_info %}
+            {% if poll.mucken_info.has_any_info %}
                 {{ poll.mucken_info.html_info }}
             {% endif %}
             {% if poll.mucken_info.additional %}
@@ -47,15 +47,38 @@
                     {% for option, votes in poll_votes[poll.id].options.items() %}
                         <tr>
                             <td>{{ option }}</td>
-                            {% for names in (votes.sorted_yes(), votes.sorted_maybe(), votes.sorted_no()) %}
-                                <td>
-                                    <ul>
-                                        {% for name in names %}
-                                            <li>{{ name }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </td>
-                            {% endfor %}
+                            <td>
+                                <ul>
+                                    {% for user in votes.sorted_yes() %}
+                                        <li>{{ user.html_display_name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            {#
+                                Maybe Option gets special handling: If someone voted maybe more than
+                                once, they'll get a * behind their name.
+                            #}
+                            <td>
+                                <ul>
+                                    {% for user in votes.sorted_maybe() %}
+                                        {% set prefix = "*" if (poll_votes[poll.id].users[user].maybe | length) > 1 else "" %}
+                                        <li>{{ prefix }}{{ user.html_display_name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            {#
+                                No Option gets special handling: remove everyone who has voted
+                                yes or maybe somewhere else from the no list.
+                            #}
+                            <td>
+                                <ul>
+                                    {% for user in votes.sorted_no() %}
+                                        {% if not (poll_votes[poll.id].users[user].yes or poll_votes[poll.id].users[user].maybe) %}
+                                            <li>{{ user.html_display_name }}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>

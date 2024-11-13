@@ -2,12 +2,12 @@ import contextlib
 import datetime as dtm
 import html
 import re
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from typing import Literal, Optional, Union
 
 import markdown
 from dateutil.parser import ParserError, parse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from akalisten.api_types.polls import Poll, PollOption, PollVote
 
@@ -197,58 +197,91 @@ class PollInfo(BaseModel):
         return f"https://cloud.akablas.de/index.php/apps/polls/vote/{self.id}"
 
 
+class User(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    name: str
+
+    @property
+    def display_name(self) -> str:
+        return ", ".join(self.name.rsplit(" ", 1)[::-1]) if " " in self.name else self.name
+
+    @property
+    def html_display_name(self) -> str:
+        return html.escape(self.display_name)
+
+
 class PollOptionVotes(BaseModel):
     poll_id: int
-    yes: list[str] = Field(default_factory=list)
-    no: list[str] = Field(default_factory=list)
-    maybe: list[str] = Field(default_factory=list)
+    yes: set[User] = Field(default_factory=set)
+    no: set[User] = Field(default_factory=set)
+    maybe: set[User] = Field(default_factory=set)
 
     def add_vote(self, vote: PollVote) -> None:
         if vote.answer == "yes":
-            self.yes.append(vote.user.displayName)
+            self.yes.add(User(name=vote.user.displayName))
         elif vote.answer == "no":
-            self.no.append(vote.user.displayName)
+            self.no.add(User(name=vote.user.displayName))
         elif vote.answer == "maybe":
-            self.maybe.append(vote.user.displayName)
+            self.maybe.add(User(name=vote.user.displayName))
 
     @property
     def max_votes(self) -> int:
         return max(len(self.yes), len(self.no), len(self.maybe))
 
     @staticmethod
-    def _sort_names(names: Sequence[str], html_escape: bool) -> Sequence[str]:
-        sorted_names = sorted(
-            [", ".join(name.rsplit(" ", 1)[::-1]) if " " in name else name for name in names]
-        )
-        if not html_escape:
-            return sorted_names
-        return list(map(html.escape, sorted_names))
+    def _sort_names(names: Collection[User], html_escape: bool) -> Sequence[User]:
+        if html_escape:
+            return sorted(names, key=lambda x: x.html_display_name)
+        return sorted(names, key=lambda x: x.display_name)
 
-    def sorted_yes(self, html_escape: bool = True) -> Sequence[str]:
+    def sorted_yes(self, html_escape: bool = True) -> Sequence[User]:
         return self._sort_names(self.yes, html_escape=html_escape)
 
-    def sorted_no(self, html_escape: bool = True) -> Sequence[str]:
+    def sorted_no(self, html_escape: bool = True) -> Sequence[User]:
         return self._sort_names(self.no, html_escape=html_escape)
 
-    def sorted_maybe(self, html_escape: bool = True) -> Sequence[str]:
+    def sorted_maybe(self, html_escape: bool = True) -> Sequence[User]:
         return self._sort_names(self.maybe, html_escape=html_escape)
+
+
+class PollUserAnswers(BaseModel):
+    poll_id: int
+    user: User
+    yes: set[str] = Field(default_factory=set)
+    no: set[str] = Field(default_factory=set)
+    maybe: set[str] = Field(default_factory=set)
+
+    def add_answer(self, poll_vote: PollVote) -> None:
+        if poll_vote.answer == "yes":
+            self.yes.add(poll_vote.optionText)
+        elif poll_vote.answer == "no":
+            self.no.add(poll_vote.optionText)
+        elif poll_vote.answer == "maybe":
+            self.maybe.add(poll_vote.optionText)
 
 
 class PollVotes(BaseModel):
     poll_id: int
     options: dict[str, PollOptionVotes] = Field(default_factory=dict)
+    users: dict[User, PollUserAnswers] = Field(default_factory=dict)
 
-    def _get(self, option_text: str) -> PollOptionVotes:
+    def _get_option_votes(self, option_text: str) -> PollOptionVotes:
         return self.options.setdefault(option_text, PollOptionVotes(poll_id=self.poll_id))
 
+    def _get_user_answers(self, user: User) -> PollUserAnswers:
+        return self.users.setdefault(user, PollUserAnswers(poll_id=self.poll_id, user=user))
+
     def add_vote(self, vote: PollVote) -> None:
-        option = self._get(vote.optionText)
+        option = self._get_option_votes(vote.optionText)
         option.add_vote(vote)
+
+        user = self._get_user_answers(User(name=vote.user.displayName))
+        user.add_answer(vote)
 
     def add_option(self, option_text: Union[str, PollOption]) -> None:
         if isinstance(option_text, PollOption):
             option_text = option_text.text
-        self._get(option_text)
+        self._get_option_votes(option_text)
 
     def sorted_option_names(self) -> Sequence[str]:
         return sorted(self.options.keys())
