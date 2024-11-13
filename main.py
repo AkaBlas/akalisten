@@ -7,13 +7,12 @@ from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
 from dotenv import load_dotenv
-from jinja2 import FileSystemLoader
+from jinja2 import FileSystemLoader, StrictUndefined
 from pydantic import BaseModel
 
-from akalisten.api_types.polls import Poll
 from akalisten.clients.polls import PollAPI
 from akalisten.jinja2 import RelImportEnvironment
-from akalisten.polls import PollVotes
+from akalisten.polls import PollInfo, PollVotes
 
 load_dotenv(override=True)
 
@@ -36,9 +35,9 @@ logging.basicConfig(
 )
 
 
-async def get_poll_data() -> tuple[dict[int, Poll], dict[int, PollVotes]]:
+async def get_poll_data() -> tuple[dict[int, PollInfo], dict[int, PollVotes]]:
     class TempData(BaseModel):
-        polls: dict[int, Poll]
+        polls: dict[int, PollInfo]
         poll_votes: dict[int, PollVotes]
 
     if DEBUG_MODE and DUMMY_DATA.exists():
@@ -47,8 +46,8 @@ async def get_poll_data() -> tuple[dict[int, Poll], dict[int, PollVotes]]:
         tmp_data = TempData(polls={}, poll_votes={})
 
         async with PollAPI() as client:
-            for poll in await client.get_polls():
-                if not poll.is_mucken_liste:
+            for poll in await client.get_polls_info():
+                if not poll.is_active_mucken_liste:
                     continue
                 votes = await client.aggregate_poll_votes(poll.id)
                 tmp_data.poll_votes[poll.id] = votes
@@ -67,6 +66,7 @@ async def main() -> None:
         loader=FileSystemLoader(ROOT / Path("akalisten/templates")),
         lstrip_blocks=True,
         trim_blocks=True,
+        undefined=StrictUndefined,
     )
     timezone = zoneinfo.ZoneInfo("Europe/Berlin")
     (ROOT / "index.html").write_text(

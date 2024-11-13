@@ -7,7 +7,7 @@ from typing import Optional
 import httpx
 
 from akalisten.api_types.polls import Poll, PollOption, PollVote
-from akalisten.polls import PollVotes
+from akalisten.polls import PollInfo, PollVotes
 
 
 @contextmanager
@@ -45,10 +45,16 @@ class PollAPI(AbstractAsyncContextManager):
         with _response_handler(response):
             return [Poll(**poll) for poll in response.json()["polls"]]
 
+    async def get_polls_info(self) -> Sequence[PollInfo]:
+        return [PollInfo(poll=poll) for poll in await self.get_polls()]
+
     async def get_poll(self, poll_id: int) -> Poll:
         response = await self.client.get(self.base_url + f"poll/{poll_id}")
         with _response_handler(response):
             return Poll(**response.json())
+
+    async def get_poll_info(self, poll_id: int) -> PollInfo:
+        return PollInfo(poll=await self.get_poll(poll_id))
 
     async def get_poll_options(self, poll_id: int) -> Sequence[PollOption]:
         response = await self.client.get(self.base_url + f"poll/{poll_id}/options")

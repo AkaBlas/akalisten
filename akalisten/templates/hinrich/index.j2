@@ -27,7 +27,15 @@
             <b>
                 🔗 <a href="{{ poll.url }}">Hier zur Mucke eintragen</a>
             </b>
-            {{ poll.html_description }}
+            {%  if poll.mucken_info.has_any_info %}
+                {{ poll.mucken_info.html_info }}
+            {% endif %}
+            {% if poll.mucken_info.additional %}
+                <p>
+                    <b>📝 Zusätzliche Informationen:</b>
+                    {{ poll.mucken_info.html_additional }}
+                </p>
+            {% endif %}
             <div class='table-container'>
                 <table>
                     <tr>

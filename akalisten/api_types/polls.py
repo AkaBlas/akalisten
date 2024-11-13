@@ -4,10 +4,8 @@ https://github.com/nextcloud/polls/blob/346f37964c53bb6cc132edbb1f113642d2bb2c39
 """
 
 import datetime as dtm
-import html
 from typing import Optional, Union
 
-import markdown
 from pydantic import BaseModel
 
 
@@ -91,24 +89,6 @@ class Poll(BaseModel):
     status: PollStatus
     currentUserStatus: PollCurrentUserStatus
     permissions: PollPermissions
-
-    @property
-    def html_description(self) -> str:
-        return markdown.markdown(self.descriptionSafe)
-
-    @property
-    def html_title(self) -> str:
-        return html.escape(self.configuration.title.removeprefix("Muckenliste: "))
-
-    @property
-    def is_mucken_liste(self) -> bool:
-        if self.status.deleted:
-            return False
-        return self.configuration.access != "private"
-
-    @property
-    def url(self) -> str:
-        return f"https://cloud.akablas.de/index.php/apps/polls/vote/{self.id}"
 
 
 # The below classes are reverse engineered from the JSON response of the polls API
