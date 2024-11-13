@@ -102,7 +102,7 @@ class Poll(BaseModel):
 
     @property
     def is_mucken_liste(self) -> bool:
-        if self.status.expired or self.status.deleted:
+        if self.status.deleted:
             return False
         return self.configuration.access != "private"
 
