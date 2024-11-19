@@ -1,20 +1,20 @@
 :root {
     --background: #ffffff;
     --text: #333333;
+    --link: #3498db;
     --accent-background: #f9f9f9;
     --accent-hover-background: #e9ecef;
     --border: #e0e0e0;
-    --button-background: #3498db;
     --button-text: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
     :root {
         --background: #1a1a1a;
         --text: #ffffff;
+        --link: #2980b9;
         --accent-background: #2c2c2c;
         --accent-hover-background: #3a3a3a;
         --border: #444444;
-        --button-background: #2980b9;
         --button-text: #ffffff;
     }
 }
@@ -31,13 +31,9 @@ p {
     margin: 0.75rem 0;
 }
 a:any-link {
-    color: var(--text);
-}
-h1 {
-    color: var(--text);
+    color: var(--link);
 }
 h2 {
-    color: #3498db;
     border-bottom: 2px solid var(--border);
     padding-bottom: 10px;
     margin-top: 0;
@@ -110,7 +106,7 @@ footer {
 }
 .filter-btn {
     border: none;
-    background-color: var(--button-background);
+    background-color: var(--link);
     color: var(--button-text);
 }
 .filter-btn:hover {
