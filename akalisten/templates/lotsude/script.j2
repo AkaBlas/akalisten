@@ -68,18 +68,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function setupNameHighlighting() {
-            const nameElements = tabContent.querySelectorAll('.category ul li');
-            nameElements.forEach(nameElement => {
-                nameElement.addEventListener('mouseenter', function() {
-                    const name = this.textContent.trim();
-                    const matchingElements = Array.from(nameElements).filter(el => el.textContent.trim() === name);
-                    if (matchingElements.length > 1) {
-                        matchingElements.forEach(el => el.classList.add('highlight'));
-                    }
-                });
+            const muckeElements = tabContent.querySelectorAll('.mucke');
+            muckeElements.forEach(mucke => {
+                const nameElements = mucke.querySelectorAll('.category ul li');
+                nameElements.forEach(nameElement => {
+                    nameElement.addEventListener('mouseenter', function () {
+                        const name = this.textContent.trim();
+                        const matchingElements = Array.from(nameElements).filter(el => el.textContent.trim() === name);
+                        if (matchingElements.length > 1) {
+                            matchingElements.forEach(el => el.classList.add('highlight'));
+                        }
+                    });
 
-                nameElement.addEventListener('mouseleave', function() {
-                    nameElements.forEach(el => el.classList.remove('highlight'));
+                    nameElement.addEventListener('mouseleave', function () {
+                        nameElements.forEach(el => el.classList.remove('highlight'));
+                    });
                 });
             });
         }
