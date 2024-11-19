@@ -95,31 +95,6 @@ footer {
     justify-content: space-between;
 }
 
-.intro-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.intro-btn {
-    padding: 10px 20px;
-}
-
-/* Tabs */
-.tab-content {
-    display: none;
-    margin-top: 10px;
-    flex-direction: column;
-    gap: 10px 25px;
-}
-.tab-content.active {
-    display: flex;
-}
-
-/* entry-link */
-.entry-link {
-    font-weight: bold;
-}
-
 .filters {
     display: flex;
     justify-content: center;
@@ -173,10 +148,6 @@ footer {
     margin-bottom: 10px;
 }
 
-.yes h2 { color: #27ae60; border-color: #27ae60; }
-.no h2 { color: #e74c3c; border-color: #e74c3c; }
-.maybe h2 { color: #f39c12; border-color: #f39c12; }
-
 /* Accordion styles */
 .accordion {
     margin: 10px 0;
@@ -215,17 +186,30 @@ footer {
 }
 .accordion-content {
     display: none;
+    flex-direction: column;
     border: 1px solid var(--border);
     border-top-style: none;
-    background-color: var(--accent-background);
+    background-color: transparent;
     overflow: hidden;
     padding: 15px;
     max-height: 0;
     transition: max-height 3s ease-out;
 }
-.accordion[data-state="open"] .accordion-content {
-    display: block;
+.accordion[data-state="open"] > .accordion-content {
+    display: flex;
     max-height: fit-content;
 }
 
+.mucke {
+    gap: 10px 25px;
+}
+.entry-link {
+    font-weight: bold;
+}
+.mucken-infos {
+    background-color: var(--accent-background);
+}
+.yes h2 { color: #27ae60; border-color: #27ae60; }
+.no h2 { color: #e74c3c; border-color: #e74c3c; }
+.maybe h2 { color: #f39c12; border-color: #f39c12; }
 .highlight { border-color: #f39c12; }
