@@ -177,6 +177,9 @@ footer {
 .accordion-icon {
     transition: transform 0.3s;
 }
+.accordion-header[aria-expanded="true"] {
+    border-radius: 5px 5px 0 0;
+}
 .accordion-header[aria-expanded="true"] .accordion-icon {
     transform: rotate(180deg);
 }
@@ -184,6 +187,7 @@ footer {
     display: none;
     flex-direction: column;
     border: 1px solid var(--border);
+    border-radius: 0 0 5px 5px;
     border-top-style: none;
     background-color: transparent;
     overflow: hidden;
