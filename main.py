@@ -70,7 +70,7 @@ async def main() -> None:
     )
     timezone = zoneinfo.ZoneInfo("Europe/Berlin")
     (ROOT / "index.html").write_text(
-        environment.get_template("hinrich/index.j2").render(
+        environment.get_template("lotsude/index.j2").render(
             polls=polls, poll_votes=poll_votes, now=dtm.datetime.now(timezone)
         ),
         encoding="utf-8",

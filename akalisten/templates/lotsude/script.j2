@@ -1,0 +1,147 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function setupFiltersAndAccordion(tabContent) {
+        // Tab content
+        function switchTab(selectedTabId) {
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            const activeTab = document.getElementById(selectedTabId);
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
+
+            // Hide intro element when a tab is selected
+            const introElement = document.querySelector('.intro');
+            if (introElement) {
+                introElement.style.display = 'none';
+            }
+
+            // Show mucken header
+            const muckenHeader = document.getElementById('mucken-header');
+            if (muckenHeader) {
+                muckenHeader.classList.remove('hidden');
+            }
+        }
+
+        // Switch tab on select change
+        const tabSelect = document.getElementById('tab-select-mucke');
+        if (tabSelect) {
+            tabSelect.addEventListener('change', function() {
+                const selectedTabId = this.value;
+                switchTab(selectedTabId);
+            });
+        }
+
+        // Call tab on button click
+        const introButtons = document.querySelectorAll('.intro-btn');
+        introButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const selectedTabId = this.getAttribute('data-tab');
+                switchTab(selectedTabId);
+                if (tabSelect) {
+                    tabSelect.value = selectedTabId;
+                }
+            });
+        });
+
+        function updateVisibility() {
+            const activeFilterButton = tabContent.querySelector('.filter-btn.active');
+            const selectedStatus = activeFilterButton ? activeFilterButton.getAttribute('data-filter') : 'all';
+            let selectedCategory = document.querySelector('.category-select') ? document.querySelector('.category-select').value : 'all';
+
+            tabContent.querySelectorAll('.column').forEach(column => {
+                const shouldShowColumn = selectedStatus === 'all' || column.classList.contains(selectedStatus);
+                column.style.display = shouldShowColumn ? 'block' : 'none';
+            });
+
+            tabContent.querySelectorAll('.category').forEach(category => {
+                const shouldShowCategory = (selectedCategory === 'all' || category.getAttribute('data-category') === selectedCategory) &&
+                    (selectedStatus === 'all' || category.closest('.column').classList.contains(selectedStatus));
+                category.style.display = shouldShowCategory ? 'block' : 'none';
+            });
+        }
+
+        const filterButtons = tabContent.querySelectorAll('.filter-btn');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                updateVisibility();
+            });
+        });
+
+        const categorySelects = document.querySelectorAll('.category-select');
+        categorySelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const selectedValue = this.value;
+                categorySelects.forEach(otherSelect => {
+                    otherSelect.value = selectedValue;
+                });
+                localStorage.setItem('selectedCategory', selectedValue);
+                updateVisibility();
+            });
+        });
+
+        // Restore selected category from localStorage
+        const savedCategory = localStorage.getItem('selectedCategory');
+        if (savedCategory) {
+            categorySelects.forEach(select => {
+                select.value = savedCategory;
+            });
+        }
+
+        // Back button
+        document.querySelector('.back-btn').addEventListener('click', function() {
+            // Hide mucken header
+            const muckenHeader = document.getElementById('mucken-header');
+            if (muckenHeader) {
+                muckenHeader.classList.add('hidden');
+            }
+
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show the intro section
+            document.querySelector('.intro').style.display = 'block';
+        });
+
+        // Accordion functionality
+        const accordionHeaders = tabContent.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const isOpen = this.getAttribute('aria-expanded') === 'true';
+                this.setAttribute('aria-expanded', !isOpen);
+                this.parentElement.setAttribute('data-state', isOpen ? 'closed' : 'open');
+                const content = this.nextElementSibling;
+                if (content) {
+                    content.hidden = isOpen;
+                }
+            });
+        });
+
+        // Highlight names on hover
+        const nameElements = tabContent.querySelectorAll('.category ul li');
+        nameElements.forEach(nameElement => {
+            nameElement.addEventListener('mouseenter', function() {
+                const name = this.textContent.trim();
+                const matchingElements = Array.from(nameElements).filter(el => el.textContent.trim() === name);
+                if (matchingElements.length > 1) {
+                    matchingElements.forEach(el => el.classList.add('highlight'));
+                }
+            });
+
+            nameElement.addEventListener('mouseleave', function() {
+                nameElements.forEach(el => el.classList.remove('highlight'));
+            });
+        });
+
+        // Initial visibility update
+        updateVisibility();
+    }
+
+    document.querySelectorAll('.tab-content').forEach(setupFiltersAndAccordion);
+});
+</script>
