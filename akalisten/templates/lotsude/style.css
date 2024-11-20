@@ -106,14 +106,17 @@ footer {
 }
 .filter-btn {
     border: none;
+    font-weight: bold;
     background-color: var(--link);
     color: var(--button-text);
+    filter: opacity(0.5);
 }
 .filter-btn:hover {
     background-color: initial;
+    filter: opacity(0.75);
 }
 .filter-btn.active {
-    font-weight: bold;
+    filter: none;
 }
 .filter-btn.all { background-color: #3498db; }
 .filter-btn.yes { background-color: #27ae60; }
