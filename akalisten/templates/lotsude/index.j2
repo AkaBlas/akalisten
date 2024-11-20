@@ -9,7 +9,7 @@
     </style>
 </head>
 <body>
-    <h1>Muckenlisten <small>🚧 <i>Erster, grober Entwurf</i></small></h1>
+    <h1>Muckenlisten <small>🚧 <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
     <p>💡 <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
     <p>🕓 Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}</p>
     <div class="intro">
@@ -106,7 +106,11 @@
         </div>
 {% endfor %}
     </div>
-    {# <footer></footer> #}
+     <footer>
+         <div>
+            <p>Mit ❤️‍🔥 gebaut von 🦌 und Henry</p>
+         </div>
+     </footer>
 {% include 'script.j2' %}
 </body>
 </html>
