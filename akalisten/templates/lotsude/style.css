@@ -213,3 +213,18 @@ footer {
 .no h2 { color: #e74c3c; border-color: #e74c3c; }
 .maybe h2 { color: #f39c12; border-color: #f39c12; }
 .highlight { border-color: #f39c12; }
+
+@media only screen and (max-width: 420px) {
+    body {
+        padding: 20px 10px;
+    }
+    .participants {
+        flex-direction: column;
+    }
+    .column {
+        min-width: auto;
+    }
+    .accordion-content {
+        padding: 15px 10px;
+    }
+}
