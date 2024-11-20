@@ -23,8 +23,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const filterButtons = tabContent.querySelectorAll('.filter-btn');
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
+                    const selectedFilter = this.getAttribute('data-filter');
+                    filterButtons.forEach(btn => {
+                        if (btn.getAttribute('data-filter') === selectedFilter) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
                     updateVisibility();
                 });
             });
