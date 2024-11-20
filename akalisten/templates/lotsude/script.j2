@@ -1,0 +1,97 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabContent = document.querySelector('.mucken');
+    if (tabContent) {
+        function updateVisibility() {
+            const activeFilterButton = tabContent.querySelector('.filter-btn.active');
+            const selectedStatus = activeFilterButton ? activeFilterButton.getAttribute('data-filter') : 'all';
+            let selectedCategory = document.querySelector('.category-select') ? document.querySelector('.category-select').value : 'all';
+
+            tabContent.querySelectorAll('.column').forEach(column => {
+                const shouldShowColumn = selectedStatus === 'all' || column.classList.contains(selectedStatus);
+                column.style.display = shouldShowColumn ? 'block' : 'none';
+            });
+
+            tabContent.querySelectorAll('.category').forEach(category => {
+                const shouldShowCategory = (selectedCategory === 'all' || category.getAttribute('data-category') === selectedCategory) &&
+                    (selectedStatus === 'all' || category.closest('.column').classList.contains(selectedStatus));
+                category.style.display = shouldShowCategory ? 'block' : 'none';
+            });
+        }
+
+        function setupFilterButtons() {
+            const filterButtons = tabContent.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    updateVisibility();
+                });
+            });
+        }
+
+        function setupCategorySelects() {
+            const categorySelects = document.querySelectorAll('.category-select');
+            categorySelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const selectedValue = this.value;
+                    categorySelects.forEach(otherSelect => {
+                        otherSelect.value = selectedValue;
+                    });
+                    localStorage.setItem('selectedCategory', selectedValue);
+                    updateVisibility();
+                });
+            });
+
+            // Restore selected category from localStorage
+            const savedCategory = localStorage.getItem('selectedCategory');
+            if (savedCategory) {
+                categorySelects.forEach(select => {
+                    select.value = savedCategory;
+                });
+            }
+        }
+
+        function setupAccordion() {
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const isOpen = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !isOpen);
+                    this.parentElement.setAttribute('data-state', isOpen ? 'closed' : 'open');
+                    const content = this.nextElementSibling;
+                    if (content) {
+                        content.hidden = isOpen;
+                    }
+                });
+            });
+        }
+
+        function setupNameHighlighting() {
+            const muckeElements = tabContent.querySelectorAll('.mucke');
+            muckeElements.forEach(mucke => {
+                const nameElements = mucke.querySelectorAll('.category ul li');
+                nameElements.forEach(nameElement => {
+                    nameElement.addEventListener('mouseenter', function () {
+                        const name = this.textContent.trim();
+                        const matchingElements = Array.from(nameElements).filter(el => el.textContent.trim() === name);
+                        if (matchingElements.length > 1) {
+                            matchingElements.forEach(el => el.classList.add('highlight'));
+                        }
+                    });
+
+                    nameElement.addEventListener('mouseleave', function () {
+                        nameElements.forEach(el => el.classList.remove('highlight'));
+                    });
+                });
+            });
+        }
+
+        setupFilterButtons();
+        setupCategorySelects();
+        setupAccordion();
+        setupNameHighlighting();
+        updateVisibility();
+    }
+});
+</script>

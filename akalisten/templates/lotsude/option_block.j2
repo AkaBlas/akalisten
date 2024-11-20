@@ -1,0 +1,12 @@
+{% macro render_category(option, votes, vote_type) %}
+{% if votes[vote_type]() %}
+    <div class="category" data-category="{{ option }}">
+        <div class="category-name">{{ option }}</div>
+        <ul>
+            {% for user in votes[vote_type]() %}
+                <li>{{ user.html_display_name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+{% endmacro %}
