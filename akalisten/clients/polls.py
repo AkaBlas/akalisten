@@ -71,6 +71,9 @@ class PollAPI(AbstractAsyncContextManager):
         options = await self.get_poll_options(poll_id)
         poll_votes = PollVotes(poll_id=poll_id)
 
+        # Adding Options first is important! Python dicts are ordered since 3.7, so this makes
+        # sure that the options are added in the order reported by the API. We assume that this
+        # is the order displayed to the user on NextCloud.
         for option in options:
             poll_votes.add_option(option)
         for vote in votes:
