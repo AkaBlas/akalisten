@@ -200,6 +200,7 @@ class PollInfo(BaseModel):
 class User(BaseModel):
     model_config = ConfigDict(frozen=True)
     name: str
+    id: str
 
     @property
     def display_name(self) -> str:
@@ -222,11 +223,11 @@ class PollOptionVotes(BaseModel):
 
     def add_vote(self, vote: PollVote) -> None:
         if vote.answer == "yes":
-            self.yes.add(User(name=vote.user.displayName))
+            self.yes.add(User(name=vote.user.displayName, id=vote.user.id))
         elif vote.answer == "no":
-            self.no.add(User(name=vote.user.displayName))
+            self.no.add(User(name=vote.user.displayName, id=vote.user.id))
         elif vote.answer == "maybe":
-            self.maybe.add(User(name=vote.user.displayName))
+            self.maybe.add(User(name=vote.user.displayName, id=vote.user.id))
 
     @property
     def max_votes(self) -> int:
@@ -267,19 +268,19 @@ class PollUserAnswers(BaseModel):
 class PollVotes(BaseModel):
     poll_id: int
     options: dict[str, PollOptionVotes] = Field(default_factory=dict)
-    users: dict[User, PollUserAnswers] = Field(default_factory=dict)
+    users: dict[str, PollUserAnswers] = Field(default_factory=dict)
 
     def _get_option_votes(self, option_text: str) -> PollOptionVotes:
         return self.options.setdefault(option_text, PollOptionVotes(poll_id=self.poll_id))
 
     def _get_user_answers(self, user: User) -> PollUserAnswers:
-        return self.users.setdefault(user, PollUserAnswers(poll_id=self.poll_id, user=user))
+        return self.users.setdefault(user.id, PollUserAnswers(poll_id=self.poll_id, user=user))
 
     def add_vote(self, vote: PollVote) -> None:
         option = self._get_option_votes(vote.optionText)
         option.add_vote(vote)
 
-        user = self._get_user_answers(User(name=vote.user.displayName))
+        user = self._get_user_answers(User(name=vote.user.displayName, id=vote.user.id))
         user.add_answer(vote)
 
     def add_option(self, option_text: Union[str, PollOption]) -> None:
