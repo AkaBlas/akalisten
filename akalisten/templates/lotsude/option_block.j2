@@ -1,10 +1,14 @@
 {% macro render_category(option, votes, vote_type) %}
-{% if votes[vote_type]() %}
-    <div class="category" data-category="{{ option }}">
+{% if votes.max_votes > 1 %}
+    <div class="category{% if not votes[vote_type]() %} placeholder{% endif %}" data-category="{{ option }}">
         <div class="category-name">{{ option }}</div>
         <ul>
             {% for user in votes[vote_type]() %}
                 <li data-user-id="{{ user.id }}">{{ user.html_display_name }}</li>
+            {% endfor %}
+            {% set empty_slots = votes.max_votes - votes[vote_type]()|length %}
+            {% for _ in range(empty_slots) %}
+                <li class="placeholder">.</li>
             {% endfor %}
         </ul>
     </div>
