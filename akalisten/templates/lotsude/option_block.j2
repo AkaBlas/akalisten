@@ -1,5 +1,4 @@
 {% macro render_category(option, votes, vote_type) %}
-{% if votes.max_votes > 1 %}
     <div class="category{% if not votes[vote_type]() %} placeholder{% endif %}" data-category="{{ option }}">
         <div class="category-name">{{ option }}</div>
         <ul>
@@ -8,9 +7,11 @@
             {% endfor %}
             {% set empty_slots = votes.max_votes - votes[vote_type]()|length %}
             {% for _ in range(empty_slots) %}
-                <li class="placeholder">.</li>
+                <li class="placeholder">&nbsp;</li>
             {% endfor %}
+            {% if not votes.max_votes %}
+                <li class="placeholder">&nbsp;</li>
+            {% endif %}
         </ul>
     </div>
-{% endif %}
 {% endmacro %}
