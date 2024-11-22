@@ -81,18 +81,25 @@
                     <div class="column no">
                         <h2>Nein</h2>
                         {% for option, votes in poll_votes[poll.id].options.items() %}
-                            {% if votes.sorted_no() %}
-                            <div class="category" data-category="{{ option }}">
+                            <div class="category{% if not votes.sorted_no() %} placeholder{% endif %}" data-category="{{ option }}">
                                 <div class="category-name">{{ option }}</div>
                                 <ul>
                                     {% for user in votes.sorted_no() %}
                                         {% if not (poll_votes[poll.id].users[user.id].yes or poll_votes[poll.id].users[user.id].maybe) %}
                                             <li data-user-id="{{ user.id }}">{{ user.html_display_name }}</li>
+                                        {% else %}
+                                            <li class="placeholder">&nbsp;</li> <!-- TODO: Sometimes appears above entries -->
                                         {% endif %}
                                     {% endfor %}
+                                    {% set empty_slots = votes.max_votes - votes.sorted_no()|length %}
+                                    {% for _ in range(empty_slots) %}
+                                        <li class="placeholder">&nbsp;</li>
+                                    {% endfor %}
+                                    {% if not votes.max_votes %}
+                                        <li class="placeholder">&nbsp;</li>
+                                    {% endif %}
                                 </ul>
                             </div>
-                            {% endif %}
                         {% endfor %}
                     </div>
                     <div class="column maybe">
