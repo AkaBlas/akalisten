@@ -139,8 +139,14 @@ footer {
     border: 1px solid var(--border);
     transition: background-color 0.3s, border-color 0.3s;
 }
+.column.hidden {
+    display: none;
+}
 .category {
     margin-bottom: 20px;
+}
+.category.hidden {
+    display: none;
 }
 .category-name {
     font-weight: bold;
