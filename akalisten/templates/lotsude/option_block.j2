@@ -4,7 +4,7 @@
         <div class="category-name">{{ option }}</div>
         <ul>
             {% for user in votes[vote_type]() %}
-                <li>{{ user.html_display_name }}</li>
+                <li data-user-id="{{ user.id }}">{{ user.html_display_name }}</li>
             {% endfor %}
         </ul>
     </div>
