@@ -231,3 +231,8 @@ footer {
         padding: 15px 10px;
     }
 }
+@media only screen and (max-width: 1200px) {
+    .placeholder {
+        display: none;
+    }
+}
