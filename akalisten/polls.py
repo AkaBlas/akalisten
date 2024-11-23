@@ -59,28 +59,6 @@ class MuckenInfo(BaseModel):
             return None
         return markdown.markdown(self.additional)
 
-    @property
-    def html_info(self) -> str:
-        if not self.has_any_info():
-            return ""
-
-        out = "<p>"
-        if self.date is not None:
-            out += f"<p>📅 Datum: {self.date.strftime('%d.%m.%Y')}</p>"
-        if self.location is not None:
-            out += f"<p>📍 Ort: {html.escape(self.location)}</p>"
-        if self.time_m2 is not None:
-            out += f"<p>🚚 Mensa 2: {self.time_m2.strftime('%H:%M')} Uhr</p>"
-        if self.time_meeting is not None:
-            out += f"<p>🕒 Direkt: {self.time_meeting.strftime('%H:%M')} Uhr</p>"
-        if self.time_start is not None:
-            out += f"<p>🏁 Start: {self.time_start.strftime('%H:%M')} Uhr</p>"
-        if self.time_end is not None:
-            out += f"<p>🔚 Ende: {self.time_end.strftime('%H:%M')} Uhr</p>"
-
-        out += "</p>"
-        return out
-
     @staticmethod
     def _parse_date_or_time(value: str) -> Optional[dtm.datetime]:
         time_string = _CLEAN_TIME_PATTERN.sub("", value).strip()

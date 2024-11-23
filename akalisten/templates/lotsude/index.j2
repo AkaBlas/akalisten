@@ -9,9 +9,8 @@
     </style>
 </head>
 <body>
-    <h1>Muckenlisten <small>🚧 <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
-    <p>💡 <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
-    <p>🕓 Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}</p>
+    <h1>Muckenlisten<br><small class="icon-text"><i data-lucide="construction" class="lucide-icon inline-icon"></i> <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
+    <p class="icon-text"><i data-lucide="github" class="lucide-icon-15 inline-icon"></i> <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
     <div class="intro">
         <header>
             {# <button class="settings-btn">⚙️ Einstellungen</button> #}
@@ -23,27 +22,49 @@
         <div class="accordion" data-state="closed">
             <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}">
                 {{ poll.html_title }}
-                <span class="accordion-icon">⬇️</span>
+                <span class="accordion-icon"><i data-lucide="chevron-down" class="lucide-icon-15 inline-icon"></i></span>
             </button>
             <div class="accordion-content mucke" id="mucke-{{ poll.id }}" hidden>
                 {% if poll.url %}
-                    <div class="entry-link">
-                        🔗 <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer">Hier zur Mucke eintragen</a>
+                    <div class="entry-link icon-text">
+                        <i data-lucide="link" class="lucide-icon inline-icon"></i>
+                        <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer">Hier zur Mucke eintragen</a>
                     </div>
                 {%  endif %}
                 {% if poll.mucken_info.has_any_info or poll.mucken_info.additional %}
                     <div class="accordion" data-state="closed">
                         <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}-infos">
                             Mucken-Infos
-                            <span class="accordion-icon">⬇️</span>
+                            <span class="accordion-icon"><i data-lucide="chevron-down" class="lucide-icon-15"></i></span>
                         </button>
                         <div class="accordion-content mucken-infos" id="mucke-{{ poll.id }}-infos" hidden>
                             {% if poll.mucken_info.has_any_info %}
-                                {{ poll.mucken_info.html_info }}
+                                <ul class="multi-column-list">
+                                    {% from 'info_block.j2' import render_info %}
+                                    {% if poll.mucken_info.date %}
+                                       {{ render_info('calendar-fold', poll.mucken_info.date.strftime('%d.%m.%Y')) }}
+                                    {% endif %}
+                                    {% if poll.mucken_info.location %}
+                                        {{ render_info('map-pin', poll.mucken_info.location) }}
+                                    {% endif %}
+                                    {% if poll.mucken_info.time_m2 %}
+                                        {{ render_info('truck', "Mensa 2: " + poll.mucken_info.time_m2.strftime('%H:%M') + " Uhr") }}
+                                    {% endif %}
+                                    {% if poll.mucken_info.time_meeting %}
+                                        {{ render_info('clock', "Direkt: " + poll.mucken_info.time_meeting.strftime('%H:%M') + " Uhr") }}
+                                    {% endif %}
+                                    {% if poll.mucken_info.time_start %}
+                                        {{ render_info('volume-2', "Start: " + poll.mucken_info.time_start.strftime('%H:%M') + " Uhr") }}
+                                    {% endif %}
+                                    {% if poll.mucken_info.time_end %}
+                                        {{ render_info('volume-x', "Ende: " + poll.mucken_info.time_end.strftime('%H:%M') + " Uhr") }}
+                                    {% endif %}
+                                </ul>
                             {% endif %}
                             {% if poll.mucken_info.additional %}
-                                <p>
-                                    <b>📝 Zusätzliche Informationen:</b>
+                                <p class="icon-text">
+                                    <i data-lucide="info" class="lucide-icon-15 inline-icon"></i>
+                                    <b>Zusätzliche Informationen:</b>
                                     {{ poll.mucken_info.html_additional }}
                                 </p>
                             {% endif %}
@@ -108,9 +129,11 @@
     </div>
      <footer>
          <div>
-            <p>Mit ❤️‍🔥 gebaut von 🦌 und Henry</p>
+            <p class="icon-text"><i data-lucide="database-backup" class="lucide-icon-15 inline-icon"></i> Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}</p>
+            <p class="icon-text">Mit <i data-lucide="heart-handshake" class="lucide-icon-15 inline-icon" style="margin-left: 5px"></i> gebaut von Hirsch und Henry</p>
          </div>
      </footer>
+{% include 'icons_script.j2' %}
 {% include 'script.j2' %}
 </body>
 </html>

@@ -6,6 +6,7 @@
     --accent-hover-background: #e9ecef;
     --border: #e0e0e0;
     --button-text: #ffffff;
+    --icon: #4c4c4c;
 }
 @media (prefers-color-scheme: dark) {
     :root {
@@ -16,6 +17,7 @@
         --accent-hover-background: #3a3a3a;
         --border: #444444;
         --button-text: #ffffff;
+        --icon: #bfbfbf;
     }
 }
 body {
@@ -50,6 +52,10 @@ li {
     border-radius: 3px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     transition: background-color 0.3s;
+}
+.multi-column-list {
+    column-count: 3;
+    column-gap: 10px;
 }
 button {
     padding: 10px 20px;
@@ -217,9 +223,41 @@ footer {
 .maybe h2 { color: #f39c12; border-color: #f39c12; }
 .highlight { border-color: #f39c12; }
 
+.lucide-icon {
+    color: var(--icon);
+    width: 1em;
+    height: 1em;
+}
+.lucide-icon-15 {
+    color: var(--icon);
+    width: 1.5em;
+    height: 1.5em;
+}
+.lucide-icon-2 {
+    color: var(--icon);
+    width: 2em;
+    height: 2em;
+}
+.inline-icon {
+    margin-right: 1ex;
+}
+.icon-text {
+    display: flex;
+    align-items: center;
+}
+
+@media only screen and (max-width: 800px) {
+    .multi-column-list {
+        column-count: 2;
+    }
+}
+
 @media only screen and (max-width: 420px) {
     body {
         padding: 20px 10px;
+    }
+    .multi-column-list {
+        column-count: 1;
     }
     .participants {
         flex-direction: column;
