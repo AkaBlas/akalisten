@@ -79,9 +79,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const nameElements = mucke.querySelectorAll('.category ul li');
                 nameElements.forEach(nameElement => {
                     nameElement.addEventListener('mouseenter', function () {
-                        const name = this.textContent.trim();
-                        const matchingElements = Array.from(nameElements).filter(el => el.textContent.trim() === name);
-                        if (matchingElements.length > 1) {
+                        const userId = this.getAttribute('data-user-id');
+                        const matchingElements = Array.from(nameElements).filter(el => el.getAttribute('data-user-id') === userId);
+                        if (userId !== null && matchingElements.length > 1) {
                             matchingElements.forEach(el => el.classList.add('highlight'));
                         }
                     });

@@ -87,7 +87,7 @@
                                 <ul>
                                     {% for user in votes.sorted_no() %}
                                         {% if not (poll_votes[poll.id].users[user.id].yes or poll_votes[poll.id].users[user.id].maybe) %}
-                                            <li>{{ user.html_display_name }}</li>
+                                            <li data-user-id="{{ user.id }}">{{ user.html_display_name }}</li>
                                         {% endif %}
                                     {% endfor %}
                                 </ul>
