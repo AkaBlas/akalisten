@@ -233,6 +233,20 @@ class PollOptionVotes(BaseModel):
     def max_votes(self) -> int:
         return max(len(self.yes), len(self.no), len(self.maybe))
 
+    def get_max_votes(self, clear_no_votes_from: Collection["PollUserAnswers"]) -> int:
+        """Like :attr:`votes`, but discards `no` votes from all users that have voted yes or maybe
+        in *any* option. Example::
+
+        votes.get_max_votes(poll_votes[poll.id].users.values())
+
+        """
+        has_yes_maybe = {
+            poll_user_answer.user
+            for poll_user_answer in clear_no_votes_from
+            if (poll_user_answer.yes or poll_user_answer.maybe)
+        }
+        return max(len(self.yes), len(self.no - has_yes_maybe), len(self.maybe))
+
     @staticmethod
     def _sort_names(names: Collection[User], html_escape: bool) -> Sequence[User]:
         if html_escape:
