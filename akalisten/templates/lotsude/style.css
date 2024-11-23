@@ -91,6 +91,13 @@ footer {
     justify-content: space-between;
 }
 
+.mucken-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+}
+
 .filters {
     display: flex;
     justify-content: center;
@@ -152,6 +159,8 @@ footer {
     margin: 10px 0;
     border-radius: 5px;
     overflow: hidden;
+    flex: 1 1 100%;
+    min-width: 250px;
 }
 .accordion-header {
     border: 1px solid var(--border);
@@ -206,8 +215,20 @@ footer {
 .mucke {
     gap: 10px 25px;
 }
-.entry-link {
+.entry-btn {
+    flex: 0 1 100%;
+    margin: 10px 0;
+    border: none;
     font-weight: bold;
+    background-color: var(--link);
+    color: var(--button-text);
+    white-space: nowrap;
+    height: max-content;
+    padding: 15px;
+}
+.entry-btn a {
+    color: var(--button-text);
+    text-decoration: none;
 }
 .mucken-infos {
     background-color: var(--accent-background);
@@ -226,6 +247,9 @@ footer {
     }
     .column {
         min-width: auto;
+    }
+    .mucken-header {
+        flex-direction: column;
     }
     .accordion-content {
         padding: 15px 10px;

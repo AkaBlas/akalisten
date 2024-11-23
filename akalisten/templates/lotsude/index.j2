@@ -26,30 +26,32 @@
                 <span class="accordion-icon">⬇️</span>
             </button>
             <div class="accordion-content mucke" id="mucke-{{ poll.id }}" hidden>
-                {% if poll.url %}
-                    <div class="entry-link">
-                        🔗 <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer">Hier zur Mucke eintragen</a>
-                    </div>
-                {%  endif %}
-                {% if poll.mucken_info.has_any_info or poll.mucken_info.additional %}
-                    <div class="accordion" data-state="closed">
-                        <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}-infos">
-                            Mucken-Infos
-                            <span class="accordion-icon">⬇️</span>
-                        </button>
-                        <div class="accordion-content mucken-infos" id="mucke-{{ poll.id }}-infos" hidden>
-                            {% if poll.mucken_info.has_any_info %}
-                                {{ poll.mucken_info.html_info }}
-                            {% endif %}
-                            {% if poll.mucken_info.additional %}
-                                <p>
-                                    <b>📝 Zusätzliche Informationen:</b>
-                                    {{ poll.mucken_info.html_additional }}
-                                </p>
-                            {% endif %}
+                <div class="mucken-header" id="mucke-{{ poll.id }}-header">
+                    {% if poll.mucken_info.has_any_info or poll.mucken_info.additional %}
+                        <div class="accordion" data-state="closed">
+                            <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}-infos">
+                                Mucken-Infos
+                                <span class="accordion-icon">⬇️</span>
+                            </button>
+                            <div class="accordion-content mucken-infos" id="mucke-{{ poll.id }}-infos" hidden>
+                                {% if poll.mucken_info.has_any_info %}
+                                    {{ poll.mucken_info.html_info }}
+                                {% endif %}
+                                {% if poll.mucken_info.additional %}
+                                    <p>
+                                        <b>📝 Zusätzliche Informationen:</b>
+                                        {{ poll.mucken_info.html_additional }}
+                                    </p>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                    {% if poll.url %}
+                        <button class="entry-btn">
+                            🔗 <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer">Hier zur Mucke eintragen</a>
+                        </button>
+                    {%  endif %}
+                </div>
 
                 <div class="filters">
                     <div class="participant-filter">
