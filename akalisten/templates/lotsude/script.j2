@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             tabContent.querySelectorAll('.category').forEach(category => {
-                const shouldShowCategory = (selectedCategory === 'all' || category.getAttribute('data-category') === selectedCategory) &&
+                const shouldShowCategory = (selectedCategory === 'all' || category.getAttribute('data-category-id') === selectedCategory) &&
                     (selectedStatus === 'all' || category.closest('.column').classList.contains(selectedStatus));
                 category.style.display = shouldShowCategory ? 'block' : 'none';
             });
