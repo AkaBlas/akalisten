@@ -31,9 +31,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             btn.classList.remove('active');
                         }
                     });
+                    localStorage.setItem('selectedFilter', selectedFilter);
                     updateVisibility();
                 });
             });
+
+            // Restore selected filter from localStorage
+            const savedFilter = localStorage.getItem('selectedFilter');
+            if (savedFilter) {
+                filterButtons.forEach(btn => {
+                    if (btn.getAttribute('data-filter') === savedFilter) {
+                        btn.click();
+                    }
+                });
+            }
         }
 
         function setupCategorySelects() {
@@ -69,7 +80,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (content) {
                         content.hidden = isOpen;
                     }
+
+                    // Persist state in localStorage
+                    const expansionState = JSON.parse(localStorage.getItem('mucken_expansion')) || {};
+                    expansionState[this.getAttribute('aria-controls')] = !isOpen;
+                    localStorage.setItem('mucken_expansion', JSON.stringify(expansionState));
+                    console.log(expansionState);
                 });
+            });
+
+            // Restore expansion state from localStorage
+            const expansionState = JSON.parse(localStorage.getItem('mucken_expansion')) || {};
+            accordionHeaders.forEach(header => {
+                const content = header.nextElementSibling;
+                if (content) {
+                    const isOpen = expansionState[header.getAttribute('aria-controls')];
+                    header.setAttribute('aria-expanded', isOpen);
+                    header.parentElement.setAttribute('data-state', isOpen ? 'open' : 'closed');
+                }
             });
         }
 
