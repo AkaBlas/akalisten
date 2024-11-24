@@ -7,8 +7,9 @@
     --border: #e0e0e0;
     --button-text: #ffffff;
 }
-@media (prefers-color-scheme: dark) {
-    :root {
+
+@media (prefers-color-scheme: light) {
+    :root[data-color-scheme=dark] {
         --background: #1a1a1a;
         --text: #ffffff;
         --link: #2980b9;
@@ -18,6 +19,45 @@
         --button-text: #ffffff;
     }
 }
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme=light]) {
+        --background: #1a1a1a;
+        --text: #ffffff;
+        --link: #2980b9;
+        --accent-background: #2c2c2c;
+        --accent-hover-background: #3a3a3a;
+        --border: #444444;
+        --button-text: #ffffff;
+    }
+}
+
+.color-scheme-toggle div {
+    color: var(--text);
+    display: none;
+    height: 1.25rem;
+    width: 1.25rem
+}
+
+.color-scheme-toggle {
+    padding: 10px;
+}
+
+:root[data-color-scheme=dark] .color-scheme-toggle div.color-scheme-icon-when-dark,
+:root[data-color-scheme=light] .color-scheme-toggle div.color-scheme-icon-when-light,
+:root[data-color-scheme=auto] .color-scheme-toggle div.color-scheme-icon-when-auto-light {
+    display: block
+}
+
+@media (prefers-color-scheme: dark) {
+    :root[data-color-scheme=auto] .color-scheme-toggle div.color-scheme-icon-when-auto-dark {
+        display: block
+    }
+
+    :root[data-color-scheme=auto] .color-scheme-toggle div.color-scheme-icon-when-auto-light {
+        display: none
+    }
+}
+
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
@@ -26,6 +66,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    transition: background-color 0.3s;
 }
 p {
     margin: 0.75rem 0;
@@ -77,10 +118,10 @@ select:hover {
 }
 header {
     display: flex;
-    gap: 10px 25px;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    min-height: 42px;
+    gap: 0 25px;
+    justify-content: space-between;
+    flex-wrap: wrap-reverse;
+    align-items: center;
 }
 header.hidden {
     display: none;

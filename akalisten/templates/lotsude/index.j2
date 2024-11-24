@@ -9,15 +9,20 @@
     </style>
 </head>
 <body>
-    <h1>Muckenlisten <small>🚧 <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
+    <header>
+        <h1>Muckenlisten <small>🚧 <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
+        <div class="color-scheme-toggle-container">
+            <button class="color-scheme-toggle">
+                <div class="color-scheme-icon-when-auto-light">🌤️</div>
+                <div class="color-scheme-icon-when-auto-dark">🌒</div>
+                <div class="color-scheme-icon-when-dark">🌙</div>
+                <div class="color-scheme-icon-when-light">☀️</div>
+            </button>
+        </div>
+    </header>
     <p>💡 <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
     <p>🕓 Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}</p>
-    <div class="intro">
-        <header>
-            {# <button class="settings-btn">⚙️ Einstellungen</button> #}
-        </header>
-        <h2>Aktuelle Mucken</h2>
-    </div>
+    <h2>Aktuelle Mucken</h2>
     <div class="mucken">
 {% for poll in polls.values() %}
         <div class="accordion" data-state="closed">

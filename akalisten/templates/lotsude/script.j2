@@ -93,11 +93,43 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        function calculateNewScheme(currentScheme, systemPrefersDark) {
+            if (systemPrefersDark) {
+                if (currentScheme === "auto") return "light";
+                if (currentScheme === "light") return "dark";
+                return "auto";
+            } else {
+                if (currentScheme === "auto") return "dark";
+                if (currentScheme === "dark") return "light";
+                return "auto";
+            }
+        }
+
+        function toggleColorScheme() {
+            const savedColorScheme = localStorage.getItem("color-scheme") || "auto";
+            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            let newScheme = calculateNewScheme(savedColorScheme, prefersDarkScheme);
+            document.documentElement.setAttribute("data-color-scheme", newScheme);
+            localStorage.setItem("color-scheme", newScheme);
+        }
+
+        function setupColorScheme() {
+            // Restore scheme from localStorage
+            const savedColorScheme = localStorage.getItem("color-scheme") || "auto";
+            document.documentElement.setAttribute("data-color-scheme", savedColorScheme);
+
+            const colorSchemeToggle = document.querySelector('.color-scheme-toggle');
+            if (colorSchemeToggle) {
+                colorSchemeToggle.addEventListener('click', toggleColorScheme);
+            }
+        }
+
         setupFilterButtons();
         setupCategorySelects();
         setupAccordion();
         setupNameHighlighting();
         updateVisibility();
+        setupColorScheme();
     }
 });
 </script>
