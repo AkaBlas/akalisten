@@ -63,8 +63,8 @@
                         <label for="category-select-{{ poll.id }}">Kategorie:</label>
                         <select class="category-select" id="category-select-{{ poll.id }}">
                             <option value="all">Alle</option>
-                            {% for option, votes in poll_votes[poll.id].options.items() %}
-                                <option value="{{ option }}">{{ option }}</option>
+                            {% for option_id, votes in poll_votes[poll.id].options.items() %}
+                                <option value="{{ option_id }}">{{ votes.text }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -79,7 +79,7 @@
                     <div class="column {{ col_class }}">
                         <h2>{{ col_name }}</h2>
                         {% from 'option_block.j2' import render_category %}
-                        {% for option, votes in poll_votes[poll.id].options.items() %}
+                        {% for votes in poll_votes[poll.id].options.values() %}
                             {{ render_category(option, votes, attr_name) }}
                         {% endfor %}
                     </div>

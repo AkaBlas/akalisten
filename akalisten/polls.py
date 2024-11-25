@@ -217,6 +217,8 @@ class User(BaseModel):
 
 class PollOptionVotes(BaseModel):
     poll_id: int
+    id: int
+    text: str
     yes: set[User] = Field(default_factory=set)
     no: set[User] = Field(default_factory=set)
     maybe: set[User] = Field(default_factory=set)
@@ -293,29 +295,26 @@ class PollUserAnswers(BaseModel):
 
 class PollVotes(BaseModel):
     poll_id: int
-    options: dict[str, PollOptionVotes] = Field(default_factory=dict)
+    options: dict[int, PollOptionVotes] = Field(default_factory=dict)
     users: dict[str, PollUserAnswers] = Field(default_factory=dict)
 
-    def _get_option_votes(self, option_text: str) -> PollOptionVotes:
-        return self.options.setdefault(option_text, PollOptionVotes(poll_id=self.poll_id))
+    def _get_option_votes(self, option_text: str, poll_id: int) -> PollOptionVotes:
+        return self.options.setdefault(
+            poll_id, PollOptionVotes(poll_id=self.poll_id, id=poll_id, text=option_text)
+        )
 
     def _get_user_answers(self, user: User) -> PollUserAnswers:
         return self.users.setdefault(user.id, PollUserAnswers(poll_id=self.poll_id, user=user))
 
     def add_vote(self, vote: PollVote) -> None:
-        option = self._get_option_votes(vote.optionText)
+        option = self._get_option_votes(vote.optionText, vote.optionId)
         option.add_vote(vote)
 
         user = self._get_user_answers(User(name=vote.user.displayName, id=vote.user.id))
         user.add_answer(vote)
 
-    def add_option(self, option_text: Union[str, PollOption]) -> None:
-        if isinstance(option_text, PollOption):
-            option_text = option_text.text
-        self._get_option_votes(option_text)
-
-    def sorted_option_names(self) -> Sequence[str]:
-        return sorted(self.options.keys())
+    def add_option(self, poll_option: PollOption) -> None:
+        self._get_option_votes(poll_option.text, poll_option.id)
 
     def sanitize_nos(self) -> None:
         for option in self.options.values():
