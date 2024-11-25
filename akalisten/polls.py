@@ -220,6 +220,25 @@ class PollOptionVotes(BaseModel):
     yes: set[User] = Field(default_factory=set)
     no: set[User] = Field(default_factory=set)
     maybe: set[User] = Field(default_factory=set)
+    _sanitized_no: Optional[set[User]] = None
+
+    @property
+    def sanitized_no(self) -> set[User]:
+        """The `no` votes without users that have voted yes or maybe in any option.
+        Available after :meth:`sanitize_nos` has been called.
+        """
+        if self._sanitized_no is None:
+            raise ValueError("No votes have not been sanitized yet.")
+        return self._sanitized_no
+
+    def sanitize_nos(self, user_answers: Collection["PollUserAnswers"]) -> None:
+        """Compute all users that have voted yes or maybe in any option. This method must have
+        been called for :attr:`sanitized_no` to be available."""
+        self._sanitized_no = self.no - {
+            poll_user_answer.user
+            for poll_user_answer in user_answers
+            if (poll_user_answer.yes or poll_user_answer.maybe)
+        }
 
     def add_vote(self, vote: PollVote) -> None:
         if vote.answer == "yes":
@@ -233,19 +252,9 @@ class PollOptionVotes(BaseModel):
     def max_votes(self) -> int:
         return max(len(self.yes), len(self.no), len(self.maybe))
 
-    def get_max_votes(self, clear_no_votes_from: Collection["PollUserAnswers"]) -> int:
-        """Like :attr:`votes`, but discards `no` votes from all users that have voted yes or maybe
-        in *any* option. Example::
-
-        votes.get_max_votes(poll_votes[poll.id].users.values())
-
-        """
-        has_yes_maybe = {
-            poll_user_answer.user
-            for poll_user_answer in clear_no_votes_from
-            if (poll_user_answer.yes or poll_user_answer.maybe)
-        }
-        return max(len(self.yes), len(self.no - has_yes_maybe), len(self.maybe))
+    @property
+    def sanitized_max_votes(self) -> int:
+        return max(len(self.yes), len(self.sanitized_no), len(self.maybe))
 
     @staticmethod
     def _sort_names(names: Collection[User], html_escape: bool) -> Sequence[User]:
@@ -258,6 +267,9 @@ class PollOptionVotes(BaseModel):
 
     def sorted_no(self, html_escape: bool = True) -> Sequence[User]:
         return self._sort_names(self.no, html_escape=html_escape)
+
+    def sorted_sanitized_no(self, html_escape: bool = True) -> Sequence[User]:
+        return self._sort_names(self.sanitized_no, html_escape=html_escape)
 
     def sorted_maybe(self, html_escape: bool = True) -> Sequence[User]:
         return self._sort_names(self.maybe, html_escape=html_escape)
@@ -304,3 +316,7 @@ class PollVotes(BaseModel):
 
     def sorted_option_names(self) -> Sequence[str]:
         return sorted(self.options.keys())
+
+    def sanitize_nos(self) -> None:
+        for option in self.options.values():
+            option.sanitize_nos(self.users.values())
