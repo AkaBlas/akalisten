@@ -18,14 +18,19 @@
         --button-text: #ffffff;
     }
 }
+html, body {
+    height: 100%;
+    margin: 0;
+}
 body {
+    display: flex;
+    flex-direction: column;
     font-family: Arial, sans-serif;
     line-height: 1.6;
     color: var(--text);
     background-color: var(--background);
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
 }
 p {
     margin: 0.75rem 0;
@@ -74,6 +79,15 @@ select {
 }
 select:hover {
     background-color: var(--accent-hover-background);
+}
+.wrapper {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 20px;
+}
+.content {
+    flex: 1;
 }
 header {
     display: flex;
