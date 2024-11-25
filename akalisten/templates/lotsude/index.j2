@@ -22,7 +22,7 @@
         <div class="accordion" data-state="closed">
             <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}">
                 {{ poll.html_title }}
-                <span class="accordion-icon"><i data-lucide="chevron-down" class="lucide-icon lg"></i></span>
+                <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
             </button>
             <div class="accordion-content mucke" id="mucke-{{ poll.id }}" hidden>
                 {% if poll.url %}
@@ -35,7 +35,7 @@
                     <div class="accordion" data-state="closed">
                         <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}-infos">
                             Mucken-Infos
-                            <span class="accordion-icon"><i data-lucide="chevron-down" class="lucide-icon lg"></i></span>
+                            <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
                         </button>
                         <div class="accordion-content mucken-infos" id="mucke-{{ poll.id }}-infos" hidden>
                             {% if poll.mucken_info.has_any_info %}
