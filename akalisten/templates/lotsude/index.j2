@@ -63,8 +63,8 @@
                         <label for="category-select-{{ poll.id }}">Kategorie:</label>
                         <select class="category-select" id="category-select-{{ poll.id }}">
                             <option value="all">Alle</option>
-                            {% for option, votes in poll_votes[poll.id].options.items() %}
-                                <option value="{{ option }}">{{ option }}</option>
+                            {% for option_id, votes in poll_votes[poll.id].options.items() %}
+                                <option value="{{ option_id }}">{{ votes.text }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -74,16 +74,16 @@
                     <div class="column yes">
                         <h2>Ja</h2>
                         {% from 'option_block.j2' import render_category %}
-                        {% for option, votes in poll_votes[poll.id].options.items() %}
-                            {{ render_category(option, votes, 'sorted_yes') }}
+                        {% for votes in poll_votes[poll.id].options.values() %}
+                            {{ render_category(votes, 'sorted_yes') }}
                         {% endfor %}
                     </div>
                     <div class="column no">
                         <h2>Nein</h2>
-                        {% for option, votes in poll_votes[poll.id].options.items() %}
+                        {% for option_id, votes in poll_votes[poll.id].options.items() %}
                             {% if votes.sorted_no() %}
-                            <div class="category" data-category="{{ option }}">
-                                <div class="category-name">{{ option }}</div>
+                            <div class="category" data-category-id="{{ option_id }}" data-category-name="{{ votes.text }}">
+                                <div class="category-name">{{ votes.text }}</div>
                                 <ul>
                                     {% for user in votes.sorted_no() %}
                                         {% if not (poll_votes[poll.id].users[user.id].yes or poll_votes[poll.id].users[user.id].maybe) %}
@@ -97,8 +97,8 @@
                     </div>
                     <div class="column maybe">
                         <h2>Vielleicht</h2>
-                        {% for option, votes in poll_votes[poll.id].options.items() %}
-                            {{ render_category(option, votes, 'sorted_maybe') }}
+                        {% for votes in poll_votes[poll.id].options.values() %}
+                            {{ render_category(votes, 'sorted_maybe') }}
                         {% endfor %}
                     </div>
                 </div>
