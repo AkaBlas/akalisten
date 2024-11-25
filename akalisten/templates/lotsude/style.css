@@ -224,6 +224,7 @@ footer {
     break-inside: avoid;
 }
 .multi-column-list li {
+    gap: 1ex;
     break-inside: avoid;
     /* For additional browser support */
     page-break-inside: avoid;
