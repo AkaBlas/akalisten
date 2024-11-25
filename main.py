@@ -42,6 +42,8 @@ async def get_poll_data() -> tuple[dict[int, PollInfo], dict[int, PollVotes]]:
 
     if DEBUG_MODE and DUMMY_DATA.exists():
         tmp_data = TempData.model_validate_json(DUMMY_DATA.read_text(encoding="utf-8"))
+        for poll_votes in tmp_data.poll_votes.values():
+            poll_votes.sanitize_nos()
     else:
         tmp_data = TempData(polls={}, poll_votes={})
 
