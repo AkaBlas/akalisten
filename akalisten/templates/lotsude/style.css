@@ -99,15 +99,13 @@ footer {
 /* Icon */
 .lucide-icon {
     color: var(--icon);
-    width: 1em;
-    height: 1em;
+    width: 1.25em;
+    height: 1.25em;
     flex: none;
 }
-.lucide-icon-15 {
-    color: var(--icon);
+.lucide-icon.lg {
     width: 1.5em;
     height: 1.5em;
-    flex: none;
 }
 .icon-text {
     display: flex;

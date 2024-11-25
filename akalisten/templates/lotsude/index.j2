@@ -10,7 +10,7 @@
 </head>
 <body>
     <h1>Muckenlisten<br><small class="icon-text"><i data-lucide="construction" class="lucide-icon"></i> <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
-    <p class="icon-text"><i data-lucide="github" class="lucide-icon-15"></i> <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
+    <p class="icon-text"><i data-lucide="github" class="lucide-icon lg"></i> <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
     <div class="intro">
         <header>
             {# <button class="settings-btn">⚙️ Einstellungen</button> #}
@@ -22,7 +22,7 @@
         <div class="accordion" data-state="closed">
             <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}">
                 {{ poll.html_title }}
-                <span class="accordion-icon"><i data-lucide="chevron-down" class="lucide-icon-15"></i></span>
+                <span class="accordion-icon"><i data-lucide="chevron-down" class="lucide-icon lg"></i></span>
             </button>
             <div class="accordion-content mucke" id="mucke-{{ poll.id }}" hidden>
                 {% if poll.url %}
@@ -35,7 +35,7 @@
                     <div class="accordion" data-state="closed">
                         <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}-infos">
                             Mucken-Infos
-                            <span class="accordion-icon"><i data-lucide="chevron-down" class="lucide-icon-15"></i></span>
+                            <span class="accordion-icon"><i data-lucide="chevron-down" class="lucide-icon lg"></i></span>
                         </button>
                         <div class="accordion-content mucken-infos" id="mucke-{{ poll.id }}-infos" hidden>
                             {% if poll.mucken_info.has_any_info %}
@@ -63,7 +63,7 @@
                             {% endif %}
                             {% if poll.mucken_info.additional %}
                                 <p class="icon-text">
-                                    <i data-lucide="info" class="lucide-icon-15"></i>
+                                    <i data-lucide="info" class="lucide-icon lg"></i>
                                     <b>Zusätzliche Informationen:</b>
                                     {{ poll.mucken_info.html_additional }}
                                 </p>
@@ -129,8 +129,8 @@
     </div>
      <footer>
          <div>
-            <p class="icon-text"><i data-lucide="database-backup" class="lucide-icon-15"></i>Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}</p>
-            <p class="icon-text">Mit<i data-lucide="heart-handshake" class="lucide-icon-15"></i>gebaut von Hirsch und Henry</p>
+            <p class="icon-text"><i data-lucide="database-backup" class="lucide-icon lg"></i>Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}</p>
+            <p class="icon-text">Mit<i data-lucide="heart-handshake" class="lucide-icon lg"></i>gebaut von Hirsch und Henry</p>
          </div>
      </footer>
 {% include 'icons_script.j2' %}
