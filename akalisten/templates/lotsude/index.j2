@@ -80,7 +80,7 @@
                         <h2>{{ col_name }}</h2>
                         {% from 'option_block.j2' import render_category %}
                         {% for votes in poll_votes[poll.id].options.values() %}
-                            {{ render_category(option, votes, attr_name) }}
+                            {{ render_category(votes, attr_name) }}
                         {% endfor %}
                     </div>
                 {% endfor %}
