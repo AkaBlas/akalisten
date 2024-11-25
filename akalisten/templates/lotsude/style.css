@@ -1,3 +1,4 @@
+/* GENERAL STYLES */
 :root {
     --background: #ffffff;
     --text: #333333;
@@ -53,18 +54,6 @@ li {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     transition: background-color 0.3s;
 }
-.multi-column-list {
-    column-count: 3;
-    column-gap: 10px;
-    break-inside: avoid;
-}
-.multi-column-list li {
-    break-inside: avoid;
-    /* For additional browser support */
-    page-break-inside: avoid;
-    -webkit-column-break-inside: avoid;
-    -moz-column-break-inside: avoid;
-}
 button {
     padding: 10px 20px;
     border: 1px solid var(--border);
@@ -105,18 +94,33 @@ footer {
     justify-content: space-between;
 }
 
+
+/* ELEMENT STYLES */
+/* Icon */
+.lucide-icon {
+    color: var(--icon);
+    width: 1em;
+    height: 1em;
+    flex: none;
+}
+.lucide-icon-15 {
+    color: var(--icon);
+    width: 1.5em;
+    height: 1.5em;
+    flex: none;
+}
+.icon-text {
+    display: flex;
+    align-items: center;
+    gap: 1ex;
+}
+
+/* Filter */
 .filters {
     display: flex;
     justify-content: center;
     gap: 10px 25px;
     flex-wrap: wrap;
-}
-.participant-filter,
-.category-filter {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
 }
 .filter-btn {
     border: none;
@@ -137,31 +141,7 @@ footer {
 .filter-btn.no { background-color: #e74c3c; }
 .filter-btn.maybe { background-color: #f39c12; }
 
-.participants {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 10px;
-}
-.column {
-    flex: 1;
-    min-width: 300px;
-    background-color: var(--accent-background);
-    border-radius: 5px;
-    padding: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border: 1px solid var(--border);
-    transition: background-color 0.3s, border-color 0.3s;
-}
-.category {
-    margin-bottom: 20px;
-}
-.category-name {
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-/* Accordion styles */
+/* Accordion */
 .accordion {
     margin: 10px 0;
     border-radius: 5px;
@@ -217,6 +197,20 @@ footer {
     max-height: fit-content;
 }
 
+/* Column */
+.column {
+    flex: 1;
+    min-width: 300px;
+    background-color: var(--accent-background);
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 1px solid var(--border);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+
+/* PAGE STYLES */
 .mucke {
     gap: 10px 25px;
 }
@@ -226,49 +220,64 @@ footer {
 .mucken-infos {
     background-color: var(--accent-background);
 }
+.multi-column-list {
+    column-count: 3;
+    column-gap: 10px;
+    break-inside: avoid;
+}
+.multi-column-list li {
+    break-inside: avoid;
+    /* For additional browser support */
+    page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    -moz-column-break-inside: avoid;
+}
+.participant-filter,
+.category-filter {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.participants {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+}
 .yes h2 { color: #27ae60; border-color: #27ae60; }
 .no h2 { color: #e74c3c; border-color: #e74c3c; }
 .maybe h2 { color: #f39c12; border-color: #f39c12; }
 .highlight { border-color: #f39c12; }
-
-.lucide-icon {
-    color: var(--icon);
-    width: 1em;
-    height: 1em;
-    flex: none;
+.category {
+    margin-bottom: 20px;
 }
-.lucide-icon-15 {
-    color: var(--icon);
-    width: 1.5em;
-    height: 1.5em;
-    flex: none;
-}
-.icon-text {
-    display: flex;
-    align-items: center;
-    gap: 1ex;
+.category-name {
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
+
+/* MEDIA QUERIES */
 @media only screen and (max-width: 800px) {
     .multi-column-list {
         column-count: 2;
     }
 }
-
 @media only screen and (max-width: 420px) {
     body {
         padding: 20px 10px;
+    }
+    .accordion-content {
+        padding: 15px 10px;
+    }
+    .column {
+        min-width: auto;
     }
     .multi-column-list {
         column-count: 1;
     }
     .participants {
         flex-direction: column;
-    }
-    .column {
-        min-width: auto;
-    }
-    .accordion-content {
-        padding: 15px 10px;
     }
 }
