@@ -56,6 +56,14 @@ li {
 .multi-column-list {
     column-count: 3;
     column-gap: 10px;
+    break-inside: avoid;
+}
+.multi-column-list li {
+    break-inside: avoid;
+    /* For additional browser support */
+    page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    -moz-column-break-inside: avoid;
 }
 button {
     padding: 10px 20px;
@@ -227,23 +235,18 @@ footer {
     color: var(--icon);
     width: 1em;
     height: 1em;
+    flex: none;
 }
 .lucide-icon-15 {
     color: var(--icon);
     width: 1.5em;
     height: 1.5em;
-}
-.lucide-icon-2 {
-    color: var(--icon);
-    width: 2em;
-    height: 2em;
-}
-.inline-icon {
-    margin-right: 1ex;
+    flex: none;
 }
 .icon-text {
     display: flex;
     align-items: center;
+    gap: 1ex;
 }
 
 @media only screen and (max-width: 800px) {
