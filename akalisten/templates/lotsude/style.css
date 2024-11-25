@@ -112,7 +112,7 @@ footer {
 .icon-text {
     display: flex;
     align-items: center;
-    gap: 1ex;
+    gap: 0.5ex;
 }
 
 /* Filter */
