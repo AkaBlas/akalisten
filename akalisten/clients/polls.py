@@ -79,4 +79,7 @@ class PollAPI(AbstractAsyncContextManager):
         for vote in votes:
             poll_votes.add_vote(vote)
 
+        # Post-processing: Compute users that have voted yes/maybe in addition to no
+        poll_votes.sanitize_nos()
+
         return poll_votes

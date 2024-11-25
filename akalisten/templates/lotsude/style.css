@@ -206,6 +206,9 @@ footer {
     border: 1px solid var(--border);
     transition: background-color 0.3s, border-color 0.3s;
 }
+.column.hidden {
+    display: none;
+}
 
 
 /* PAGE STYLES */
@@ -251,13 +254,24 @@ footer {
 .category {
     margin-bottom: 20px;
 }
+.category.hidden {
+    display: none;
+}
 .category-name {
     font-weight: bold;
     margin-bottom: 10px;
 }
+li.placeholder {
+    opacity: 0.5;
+}
 
 
 /* MEDIA QUERIES */
+@media only screen and (max-width: 1200px) {
+    .placeholder {
+        display: none;
+    }
+}
 @media only screen and (max-width: 800px) {
     .multi-column-list {
         column-count: 2;

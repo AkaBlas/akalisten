@@ -195,9 +195,30 @@ class User(BaseModel):
 
 class PollOptionVotes(BaseModel):
     poll_id: int
+    id: int
+    text: str
     yes: set[User] = Field(default_factory=set)
     no: set[User] = Field(default_factory=set)
     maybe: set[User] = Field(default_factory=set)
+    _sanitized_no: Optional[set[User]] = None
+
+    @property
+    def sanitized_no(self) -> set[User]:
+        """The `no` votes without users that have voted yes or maybe in any option.
+        Available after :meth:`sanitize_nos` has been called.
+        """
+        if self._sanitized_no is None:
+            raise ValueError("No votes have not been sanitized yet.")
+        return self._sanitized_no
+
+    def sanitize_nos(self, user_answers: Collection["PollUserAnswers"]) -> None:
+        """Compute all users that have voted yes or maybe in any option. This method must have
+        been called for :attr:`sanitized_no` to be available."""
+        self._sanitized_no = self.no - {
+            poll_user_answer.user
+            for poll_user_answer in user_answers
+            if (poll_user_answer.yes or poll_user_answer.maybe)
+        }
 
     def add_vote(self, vote: PollVote) -> None:
         if vote.answer == "yes":
@@ -211,6 +232,10 @@ class PollOptionVotes(BaseModel):
     def max_votes(self) -> int:
         return max(len(self.yes), len(self.no), len(self.maybe))
 
+    @property
+    def sanitized_max_votes(self) -> int:
+        return max(len(self.yes), len(self.sanitized_no), len(self.maybe))
+
     @staticmethod
     def _sort_names(names: Collection[User], html_escape: bool) -> Sequence[User]:
         if html_escape:
@@ -222,6 +247,9 @@ class PollOptionVotes(BaseModel):
 
     def sorted_no(self, html_escape: bool = True) -> Sequence[User]:
         return self._sort_names(self.no, html_escape=html_escape)
+
+    def sorted_sanitized_no(self, html_escape: bool = True) -> Sequence[User]:
+        return self._sort_names(self.sanitized_no, html_escape=html_escape)
 
     def sorted_maybe(self, html_escape: bool = True) -> Sequence[User]:
         return self._sort_names(self.maybe, html_escape=html_escape)
@@ -245,26 +273,27 @@ class PollUserAnswers(BaseModel):
 
 class PollVotes(BaseModel):
     poll_id: int
-    options: dict[str, PollOptionVotes] = Field(default_factory=dict)
+    options: dict[int, PollOptionVotes] = Field(default_factory=dict)
     users: dict[str, PollUserAnswers] = Field(default_factory=dict)
 
-    def _get_option_votes(self, option_text: str) -> PollOptionVotes:
-        return self.options.setdefault(option_text, PollOptionVotes(poll_id=self.poll_id))
+    def _get_option_votes(self, option_text: str, poll_id: int) -> PollOptionVotes:
+        return self.options.setdefault(
+            poll_id, PollOptionVotes(poll_id=self.poll_id, id=poll_id, text=option_text)
+        )
 
     def _get_user_answers(self, user: User) -> PollUserAnswers:
         return self.users.setdefault(user.id, PollUserAnswers(poll_id=self.poll_id, user=user))
 
     def add_vote(self, vote: PollVote) -> None:
-        option = self._get_option_votes(vote.optionText)
+        option = self._get_option_votes(vote.optionText, vote.optionId)
         option.add_vote(vote)
 
         user = self._get_user_answers(User(name=vote.user.displayName, id=vote.user.id))
         user.add_answer(vote)
 
-    def add_option(self, option_text: Union[str, PollOption]) -> None:
-        if isinstance(option_text, PollOption):
-            option_text = option_text.text
-        self._get_option_votes(option_text)
+    def add_option(self, poll_option: PollOption) -> None:
+        self._get_option_votes(poll_option.text, poll_option.id)
 
-    def sorted_option_names(self) -> Sequence[str]:
-        return sorted(self.options.keys())
+    def sanitize_nos(self) -> None:
+        for option in self.options.values():
+            option.sanitize_nos(self.users.values())

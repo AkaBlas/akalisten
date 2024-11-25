@@ -8,14 +8,14 @@ document.addEventListener('DOMContentLoaded', function() {
             let selectedCategory = document.querySelector('.category-select') ? document.querySelector('.category-select').value : 'all';
 
             tabContent.querySelectorAll('.column').forEach(column => {
-                const shouldShowColumn = selectedStatus === 'all' || column.classList.contains(selectedStatus);
-                column.style.display = shouldShowColumn ? 'block' : 'none';
+                const shouldHideColumn = !(selectedStatus === 'all' || column.classList.contains(selectedStatus));
+                column.classList.toggle('hidden', shouldHideColumn);
             });
 
             tabContent.querySelectorAll('.category').forEach(category => {
-                const shouldShowCategory = (selectedCategory === 'all' || category.getAttribute('data-category') === selectedCategory) &&
-                    (selectedStatus === 'all' || category.closest('.column').classList.contains(selectedStatus));
-                category.style.display = shouldShowCategory ? 'block' : 'none';
+                const shouldHideCategory = !((selectedCategory === 'all' || category.getAttribute('data-category-id') === selectedCategory) &&
+                    (selectedStatus === 'all' || category.closest('.column').classList.contains(selectedStatus)));
+                category.classList.toggle('hidden', shouldHideCategory);
             });
         }
 
