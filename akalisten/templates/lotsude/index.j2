@@ -66,6 +66,7 @@
                             {% for option_id, votes in poll_votes[poll.id].options.items() %}
                                 <option value="{{ votes.text }}">{{ votes.text }}</option>
                             {% endfor %}
+                                <option hidden value="unknown" class="strikethrough">Unbekannt</option>
                         </select>
                     </div>
                 </div>

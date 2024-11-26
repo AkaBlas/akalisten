@@ -41,8 +41,17 @@ document.addEventListener('DOMContentLoaded', function() {
             categorySelects.forEach(select => {
                 select.addEventListener('change', function() {
                     const selectedValue = this.value;
+                    const selectedText = this.options[this.selectedIndex].text;
+
                     categorySelects.forEach(otherSelect => {
                         otherSelect.value = selectedValue;
+                        if (otherSelect.options[otherSelect.selectedIndex] === undefined) {
+                            otherSelect.value = "unknown";
+                            otherSelect.options[otherSelect.selectedIndex].text = selectedText;
+                            otherSelect.classList.add('strikethrough');
+                        } else {
+                            otherSelect.classList.remove('strikethrough');
+                        }
                     });
                     localStorage.setItem('selectedCategory', selectedValue);
                     updateVisibility();
