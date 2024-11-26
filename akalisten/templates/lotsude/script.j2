@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             tabContent.querySelectorAll('.category').forEach(category => {
-                const shouldHideCategory = !((selectedCategory === 'all' || category.getAttribute('data-category-id') === selectedCategory) &&
+                const shouldHideCategory = !((selectedCategory === 'all' || category.getAttribute('data-category-name') === selectedCategory) &&
                     (selectedStatus === 'all' || category.closest('.column').classList.contains(selectedStatus)));
                 category.classList.toggle('hidden', shouldHideCategory);
             });
