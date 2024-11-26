@@ -153,8 +153,14 @@ footer {
     border: 1px solid var(--border);
     transition: background-color 0.3s, border-color 0.3s;
 }
+.column.hidden {
+    display: none;
+}
 .category {
     margin-bottom: 20px;
+}
+.category.hidden {
+    display: none;
 }
 .category-name {
     font-weight: bold;
@@ -231,6 +237,10 @@ footer {
 .maybe h2 { color: #f39c12; border-color: #f39c12; }
 .highlight { border-color: #f39c12; }
 
+li.placeholder {
+    opacity: 0.5;
+}
+
 @media only screen and (max-width: 420px) {
     body {
         padding: 20px 10px;
@@ -243,5 +253,10 @@ footer {
     }
     .accordion-content {
         padding: 15px 10px;
+    }
+}
+@media only screen and (max-width: 1200px) {
+    .placeholder {
+        display: none;
     }
 }
