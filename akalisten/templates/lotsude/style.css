@@ -84,7 +84,7 @@ select:hover {
     display: flex;
     flex: 1;
     flex-direction: column;
-    padding: 20px;
+    padding: 0 20px;
 }
 .content {
     flex: 1;
@@ -242,8 +242,8 @@ li.placeholder {
 }
 
 @media only screen and (max-width: 420px) {
-    body {
-        padding: 20px 10px;
+    .wrapper {
+        padding: 0 10px;
     }
     .participants {
         flex-direction: column;
