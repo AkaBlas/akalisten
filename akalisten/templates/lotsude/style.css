@@ -21,14 +21,19 @@
         --icon: #bfbfbf;
     }
 }
+html, body {
+    height: 100%;
+    margin: 0;
+}
 body {
+    display: flex;
+    flex-direction: column;
     font-family: Arial, sans-serif;
     line-height: 1.6;
     color: var(--text);
     background-color: var(--background);
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
 }
 p {
     margin: 0.75rem 0;
@@ -77,6 +82,15 @@ select {
 }
 select:hover {
     background-color: var(--accent-hover-background);
+}
+.wrapper {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 0 20px;
+}
+.content {
+    flex: 1;
 }
 header {
     display: flex;
@@ -278,8 +292,8 @@ li.placeholder {
     }
 }
 @media only screen and (max-width: 420px) {
-    body {
-        padding: 20px 10px;
+    .wrapper {
+        padding: 0 10px;
     }
     .accordion-content {
         padding: 15px 10px;

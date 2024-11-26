@@ -9,25 +9,27 @@
     </style>
 </head>
 <body>
-    <h1>Muckenlisten<br><small class="icon-text"><i data-lucide="construction" class="lucide-icon"></i> <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
+    <div class="wrapper">
+        <div class="content">
+            <h1>Muckenlisten<br><small class="icon-text"><i data-lucide="construction" class="lucide-icon"></i> <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
     <p class="icon-text"><i data-lucide="github" class="lucide-icon"></i> <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
-    <div class="intro">
-        <header>
-            {# <button class="settings-btn">⚙️ Einstellungen</button> #}
-        </header>
-        <h2>Aktuelle Mucken</h2>
-    </div>
-    <div class="mucken">
-{% for poll in polls.values() %}
-        <div class="accordion" data-state="closed">
-            <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}">
-                {{ poll.html_title }}
-                <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
+            <div class="intro">
+                <header>
+                    {# <button class="settings-btn">⚙️ Einstellungen</button> #}
+                </header>
+                <h2>Aktuelle Mucken</h2>
+            </div>
+            <div class="mucken">
+                {% for poll in polls.values() %}
+                    <div class="accordion" data-state="closed">
+                        <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}">
+                            {{ poll.html_title }}
+                            <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
             </button>
             <div class="accordion-content mucke" id="mucke-{{ poll.id }}" hidden>
                 {% if poll.url %}
                     <div class="entry-link icon-text">
-                        <i data-lucide="link" class="lucide-icon"></i>
+                                    <i data-lucide="link" class="lucide-icon"></i>
                         <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer">Hier zur Mucke eintragen</a>
                     </div>
                 {%  endif %}
@@ -36,10 +38,10 @@
                         <button class="accordion-header" aria-expanded="false" aria-controls="mucke-{{ poll.id }}-infos">
                             Mucken-Infos
                             <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
-                        </button>
-                        <div class="accordion-content mucken-infos" id="mucke-{{ poll.id }}-infos" hidden>
-                            {% if poll.mucken_info.has_any_info %}
-                                <ul class="multi-column-list">
+                                    </button>
+                                    <div class="accordion-content mucken-infos" id="mucke-{{ poll.id }}-infos" hidden>
+                                        {% if poll.mucken_info.has_any_info %}
+                                            <ul class="multi-column-list">
                                     {% from 'info_block.j2' import render_info %}
                                     {% if poll.mucken_info.date %}
                                        {{ render_info('calendar-fold', poll.mucken_info.date.strftime('%d.%m.%Y')) }}
@@ -64,7 +66,7 @@
                             {% if poll.mucken_info.additional %}
                                 <p class="icon-text">
                                     <i data-lucide="info" class="lucide-icon"></i>
-                                    <b>Zusätzliche Informationen:</b>
+                                                <b>Zusätzliche Informationen:</b>
                                     {{ poll.mucken_info.html_additional }}
                                 </p>
                             {% endif %}
@@ -72,49 +74,52 @@
                     </div>
                 {% endif %}
 
-                <div class="filters">
-                    <div class="participant-filter">
-                        <label>Filter:</label>
-                        <button class="filter-btn all active" data-filter="all">Alle</button>
-                        <button class="filter-btn yes" data-filter="yes">Ja</button>
-                        <button class="filter-btn no" data-filter="no">Nein</button>
-                        <button class="filter-btn maybe" data-filter="maybe">Vielleicht</button>
-                    </div>
-                    <div class="category-filter">
-                        <label for="category-select-{{ poll.id }}">Kategorie:</label>
-                        <select class="category-select" id="category-select-{{ poll.id }}">
-                            <option value="all">Alle</option>
-                            {% for option_id, votes in poll_votes[poll.id].options.items() %}
-                                <option value="{{ option_id }}">{{ votes.text }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
+                            <div class="filters">
+                                <div class="participant-filter">
+                                    <label>Filter:</label>
+                                    <button class="filter-btn all active" data-filter="all">Alle</button>
+                                    <button class="filter-btn yes" data-filter="yes">Ja</button>
+                                    <button class="filter-btn no" data-filter="no">Nein</button>
+                                    <button class="filter-btn maybe" data-filter="maybe">Vielleicht</button>
+                                </div>
+                                <div class="category-filter">
+                                    <label for="category-select-{{ poll.id }}">Kategorie:</label>
+                                    <select class="category-select" id="category-select-{{ poll.id }}">
+                                        <option value="all">Alle</option>
+                                        {% for option_id, votes in poll_votes[poll.id].options.items() %}
+                                            <option value="{{ option_id }}">{{ votes.text }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
 
-                <div class="participants">
-                {% for col_class, col_name, attr_name in (
+                            <div class="participants">
+                                {% for col_class, col_name, attr_name in (
                     ("yes", "Ja", "sorted_yes"),
                     ("no", "Nein", "sorted_sanitized_no"),
                     ("maybe", "Vielleicht", "sorted_maybe")
                 ) %}
-                    <div class="column {{ col_class }}">
-                        <h2>{{ col_name }}</h2>
-                        {% from 'option_block.j2' import render_category %}
-                        {% for votes in poll_votes[poll.id].options.values() %}
-                            {{ render_category(votes, attr_name) }}
-                        {% endfor %}
+                                    <div class="column {{ col_class }}">
+                                        <h2>{{ col_name }}</h2>
+                                        {% from 'option_block.j2' import render_category %}
+                                        {% for votes in poll_votes[poll.id].options.values() %}
+                                            {{ render_category(votes, attr_name) }}
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
-{% endfor %}
+         <footer>
+             <div>
+                 <p class="icon-text"><i data-lucide="database-backup" class="lucide-icon"></i>Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}</p>
+                 <p class="icon-text">Mit<i data-lucide="heart-handshake" class="lucide-icon"></i>gebaut von Hirsch und Henry</p>
+             </div>
+         </footer>
     </div>
-     <footer>
-         <div>
-            <p class="icon-text"><i data-lucide="database-backup" class="lucide-icon"></i>Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}</p>
-            <p class="icon-text">Mit<i data-lucide="heart-handshake" class="lucide-icon"></i>gebaut von Hirsch und Henry</p>
-         </div>
-     </footer>
 {% include 'icons_script.j2' %}
 {% include 'script.j2' %}
 </body>
