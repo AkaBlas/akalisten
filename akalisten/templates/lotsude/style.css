@@ -178,6 +178,7 @@ footer {
     color: inherit;
     outline: none;
     font: inherit;
+    text-align: left;
     line-height: normal;
     -webkit-appearance: none;
     background-color: var(--accent-background);
