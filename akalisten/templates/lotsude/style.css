@@ -241,6 +241,10 @@ li.placeholder {
     opacity: 0.5;
 }
 
+.strikethrough {
+    text-decoration: line-through;
+}
+
 @media only screen and (max-width: 420px) {
     .wrapper {
         padding: 0 10px;

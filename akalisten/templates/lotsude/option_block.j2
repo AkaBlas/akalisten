@@ -1,6 +1,6 @@
 {% macro render_category(votes, vote_type) %}
     {% set users = votes[vote_type]() %}
-    <div class="category{% if not users %} placeholder{% endif %}" data-category-id="{{ votes.id }}">
+    <div class="category{% if not users %} placeholder{% endif %}" data-category-name="{{ votes.text }}">
         <div class="category-name">{{ votes.text }}</div>
         <ul>
             {% for user in users %}

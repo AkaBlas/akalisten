@@ -66,8 +66,9 @@
                                     <select class="category-select" id="category-select-{{ poll.id }}">
                                         <option value="all">Alle</option>
                                         {% for option_id, votes in poll_votes[poll.id].options.items() %}
-                                            <option value="{{ option_id }}">{{ votes.text }}</option>
+                                            <option value="{{ votes.text }}">{{ votes.text }}</option>
                                         {% endfor %}
+                                        <option hidden value="unknown" class="strikethrough">Unbekannt</option>
                                     </select>
                                 </div>
                             </div>
