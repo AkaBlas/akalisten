@@ -121,10 +121,21 @@ footer {
     width: 1.5em;
     height: 1.5em;
 }
-.icon-text {
+.center-icon {
     display: flex;
     align-items: center;
     gap: 0.5ex;
+}
+.icon-text {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5ex;
+}
+
+.icon-text .lucide-icon {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /* Filter */
