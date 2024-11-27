@@ -11,20 +11,23 @@
 <body>
     <div class="wrapper">
         <div class="content">
-            <h1>Muckenlisten<br><small class="icon-text"><i data-lucide="construction" class="lucide-icon"></i> <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
-    <p class="icon-text"><i data-lucide="github" class="lucide-icon"></i> <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
         <header>
-            <h1>Muckenlisten <small>🚧 <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
-            <div class="color-scheme-toggle-container">
-                <button class="color-scheme-toggle">
-                    <div class="color-scheme-icon-when-auto-light">🌤️</div>
-                    <div class="color-scheme-icon-when-auto-dark">🌒</div>
-                    <div class="color-scheme-icon-when-dark">🌙</div>
-                    <div class="color-scheme-icon-when-light">☀️</div>
-                </button>
-            </div>
+            <h1>
+                <div class="vcenter-flex">
+                    Muckenlisten
+                    <div class="color-scheme-toggle-container">
+                        <button class="color-scheme-toggle">
+                            <div class="color-scheme-icon-when-auto-light"><i data-lucide="sun-moon" class="lucide-icon"></i></div>
+                            <div class="color-scheme-icon-when-auto-dark"><i data-lucide="sun-moon" class="lucide-icon"></i></div>
+                            <div class="color-scheme-icon-when-dark"><i data-lucide="moon-star" class="lucide-icon"></i></div>
+                            <div class="color-scheme-icon-when-light"><i data-lucide="sun" class="lucide-icon"></i></div>
+                        </button>
+                    </div>
+                </div>
+                <small class="icon-text"><i data-lucide="construction" class="lucide-icon"></i> <i>Zweiter, überarbeiteter Entwurf</i></small>
+            </h1>
         </header>
-        <p>💡 <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
+        <p class="icon-text"><i data-lucide="github" class="lucide-icon"></i> <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
         <h2>Aktuelle Mucken</h2>
             <div class="mucken">
                 {% for poll in polls.values() %}

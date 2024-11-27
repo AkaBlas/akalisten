@@ -133,12 +133,14 @@ select:hover {
 .content {
     flex: 1;
 }
-header {
+.vcenter-flex {
     display: flex;
+    align-items: center;
+}
+header div.vcenter-flex {
     gap: 0 25px;
     justify-content: space-between;
     flex-wrap: wrap-reverse;
-    align-items: center;
 }
 header.hidden {
     display: none;
