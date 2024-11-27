@@ -27,7 +27,6 @@
                 <small class="icon-text"><i data-lucide="construction" class="lucide-icon"></i> <i>Zweiter, überarbeiteter Entwurf</i></small>
             </h1>
         </header>
-        <p class="icon-text"><i data-lucide="github" class="lucide-icon"></i> <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
         <h2>Aktuelle Mucken</h2>
             <div class="mucken">
                 {% for poll in polls.values() %}
@@ -38,7 +37,7 @@
             </button>
             <div class="accordion-content mucke" id="mucke-{{ poll.id }}" hidden>
                 {% if poll.url %}
-                    <div class="entry-link icon-text pseudo-button">
+                    <div class="icon-text pseudo-button">
                                     <i data-lucide="link" class="lucide-icon"></i>
                         <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer">Hier zur Mucke eintragen</a>
                     </div>
@@ -126,21 +125,26 @@
         </div>
          <footer>
              <div>
-                 <p>
+                 <small>
+                     <div class="icon-text pseudo-button">
+                         <i data-lucide="github" class="lucide-icon"></i>
+                         <a href="https://github.com/AkaBlas/akalisten/issues">Verbesserungsvorschläge</a>
+                     </div>
+                     <p>
                      <span class="icon-text">
                          <i data-lucide="database-backup" class="lucide-icon"></i>Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}
                      </span>
-                 </p>
-                <p>
-                     <span class="icon-text">
-                         <i data-lucide="fingerprint" class="lucide-icon"></i>Diese Seite nutzt <a href="https://de.wikipedia.org/wiki/Web_Storage#localStorage">Labskauspetties</a>. Das sind quasi DSGVO-konforme Cookies. Lecker!
+                         <br>
+                         <span class="icon-text">
+                         <i data-lucide="fingerprint" class="lucide-icon"></i>Diese Seite nutzt <a
+                                 href="https://de.wikipedia.org/wiki/Web_Storage#localStorage">Labskauspetties</a>. Das sind quasi DSGVO-konforme Cookies. Lecker!
                     </span>
-                 </p>
-                <p>
-                     <span class="icon-text">
+                         <br>
+                         <span class="icon-text">
                          Mit<i data-lucide="heart-handshake" class="lucide-icon"></i>gebaut von Hirsch und Henry
                      </span>
-                 </p>
+                     </p>
+                 </small>
              </div>
          </footer>
     </div>

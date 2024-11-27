@@ -160,6 +160,10 @@ footer {
     transition: background-color 0.3s;
     color: var(--button-text);
 }
+.pseudo-button a {
+    color: var(--button-text);
+    text-decoration: none;
+}
 
 
 /* ELEMENT STYLES */
@@ -293,11 +297,6 @@ footer {
 /* PAGE STYLES */
 .mucke {
     gap: 10px 25px;
-}
-
-.entry-link a {
-    color: var(--button-text);
-    text-decoration: none;
 }
 
 .mucken-infos {
