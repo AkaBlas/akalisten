@@ -11,14 +11,24 @@
 <body>
     <div class="wrapper">
         <div class="content">
-            <h1>Muckenlisten<br><small class="icon-text"><i data-lucide="construction" class="lucide-icon"></i> <i>Zweiter, überarbeiteter Entwurf</i></small></h1>
-    <p class="icon-text"><i data-lucide="github" class="lucide-icon"></i> <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
-            <div class="intro">
-                <header>
-                    {# <button class="settings-btn">⚙️ Einstellungen</button> #}
-                </header>
-                <h2>Aktuelle Mucken</h2>
-            </div>
+        <header>
+            <h1>
+                <div class="vcenter-flex">
+                    Muckenlisten
+                    <div class="color-scheme-toggle-container">
+                        <button class="color-scheme-toggle">
+                            <div class="color-scheme-icon-when-auto-light"><i data-lucide="sun-moon" class="lucide-icon"></i></div>
+                            <div class="color-scheme-icon-when-auto-dark"><i data-lucide="sun-moon" class="lucide-icon"></i></div>
+                            <div class="color-scheme-icon-when-dark"><i data-lucide="moon-star" class="lucide-icon"></i></div>
+                            <div class="color-scheme-icon-when-light"><i data-lucide="sun" class="lucide-icon"></i></div>
+                        </button>
+                    </div>
+                </div>
+                <small class="icon-text"><i data-lucide="construction" class="lucide-icon"></i> <i>Zweiter, überarbeiteter Entwurf</i></small>
+            </h1>
+        </header>
+        <p class="icon-text"><i data-lucide="github" class="lucide-icon"></i> <a href="https://github.com/AkaBlas/akalisten/issues">Eingegangene Verbesserungsvorschläge</a></p>
+        <h2>Aktuelle Mucken</h2>
             <div class="mucken">
                 {% for poll in polls.values() %}
                     <div class="accordion" data-state="closed">
