@@ -1,12 +1,18 @@
-{% macro render_category(option, votes, vote_type) %}
-{% if votes[vote_type]() %}
-    <div class="category" data-category="{{ option }}">
-        <div class="category-name">{{ option }}</div>
+{% macro render_category(votes, vote_type) %}
+    {% set users = votes[vote_type]() %}
+    <div class="category{% if not users %} placeholder{% endif %}" data-category-name="{{ votes.text }}">
+        <div class="category-name">{{ votes.text }}</div>
         <ul>
-            {% for user in votes[vote_type]() %}
+            {% for user in users %}
                 <li data-user-id="{{ user.id }}">{{ user.html_display_name }}</li>
             {% endfor %}
+            {% set empty_slots = votes.sanitized_max_votes - users|length %}
+            {% for _ in range(empty_slots) %}
+                <li class="placeholder">&nbsp;</li>
+            {% endfor %}
+            {% if not votes.sanitized_max_votes %}
+                <li class="placeholder">&nbsp;</li>
+            {% endif %}
         </ul>
     </div>
-{% endif %}
 {% endmacro %}
