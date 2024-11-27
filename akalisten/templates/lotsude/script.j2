@@ -2,20 +2,39 @@
 document.addEventListener('DOMContentLoaded', function() {
     const tabContent = document.querySelector('.mucken');
     if (tabContent) {
+        function getSelectedCategory() {
+            // Simply selecting the first element doesn't suffice b/c the selected category might
+            // not be known for that selection. We need to find the first non-unknown category.
+            let selectedCategory = Array.from(document.querySelectorAll('.category-select'))
+              .map(select => select.value)
+              .find(value => value && value !== "unknown") || "all";
+            if (document.querySelectorAll('.category-select').length === 0) {
+              return "all";
+            }
+            return selectedCategory;
+        }
+
         function updateVisibility() {
             const activeFilterButton = tabContent.querySelector('.filter-btn.active');
             const selectedStatus = activeFilterButton ? activeFilterButton.getAttribute('data-filter') : 'all';
-            let selectedCategory = document.querySelector('.category-select') ? document.querySelector('.category-select').value : 'all';
+            const selectedCategory = getSelectedCategory();
 
             tabContent.querySelectorAll('.column').forEach(column => {
-                const shouldShowColumn = selectedStatus === 'all' || column.classList.contains(selectedStatus);
-                column.style.display = shouldShowColumn ? 'block' : 'none';
+                const shouldHideColumn = !(selectedStatus === 'all' || column.classList.contains(selectedStatus));
+                column.classList.toggle('hidden', shouldHideColumn);
             });
 
             tabContent.querySelectorAll('.category').forEach(category => {
-                const shouldShowCategory = (selectedCategory === 'all' || category.getAttribute('data-category') === selectedCategory) &&
-                    (selectedStatus === 'all' || category.closest('.column').classList.contains(selectedStatus));
-                category.style.display = shouldShowCategory ? 'block' : 'none';
+                const shouldHideCategory = !(
+                    (
+                        selectedCategory === 'all'
+                        || category.getAttribute('data-category-name') === selectedCategory
+                    ) && (
+                        selectedStatus === 'all'
+                        || category.closest('.column').classList.contains(selectedStatus)
+                    )
+                );
+                category.classList.toggle('hidden', shouldHideCategory);
             });
         }
 
@@ -36,19 +55,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        function handleUnknownOption(select, selectedText) {
+            if (select.options[select.selectedIndex] === undefined) {
+                select.value = "unknown";
+                select.options[select.selectedIndex].text = selectedText;
+                select.classList.add('strikethrough');
+            } else {
+                select.classList.remove('strikethrough');
+            }
+        }
+
         function setupCategorySelects() {
             const categorySelects = document.querySelectorAll('.category-select');
-            categorySelects.forEach(select => {
-                select.addEventListener('change', function() {
-                    const selectedValue = this.value;
-                    categorySelects.forEach(otherSelect => {
-                        otherSelect.value = selectedValue;
-                    });
-                    localStorage.setItem('selectedCategory', selectedValue);
-                    updateVisibility();
-                });
-            });
-
             // Restore selected category from localStorage
             const savedCategory = localStorage.getItem('selectedCategory');
             if (savedCategory) {
@@ -56,6 +74,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     select.value = savedCategory;
                 });
             }
+
+            const selectedCategory = getSelectedCategory();
+            categorySelects.forEach(select => {
+                handleUnknownOption(select, selectedCategory);
+
+                select.addEventListener('change', function() {
+                    const selectedValue = this.value;
+                    categorySelects.forEach(otherSelect => {
+                        otherSelect.value = selectedValue;
+                        handleUnknownOption(otherSelect, this.options[this.selectedIndex].text);
+                    });
+                    localStorage.setItem('selectedCategory', selectedValue);
+                    updateVisibility();
+                });
+            });
         }
 
         function setupAccordion() {
