@@ -1,196 +1,196 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const tabContent = document.querySelector('.mucken');
-        if (tabContent) {
-            function getSelectedCategory() {
-                // Simply selecting the first element doesn't suffice b/c the selected category might
-                // not be known for that selection. We need to find the first non-unknown category.
-                let selectedCategory = Array.from(document.querySelectorAll('.category-select'))
-                    .map(select => select.value)
-                    .find(value => value && value !== "unknown") || "all";
-                if (document.querySelectorAll('.category-select').length === 0) {
-                    return "all";
-                }
-                return selectedCategory;
+        if (!tabContent) return;
+
+        function getSelectedCategory() {
+            // Simply selecting the first element doesn't suffice b/c the selected category might
+            // not be known for that selection. We need to find the first non-unknown category.
+            let selectedCategory = Array.from(document.querySelectorAll('.category-select'))
+                .map(select => select.value)
+                .find(value => value && value !== "unknown") || "all";
+            if (document.querySelectorAll('.category-select').length === 0) {
+                return "all";
             }
+            return selectedCategory;
+        }
 
-            function updateVisibility() {
-                const activeFilterButton = tabContent.querySelector('.filter-btn.active');
-                const selectedStatus = activeFilterButton ? activeFilterButton.getAttribute('data-filter') : 'all';
-                const selectedCategory = getSelectedCategory();
+        function updateVisibility() {
+            const activeFilterButton = tabContent.querySelector('.filter-btn.active');
+            const selectedStatus = activeFilterButton ? activeFilterButton.getAttribute('data-filter') : 'all';
+            const selectedCategory = getSelectedCategory();
 
-                tabContent.querySelectorAll('.column').forEach(column => {
-                    const shouldHideColumn = !(selectedStatus === 'all' || column.classList.contains(selectedStatus));
-                    column.classList.toggle('hidden', shouldHideColumn);
-                });
+            tabContent.querySelectorAll('.column').forEach(column => {
+                const shouldHideColumn = !(selectedStatus === 'all' || column.classList.contains(selectedStatus));
+                column.classList.toggle('hidden', shouldHideColumn);
+            });
 
-                tabContent.querySelectorAll('.category').forEach(category => {
-                    const shouldHideCategory = !(
-                        (
-                            selectedCategory === 'all'
-                            || category.getAttribute('data-category-name') === selectedCategory
-                        ) && (
-                            selectedStatus === 'all'
-                            || category.closest('.column').classList.contains(selectedStatus)
-                        )
-                    );
-                    category.classList.toggle('hidden', shouldHideCategory);
-                });
-            }
+            tabContent.querySelectorAll('.category').forEach(category => {
+                const shouldHideCategory = !(
+                    (
+                        selectedCategory === 'all'
+                        || category.getAttribute('data-category-name') === selectedCategory
+                    ) && (
+                        selectedStatus === 'all'
+                        || category.closest('.column').classList.contains(selectedStatus)
+                    )
+                );
+                category.classList.toggle('hidden', shouldHideCategory);
+            });
+        }
 
-            function setupFilterButtons() {
-                const filterButtons = tabContent.querySelectorAll('.filter-btn');
-                filterButtons.forEach(button => {
-                    button.addEventListener('click', function () {
-                        const selectedFilter = this.getAttribute('data-filter');
-                        filterButtons.forEach(btn => {
-                            if (btn.getAttribute('data-filter') === selectedFilter) {
-                                btn.classList.add('active');
-                            } else {
-                                btn.classList.remove('active');
-                            }
-                        });
-                        localStorage.setItem('selectedFilter', selectedFilter);
-                        updateVisibility();
-                    });
-                });
-
-                // Restore selected filter from localStorage
-                const savedFilter = localStorage.getItem('selectedFilter');
-                if (savedFilter) {
+        function setupFilterButtons() {
+            const filterButtons = tabContent.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const selectedFilter = this.getAttribute('data-filter');
                     filterButtons.forEach(btn => {
-                        if (btn.getAttribute('data-filter') === savedFilter) {
-                            btn.click();
+                        if (btn.getAttribute('data-filter') === selectedFilter) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
                         }
                     });
-                }
-            }
-
-            function handleUnknownOption(select, selectedText) {
-                if (select.options[select.selectedIndex] === undefined) {
-                    select.value = "unknown";
-                    select.options[select.selectedIndex].text = selectedText;
-                    select.classList.add('strikethrough');
-                } else {
-                    select.classList.remove('strikethrough');
-                }
-            }
-
-            function setupCategorySelects() {
-                const categorySelects = document.querySelectorAll('.category-select');
-                // Restore selected category from localStorage
-                const savedCategory = localStorage.getItem('selectedCategory');
-                if (savedCategory) {
-                    categorySelects.forEach(select => {
-                        select.value = savedCategory;
-                    });
-                }
-
-                const selectedCategory = getSelectedCategory();
-                categorySelects.forEach(select => {
-                    handleUnknownOption(select, selectedCategory);
-
-                    select.addEventListener('change', function () {
-                        const selectedValue = this.value;
-                        categorySelects.forEach(otherSelect => {
-                            otherSelect.value = selectedValue;
-                            handleUnknownOption(otherSelect, this.options[this.selectedIndex].text);
-                        });
-                        localStorage.setItem('selectedCategory', selectedValue);
-                        updateVisibility();
-                    });
+                    localStorage.setItem('selectedFilter', selectedFilter);
+                    updateVisibility();
                 });
-            }
+            });
 
-            function setupAccordion() {
-                const accordionHeaders = document.querySelectorAll('.accordion-header');
-                accordionHeaders.forEach(header => {
-                    header.addEventListener('click', function () {
-                        const isOpen = this.getAttribute('aria-expanded') === 'true';
-                        this.setAttribute('aria-expanded', !isOpen);
-                        this.parentElement.setAttribute('data-state', isOpen ? 'closed' : 'open');
-                        const content = this.nextElementSibling;
-                        if (content) {
-                            content.hidden = isOpen;
-                        }
-
-                        // Persist state in localStorage
-                        const expansionState = JSON.parse(localStorage.getItem('mucken_expansion')) || {};
-                        expansionState[this.getAttribute('aria-controls')] = !isOpen;
-                        localStorage.setItem('mucken_expansion', JSON.stringify(expansionState));
-                        console.log(expansionState);
-                    });
-                });
-
-                // Restore expansion state from localStorage
-                const expansionState = JSON.parse(localStorage.getItem('mucken_expansion')) || {};
-                accordionHeaders.forEach(header => {
-                    const content = header.nextElementSibling;
-                    if (content) {
-                        const isOpen = expansionState[header.getAttribute('aria-controls')];
-                        header.setAttribute('aria-expanded', isOpen);
-                        header.parentElement.setAttribute('data-state', isOpen ? 'open' : 'closed');
+            // Restore selected filter from localStorage
+            const savedFilter = localStorage.getItem('selectedFilter');
+            if (savedFilter) {
+                filterButtons.forEach(btn => {
+                    if (btn.getAttribute('data-filter') === savedFilter) {
+                        btn.click();
                     }
                 });
             }
+        }
 
-            function setupNameHighlighting() {
-                const muckeElements = tabContent.querySelectorAll('.mucke');
-                muckeElements.forEach(mucke => {
-                    const nameElements = mucke.querySelectorAll('.category ul li');
-                    nameElements.forEach(nameElement => {
-                        nameElement.addEventListener('mouseenter', function () {
-                            const userId = this.getAttribute('data-user-id');
-                            const matchingElements = Array.from(nameElements).filter(el => el.getAttribute('data-user-id') === userId);
-                            if (userId !== null && matchingElements.length > 1) {
-                                matchingElements.forEach(el => el.classList.add('highlight'));
-                            }
-                        });
+        function handleUnknownOption(select, selectedText) {
+            if (select.options[select.selectedIndex] === undefined) {
+                select.value = "unknown";
+                select.options[select.selectedIndex].text = selectedText;
+                select.classList.add('strikethrough');
+            } else {
+                select.classList.remove('strikethrough');
+            }
+        }
 
-                        nameElement.addEventListener('mouseleave', function () {
-                            nameElements.forEach(el => el.classList.remove('highlight'));
-                        });
-                    });
+        function setupCategorySelects() {
+            const categorySelects = document.querySelectorAll('.category-select');
+            // Restore selected category from localStorage
+            const savedCategory = localStorage.getItem('selectedCategory');
+            if (savedCategory) {
+                categorySelects.forEach(select => {
+                    select.value = savedCategory;
                 });
             }
 
-            function calculateNewScheme(currentScheme, systemPrefersDark) {
-                if (systemPrefersDark) {
-                    if (currentScheme === "auto") return "light";
-                    if (currentScheme === "light") return "dark";
-                    return "auto";
-                } else {
-                    if (currentScheme === "auto") return "dark";
-                    if (currentScheme === "dark") return "light";
-                    return "auto";
-                }
-            }
+            const selectedCategory = getSelectedCategory();
+            categorySelects.forEach(select => {
+                handleUnknownOption(select, selectedCategory);
 
-            function toggleColorScheme() {
-                const savedColorScheme = localStorage.getItem("color-scheme") || "auto";
-                const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
-                let newScheme = calculateNewScheme(savedColorScheme, prefersDarkScheme);
-                document.documentElement.setAttribute("data-color-scheme", newScheme);
-                localStorage.setItem("color-scheme", newScheme);
-            }
-
-            function setupColorScheme() {
-                // Restore scheme from localStorage
-                const savedColorScheme = localStorage.getItem("color-scheme") || "auto";
-                document.documentElement.setAttribute("data-color-scheme", savedColorScheme);
-
-                const colorSchemeToggle = document.querySelector('.color-scheme-toggle');
-                if (colorSchemeToggle) {
-                    colorSchemeToggle.addEventListener('click', toggleColorScheme);
-                }
-            }
-
-            setupFilterButtons();
-            setupCategorySelects();
-            setupAccordion();
-            setupNameHighlighting();
-            updateVisibility();
-            setupColorScheme();
+                select.addEventListener('change', function () {
+                    const selectedValue = this.value;
+                    categorySelects.forEach(otherSelect => {
+                        otherSelect.value = selectedValue;
+                        handleUnknownOption(otherSelect, this.options[this.selectedIndex].text);
+                    });
+                    localStorage.setItem('selectedCategory', selectedValue);
+                    updateVisibility();
+                });
+            });
         }
+
+        function setupAccordion() {
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function () {
+                    const isOpen = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !isOpen);
+                    this.parentElement.setAttribute('data-state', isOpen ? 'closed' : 'open');
+                    const content = this.nextElementSibling;
+                    if (content) {
+                        content.hidden = isOpen;
+                    }
+
+                    // Persist state in localStorage
+                    const expansionState = JSON.parse(localStorage.getItem('mucken_expansion')) || {};
+                    expansionState[this.getAttribute('aria-controls')] = !isOpen;
+                    localStorage.setItem('mucken_expansion', JSON.stringify(expansionState));
+                    console.log(expansionState);
+                });
+            });
+
+            // Restore expansion state from localStorage
+            const expansionState = JSON.parse(localStorage.getItem('mucken_expansion')) || {};
+            accordionHeaders.forEach(header => {
+                const content = header.nextElementSibling;
+                if (content) {
+                    const isOpen = expansionState[header.getAttribute('aria-controls')];
+                    header.setAttribute('aria-expanded', isOpen);
+                    header.parentElement.setAttribute('data-state', isOpen ? 'open' : 'closed');
+                }
+            });
+        }
+
+        function setupNameHighlighting() {
+            const muckeElements = tabContent.querySelectorAll('.mucke');
+            muckeElements.forEach(mucke => {
+                const nameElements = mucke.querySelectorAll('.category ul li');
+                nameElements.forEach(nameElement => {
+                    nameElement.addEventListener('mouseenter', function () {
+                        const userId = this.getAttribute('data-user-id');
+                        const matchingElements = Array.from(nameElements).filter(el => el.getAttribute('data-user-id') === userId);
+                        if (userId !== null && matchingElements.length > 1) {
+                            matchingElements.forEach(el => el.classList.add('highlight'));
+                        }
+                    });
+
+                    nameElement.addEventListener('mouseleave', function () {
+                        nameElements.forEach(el => el.classList.remove('highlight'));
+                    });
+                });
+            });
+        }
+
+        function calculateNewScheme(currentScheme, systemPrefersDark) {
+            if (systemPrefersDark) {
+                if (currentScheme === "auto") return "light";
+                if (currentScheme === "light") return "dark";
+                return "auto";
+            } else {
+                if (currentScheme === "auto") return "dark";
+                if (currentScheme === "dark") return "light";
+                return "auto";
+            }
+        }
+
+        function toggleColorScheme() {
+            const savedColorScheme = localStorage.getItem("color-scheme") || "auto";
+            const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            let newScheme = calculateNewScheme(savedColorScheme, prefersDarkScheme);
+            document.documentElement.setAttribute("data-color-scheme", newScheme);
+            localStorage.setItem("color-scheme", newScheme);
+        }
+
+        function setupColorScheme() {
+            // Restore scheme from localStorage
+            const savedColorScheme = localStorage.getItem("color-scheme") || "auto";
+            document.documentElement.setAttribute("data-color-scheme", savedColorScheme);
+
+            const colorSchemeToggle = document.querySelector('.color-scheme-toggle');
+            if (colorSchemeToggle) {
+                colorSchemeToggle.addEventListener('click', toggleColorScheme);
+            }
+        }
+
+        setupFilterButtons();
+        setupCategorySelects();
+        setupAccordion();
+        setupNameHighlighting();
+        updateVisibility();
+        setupColorScheme();
     });
 </script>
