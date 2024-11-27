@@ -150,6 +150,16 @@ footer {
     gap: 10px 25px;
     justify-content: space-between;
 }
+.pseudo-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db80;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    color: var(--button-text);
+}
 
 
 /* ELEMENT STYLES */
@@ -284,9 +294,12 @@ footer {
 .mucke {
     gap: 10px 25px;
 }
-.entry-link {
-    font-weight: bold;
+
+.entry-link a {
+    color: var(--button-text);
+    text-decoration: none;
 }
+
 .mucken-infos {
     background-color: var(--accent-background);
 }
