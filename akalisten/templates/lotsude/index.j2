@@ -49,12 +49,13 @@
                     </button>
                     <div class="accordion-content mucke" id="mucke-{{ poll.id }}" hidden>
                         {% if poll.url %}
-                            <div class="icon-text pseudo-button">
-                                <i data-lucide="link" class="lucide-icon"></i>
-                                <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer">
-                                    Hier zur Mucke eintragen
-                                </a>
-                            </div>
+                            <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer"
+                               class="pseudo-button">
+                                <div class="icon-text">
+                                    <i data-lucide="link" class="lucide-icon"></i>
+                                    <span>Hier zur Mucke eintragen</span>
+                                </div>
+                            </a>
                         {% endif %}
                         {% if poll.mucken_info.has_any_info or poll.mucken_info.additional %}
                             <div class="accordion" data-state="closed">
@@ -146,10 +147,13 @@
     <footer>
         <div>
             <small>
-                <div class="icon-text pseudo-button">
-                    <i data-lucide="github" class="lucide-icon"></i>
-                    <a href="https://github.com/AkaBlas/akalisten/issues">Verbesserungsvorschläge</a>
-                </div>
+                <a href="https://github.com/AkaBlas/akalisten/issues" target="_blank"
+                   rel="noopener noreferrer" class="pseudo-button">
+                    <div class="icon-text">
+                        <i data-lucide="github" class="lucide-icon"></i>
+                        <span>Verbesserungsvorschläge</span>
+                    </div>
+                </a>
                 <p>
                      <span class="icon-text">
                          <i data-lucide="database-backup" class="lucide-icon"></i>Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}

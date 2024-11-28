@@ -83,10 +83,6 @@ p {
     margin: 0.75rem 0;
 }
 
-a:any-link {
-    color: var(--link);
-}
-
 h2 {
     border-bottom: 2px solid var(--border);
     padding-bottom: 10px;
@@ -169,6 +165,7 @@ footer {
 }
 
 .pseudo-button {
+    display: inline-flex;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -176,10 +173,6 @@ footer {
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
-    color: var(--button-text);
-}
-
-.pseudo-button a {
     color: var(--button-text);
     text-decoration: none;
 }
