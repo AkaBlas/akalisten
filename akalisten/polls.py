@@ -13,7 +13,7 @@ from akalisten.api_types.polls import Poll, PollOption, PollVote
 
 _INFO_PATTERN = re.compile(r"(?P<header>#+ Infos\n+)(?P<items>(\* [^:]+ ?[^\n]+(\n|$))+)")
 _INFO_ITEM_PATTERN = re.compile(r"\* (?P<key>[^:]+): ?(?P<value>[^\n]+)(\n|$)")
-_CLEAN_TIME_PATTERN = re.compile(r"(Uhr|ca\.|~)\s*")
+_CLEAN_TIME_PATTERN = re.compile(r"(Uhr|ca\.|~|h)\s*")
 
 
 class MuckenInfo(BaseModel):
