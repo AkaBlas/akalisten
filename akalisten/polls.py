@@ -69,8 +69,7 @@ class MuckenInfo(BaseModel):
             return dtm.datetime.strptime(time_string, "%H.%M")  # noqa: DTZ007
 
         with contextlib.suppress(ParserError):
-            # Remove 'Uhr' and 'ca.' if present
-            return parse(time_string)
+            return parse(time_string, dayfirst=True)
         return None
 
     @classmethod
