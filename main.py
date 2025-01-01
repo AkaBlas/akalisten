@@ -11,6 +11,7 @@ from jinja2 import FileSystemLoader, StrictUndefined
 from pydantic import BaseModel
 
 from akalisten.clients.polls import PollAPI
+from akalisten.clients.wordpress import WordPressAPI
 from akalisten.jinja2 import RelImportEnvironment
 from akalisten.polls import PollInfo, PollVotes
 
@@ -71,12 +72,30 @@ async def main() -> None:
         undefined=StrictUndefined,
     )
     timezone = zoneinfo.ZoneInfo("Europe/Berlin")
+    kwargs = {"polls": polls, "poll_votes": poll_votes, "now": dtm.datetime.now(timezone)}
+
+    # Write to file
     (ROOT / "index.html").write_text(
-        environment.get_template("lotsude/index.j2").render(
-            polls=polls, poll_votes=poll_votes, now=dtm.datetime.now(timezone)
-        ),
+        environment.get_template("lotsude/index.j2").render(wordpress=False, **kwargs),
         encoding="utf-8",
     )
+
+    # Update WordPress Page
+    wp_content = environment.get_template("lotsude/index.j2").render(wordpress=True, **kwargs)
+    async with WordPressAPI() as wp_client:
+        await wp_client.edit_page(
+            int(os.getenv("WP_PAGE_ID")),  # type: ignore[arg-type]
+            (
+                "<!-- wp:paragraph -->"
+                '<p><a href="https://listen.akablas.de" target="_blank" rel="noreferrer noopener">'
+                " Klicke hier</a>, um den Inhalt unten in einer neuen Seite zu öffnen. Die "
+                "Zugangsdaten sie die gleichen wie für den internen Bereich.</p>"
+                "<!-- /wp:paragraph -->"
+                "<!-- wp:html -->"
+                f"{wp_content}"
+                "<!-- /wp:html -->"
+            ),
+        )
 
 
 if __name__ == "__main__":

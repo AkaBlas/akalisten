@@ -5,10 +5,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0">
     <style>
-        {% include 'style.css' %}
+        {% include 'style.css.j2' %}
     </style>
 </head>
-<body>
+{% if wordpress %}
+    <div id="wp-embedding">
+{% else %}
+    <body>
+{% endif %}
 <div class="wrapper">
     <div class="content">
         <header>
@@ -174,5 +178,9 @@
 </div>
 {% include 'icons_script.j2' %}
 {% include 'script.j2' %}
-</body>
+{% if wordpress %}
+    </div>
+{% else %}
+    </body>
+{% endif %}
 </html>
