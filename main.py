@@ -66,7 +66,7 @@ async def main() -> None:
     polls, poll_votes = await get_poll_data()
 
     environment = RelImportEnvironment(
-        loader=FileSystemLoader(ROOT / Path("akalisten/templates")),
+        loader=FileSystemLoader(ROOT / Path("akalisten/template")),
         lstrip_blocks=True,
         trim_blocks=True,
         undefined=StrictUndefined,
@@ -76,8 +76,7 @@ async def main() -> None:
 
     # Write to file
     (ROOT / "index.html").write_text(
-        environment.get_template("lotsude/index.j2").render(wordpress=False, **kwargs),
-        encoding="utf-8",
+        environment.get_template("index.j2").render(wordpress=False, **kwargs), encoding="utf-8"
     )
 
     if DEBUG_MODE:
@@ -85,7 +84,7 @@ async def main() -> None:
         return
 
     # Update WordPress Page
-    wp_content = environment.get_template("lotsude/index.j2").render(wordpress=True, **kwargs)
+    wp_content = environment.get_template("index.j2").render(wordpress=True, **kwargs)
     async with WordPressAPI() as wp_client:
         await wp_client.edit_page(
             int(os.getenv("WP_PAGE_ID")),  # type: ignore[arg-type]
