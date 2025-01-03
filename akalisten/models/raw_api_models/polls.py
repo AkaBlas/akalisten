@@ -5,7 +5,7 @@ https://github.com/nextcloud/polls/blob/346f37964c53bb6cc132edbb1f113642d2bb2c39
 
 import datetime as dtm
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 
 class PollConfiguration(BaseModel):
@@ -142,3 +142,22 @@ class PollOption(BaseModel):
     text: str
     timestamp: dtm.datetime
     votes: PollOptionVotes
+
+
+class PollShare(BaseModel):
+    type: str
+    id: int
+    token: str
+    pollId: int
+    userId: str
+    emailAddress: str
+    invitationSent: bool
+    reminderSent: bool
+    locked: bool
+    label: str
+    URL: HttpUrl
+    showLogin: bool | None = None
+    publicPollEmail: str
+    voted: bool
+    deleted: bool
+    user: PollOwner

@@ -7,7 +7,7 @@ import httpx
 
 from akalisten.clients._utils import response_handler
 from akalisten.models.polls import PollInfo, PollVotes
-from akalisten.models.raw_api_models.polls import Poll, PollOption, PollVote
+from akalisten.models.raw_api_models.polls import Poll, PollOption, PollShare, PollVote
 
 
 class PollAPI(AbstractAsyncContextManager):
@@ -53,6 +53,15 @@ class PollAPI(AbstractAsyncContextManager):
         response = await self.client.get(self.base_url + f"poll/{poll_id}/votes")
         with response_handler(response):
             return [PollVote(**vote) for vote in response.json()["votes"]]
+
+    async def get_poll_shares(self, poll_id: int) -> Sequence[PollShare]:
+        response = await self.client.get(self.base_url + f"poll/{poll_id}/shares")
+        with response_handler(response):
+            return [PollShare(**share) for share in response.json()["shares"]]
+
+    async def get_public_share_token(self, poll_id: int) -> set[str]:
+        shares = await self.get_poll_shares(poll_id)
+        return {share.token for share in shares if share.type == "public"}
 
     async def aggregate_poll_votes(self, poll_id: int) -> PollVotes:
         votes = await self.get_poll_votes(poll_id)

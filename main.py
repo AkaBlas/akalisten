@@ -5,17 +5,18 @@ import os
 import zoneinfo
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from dotenv import load_dotenv
 from jinja2 import FileSystemLoader, StrictUndefined
-from pydantic import BaseModel
 
 from akalisten.clients.circles import CirclesAPI
 from akalisten.clients.polls import PollAPI
 from akalisten.clients.wordpress import WordPressAPI
-from akalisten.jinja2 import RelImportEnvironment
-from akalisten.models.polls import PollInfo, PollVotes
-from akalisten.models.register import Registers
+from akalisten.jinja2 import MuckenListenData, RelImportEnvironment, TemplateData
+
+if TYPE_CHECKING:
+    from akalisten.models.polls import PollInfo
 
 load_dotenv(override=True)
 
@@ -38,42 +39,44 @@ logging.basicConfig(
 )
 
 
-async def get_poll_data() -> tuple[dict[int, PollInfo], dict[int, PollVotes]]:
-    class TempData(BaseModel):
-        polls: dict[int, PollInfo]
-        poll_votes: dict[int, PollVotes]
-        registers: Registers
-
+async def get_template_data() -> TemplateData:
     if DEBUG_MODE and DUMMY_DATA.exists():
-        tmp_data = TempData.model_validate_json(DUMMY_DATA.read_text(encoding="utf-8"))
-        for poll_votes in tmp_data.poll_votes.values():
+        template_data = TemplateData.model_validate_json(DUMMY_DATA.read_text(encoding="utf-8"))
+        for poll_votes in template_data.mucken_listen.poll_votes.values():
             poll_votes.sanitize_nos()
     else:
         async with CirclesAPI() as circles_client:
-            tmp_data = TempData(
+            mucken_listen_data = MuckenListenData(
                 polls={}, poll_votes={}, registers=await circles_client.aggregate_registers()
             )
 
         async with PollAPI() as poll_client:
+            other_polls: list[PollInfo] = []
             for poll in await poll_client.get_polls_info():
-                if not poll.is_active_mucken_liste:
+                if poll.is_active_mucken_liste:
+                    votes = await poll_client.aggregate_poll_votes(poll.id)
+                    mucken_listen_data.poll_votes[poll.id] = votes
+                    mucken_listen_data.polls[poll.id] = poll
+                elif poll.is_active_poll:
+                    poll.public_tokens.update(await poll_client.get_public_share_token(poll.id))
+                    other_polls.append(poll)
+                else:
                     continue
-                votes = await poll_client.aggregate_poll_votes(poll.id)
-                tmp_data.poll_votes[poll.id] = votes
-                tmp_data.polls[poll.id] = poll
 
         # Compute the members that have not voted yet
-        for poll_votes in tmp_data.poll_votes.values():
-            poll_votes.add_register_users(tmp_data.registers)
+        for poll_votes in mucken_listen_data.poll_votes.values():
+            poll_votes.add_register_users(mucken_listen_data.registers)
+
+        template_data = TemplateData(mucken_listen=mucken_listen_data, polls=other_polls)
 
         if DEBUG_MODE:
-            DUMMY_DATA.write_text(tmp_data.model_dump_json(indent=2), encoding="utf-8")
+            DUMMY_DATA.write_text(template_data.model_dump_json(indent=2), encoding="utf-8")
 
-    return tmp_data.polls, tmp_data.poll_votes
+    return template_data
 
 
 async def main() -> None:
-    polls, poll_votes = await get_poll_data()
+    template_data = await get_template_data()
 
     environment = RelImportEnvironment(
         loader=FileSystemLoader(ROOT / Path("akalisten/template")),
@@ -82,7 +85,11 @@ async def main() -> None:
         undefined=StrictUndefined,
     )
     timezone = zoneinfo.ZoneInfo("Europe/Berlin")
-    kwargs = {"polls": polls, "poll_votes": poll_votes, "now": dtm.datetime.now(timezone)}
+    kwargs = {
+        "mucken_listen": template_data.mucken_listen,
+        "polls": template_data.polls,
+        "now": dtm.datetime.now(timezone),
+    }
 
     # Write to file
     (ROOT / "index.html").write_text(

@@ -144,6 +144,7 @@ class MuckenInfo(BaseModel):
 
 class PollInfo(BaseModel):
     poll: Poll
+    public_tokens: set[str] = Field(default_factory=set)
     _mucken_info: MuckenInfo | Literal["not-computed"] = "not-computed"
 
     @property
@@ -164,6 +165,16 @@ class PollInfo(BaseModel):
         return html.escape(self.poll.configuration.title.removeprefix("Muckenliste: "))
 
     @property
+    def html_description(self) -> str:
+        return markdown.markdown(self.poll.descriptionSafe)
+
+    @property
+    def expire_date(self) -> dtm.datetime | None:
+        if (date := self.poll.configuration.expire) != dtm.datetime(1970, 1, 1, tzinfo=dtm.UTC):
+            return date
+        return None
+
+    @property
     def is_active_mucken_liste(self) -> bool:
         if self.poll.status.deleted:
             return False
@@ -182,8 +193,26 @@ class PollInfo(BaseModel):
         return self.poll.configuration.access != "private"
 
     @property
+    def is_active_poll(self) -> bool:
+        if self.poll.status.deleted:
+            return False
+        if (date := self.mucken_info.date) and date < dtm.date.today():  # noqa: DTZ011
+            return False
+
+        return self.poll.configuration.access != "private"
+
+    @property
     def url(self) -> str:
         return f"https://cloud.akablas.de/index.php/apps/polls/vote/{self.id}"
+
+    @property
+    def public_url(self) -> str | None:
+        try:
+            return (
+                f"https://cloud.akablas.de/index.php/apps/polls/s/{next(iter(self.public_tokens))}"
+            )
+        except StopIteration:
+            return None
 
 
 class PollOptionVotes(BaseModel):

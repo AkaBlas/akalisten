@@ -181,6 +181,25 @@ body {
         text-decoration: none;
     }
 
+    .poll-links-container {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .poll-link {
+        width: 100%;
+    }
+
+    .poll-info {
+        border-radius: 5px;
+        border-color: var(--border);
+        background-color: var(--accent-background);
+        padding-left: 15px;
+        padding-right: 15px;
+        margin: 10px 0;
+    }
+
 
     /* ELEMENT STYLES */
     /* Icon */
@@ -540,6 +559,12 @@ body {
     @media only screen and (max-width: 800px) {
         .multi-column-list {
             column-count: 2;
+        }
+        .poll-links-container {
+            flex-direction: column;
+        }
+        .poll-link {
+            width: initial;
         }
     }
 

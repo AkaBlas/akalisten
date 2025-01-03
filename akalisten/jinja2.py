@@ -1,6 +1,21 @@
 from pathlib import Path
 
 from jinja2 import Environment
+from pydantic import BaseModel
+
+from akalisten.models.polls import PollInfo, PollVotes
+from akalisten.models.register import Registers
+
+
+class MuckenListenData(BaseModel):
+    polls: dict[int, PollInfo]
+    poll_votes: dict[int, PollVotes]
+    registers: Registers
+
+
+class TemplateData(BaseModel):
+    mucken_listen: MuckenListenData
+    polls: list[PollInfo]
 
 
 class RelImportEnvironment(Environment):
