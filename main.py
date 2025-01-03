@@ -80,6 +80,10 @@ async def main() -> None:
         encoding="utf-8",
     )
 
+    if DEBUG_MODE:
+        # Don't update WordPress Page in debug mode
+        return
+
     # Update WordPress Page
     wp_content = environment.get_template("lotsude/index.j2").render(wordpress=True, **kwargs)
     async with WordPressAPI() as wp_client:

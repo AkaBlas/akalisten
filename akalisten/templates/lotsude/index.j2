@@ -1,3 +1,5 @@
+{% from 'option_block.j2' import render_category %}
+{% from 'info_block.j2' import render_info %}
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -73,7 +75,6 @@
                                      id="mucke-{{ poll.id }}-infos" hidden>
                                     {% if poll.mucken_info.has_any_info %}
                                         <ul class="multi-column-list">
-                                            {% from 'info_block.j2' import render_info %}
                                             {% if poll.mucken_info.date %}
                                                 {{ render_info('calendar-fold', poll.mucken_info.date.strftime('%d.%m.%Y')) }}
                                             {% endif %}
@@ -110,9 +111,10 @@
                                 <label>Filter:</label>
                                 <button class="filter-btn all active" data-filter="all">Alle
                                 </button>
-                                <button class="filter-btn yes" data-filter="yes">Ja</button>
-                                <button class="filter-btn no" data-filter="no">Nein</button>
+                                <button class="filter-btn yes" data-filter="yes">Dabei</button>
+                                <button class="filter-btn no" data-filter="no">Nicht Dabei</button>
                                 <button class="filter-btn maybe" data-filter="maybe">Vielleicht
+                                    Dabei
                                 </button>
                             </div>
                             <div class="category-filter">
@@ -129,14 +131,18 @@
                         </div>
 
                         <div class="participants">
-                            {% for col_class, col_name, attr_name in (
-                                ("yes", "Ja", "sorted_yes"),
-                                ("no", "Nein", "sorted_sanitized_no"),
-                                ("maybe", "Vielleicht", "sorted_maybe")
+                            {% for col_class, col_name, col_icon, attr_name in (
+                                ("yes", "Dabei", "thumbs-up", "sorted_yes"),
+                                ("no", "Nicht Dabei", "thumbs-down", "sorted_sanitized_no"),
+                                ("maybe", "Vielleicht Dabei", "circle-help", "sorted_maybe")
                             ) %}
                                 <div class="column {{ col_class }}">
-                                    <h2>{{ col_name }}</h2>
-                                    {% from 'option_block.j2' import render_category %}
+                                    <h2>
+                                        <span class="icon-text, icon-header">
+                                            <span>{{ col_name }}</span>
+                                            <i data-lucide="{{ col_icon }}" class="lucide-icon"></i>
+                                        </span>
+                                    </h2>
                                     {% for votes in poll_votes[poll.id].options.values() %}
                                         {{ render_category(votes, attr_name) }}
                                     {% endfor %}
