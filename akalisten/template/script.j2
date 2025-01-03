@@ -24,7 +24,6 @@
 
             // (un)hilde all li.non-voted-placeholder elements
             document.querySelectorAll('li.non-voted-placeholder').forEach(el => {
-                console.log(el);
                 el.classList.toggle('hidden', !showNotVoted);
             });
 
@@ -183,6 +182,7 @@
 
         function setupNameHighlighting() {
             const muckeElements = tabContent.querySelectorAll('.mucke');
+            let currentHighlightedUser = null;
             muckeElements.forEach(mucke => {
                 const nameElements = mucke.querySelectorAll('.category ul li');
                 nameElements.forEach(nameElement => {
@@ -190,12 +190,39 @@
                         const userId = this.getAttribute('data-user-id');
                         const matchingElements = Array.from(nameElements).filter(el => el.getAttribute('data-user-id') === userId);
                         if (userId !== null && matchingElements.length > 1) {
-                            matchingElements.forEach(el => el.classList.add('highlight'));
+                            matchingElements.forEach(el => {
+                                el.classList.add('highlight-temp');
+                                el.classList.add('selectable');
+                            });
                         }
                     });
 
                     nameElement.addEventListener('mouseleave', function () {
-                        nameElements.forEach(el => el.classList.remove('highlight'));
+                        nameElements.forEach(el => el.classList.remove('highlight-temp'));
+                    });
+
+
+                    nameElement.addEventListener('click', function () {
+                        const isHighlighted = this.classList.contains('highlight-perm');
+                        const userId = this.getAttribute('data-user-id');
+
+                        // update highlighting for selected user
+                        const matchingElements = Array.from(nameElements).filter(el => el.getAttribute('data-user-id') === userId);
+                        if (userId !== null && matchingElements.length > 1) {
+                            matchingElements.forEach(el => el.classList.add('highlight-perm'));
+                            if (isHighlighted) {
+                                matchingElements.forEach(el => el.classList.remove('highlight-perm'));
+                            } else {
+                                matchingElements.forEach(el => el.classList.add('highlight-perm'));
+                            }
+                        }
+
+                        // if required, un-highlight the previously highlighted user
+                        if (currentHighlightedUser == null || currentHighlightedUser !== userId) {
+                            const previouslyHighlightedElements = Array.from(nameElements).filter(el => el.getAttribute('data-user-id') === currentHighlightedUser);
+                            previouslyHighlightedElements.forEach(el => el.classList.remove('highlight-perm'));
+                            currentHighlightedUser = userId;
+                        }
                     });
                 });
             });
