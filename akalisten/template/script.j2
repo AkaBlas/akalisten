@@ -39,8 +39,6 @@
             });
 
             tabContent.querySelectorAll('.category').forEach(category => {
-                // skip the category if "permanent-category" class is present
-                if (category.classList.contains('permanent-category')) return;
                 const shouldHideCategory = !(
                     (
                         selectedCategory === 'all'
@@ -48,6 +46,7 @@
                     ) && (
                         selectedStatus === 'all'
                         || category.closest('.column').classList.contains(selectedStatus)
+                        || category.closest('.column').classList.contains('not-voted')
                     )
                 );
                 category.classList.toggle('hidden', shouldHideCategory);

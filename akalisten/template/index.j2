@@ -145,11 +145,11 @@
                         </div>
 
                         <div class="participants">
-                            {% for col_class, col_name, col_icon, attr_name, updates_visibility in (
-                                ("yes", "Dabei", "thumbs-up", "sorted_yes", True),
-                                ("no", "Nicht Dabei", "thumbs-down", "sorted_sanitized_no", True),
-                                ("maybe", "Vielleicht Dabei", "circle-help", "sorted_maybe", True),
-                                ("not-voted", "Keine Antwort", "search", "sorted_not_voted", False),
+                            {% for col_class, col_name, col_icon, attr_name in (
+                                ("yes", "Dabei", "thumbs-up", "sorted_yes"),
+                                ("no", "Nicht Dabei", "thumbs-down", "sorted_sanitized_no"),
+                                ("maybe", "Vielleicht Dabei", "circle-help", "sorted_maybe"),
+                                ("not-voted", "Keine Antwort", "search", "sorted_not_voted"),
                             ) %}
                                 <div class="column {{ col_class }}">
                                     <h2>
@@ -172,7 +172,7 @@
                                         </span>
                                     </h2>
                                     {% for votes in poll_votes[poll.id].options.values() %}
-                                        {{ render_category(votes, attr_name, updates_visibility) }}
+                                        {{ render_category(votes, attr_name) }}
                                     {% endfor %}
                                 </div>
                             {% endfor %}
