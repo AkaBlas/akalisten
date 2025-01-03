@@ -169,6 +169,16 @@ class PollInfo(BaseModel):
             return False
         if (date := self.mucken_info.date) and date < dtm.date.today():  # noqa: DTZ011
             return False
+
+        text_conditions = (
+            "muckenliste" in self.poll.configuration.title.lower(),
+            "mensa 2" in self.poll.descriptionSafe.lower(),
+            "m2" in self.poll.descriptionSafe.lower(),
+            "direkt" in self.poll.descriptionSafe.lower(),
+        )
+        if not any(text_conditions):
+            return False
+
         return self.poll.configuration.access != "private"
 
     @property
