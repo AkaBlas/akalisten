@@ -197,6 +197,11 @@ body {
         height: 1.5em;
     }
 
+    .lucide-icon.sml {
+        width: 0.75em;
+        height: 0.75em;
+    }
+
     .center-icon {
         display: flex;
         align-items: center;
@@ -302,6 +307,38 @@ body {
     .checkbox-icon.lucide-icon {
         color: #bfbfbf;
     }
+
+    /* Tooltip */
+
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 240px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        padding: 10px;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -120px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        font-size: small;
+        font-weight: normal;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
 
     /* Accordion */
 

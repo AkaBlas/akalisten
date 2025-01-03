@@ -153,8 +153,21 @@
                             ) %}
                                 <div class="column {{ col_class }}">
                                     <h2>
-                                        <span class="icon-text, icon-header">
+                                        <span class="icon-text icon-header">
+                                        <div>
                                             <span>{{ col_name }}</span>
+                                            {% if col_class == "not-voted" %}
+                                                <div class="tooltip">
+                                                    <i data-lucide="info"
+                                                       class="lucide-icon sml"></i>
+                                                    <span class="tooltiptext">
+                                                        Diese Info stammt aus der Registerzuteilung in der AkaCloud ist wahrscheinlich nicht komplett korrekt.
+                                                        <br>
+                                                        Bitte versteh sie als groben Anhaltspunkt.
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
                                             <i data-lucide="{{ col_icon }}" class="lucide-icon"></i>
                                         </span>
                                     </h2>
