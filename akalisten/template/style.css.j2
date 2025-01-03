@@ -19,6 +19,7 @@
         --accent-hover-background: #3a3a3a;
         --border: #444444;
         --button-text: #ffffff;
+        --icon: #bfbfbf;
     }
 }
 
@@ -78,7 +79,7 @@ body {
     line-height: 1.6;
     color: var(--text);
     background-color: var(--background);
-    max-width: 1200px;
+    max-width: 1500px;
     margin: 0 auto;
     transition: background-color 0.3s;
 
@@ -262,6 +263,46 @@ body {
         background-color: #f39c12;
     }
 
+    /* Checkbox */
+
+    .checkbox {
+        display: inline-block;
+        position: relative;
+    }
+
+    .checkbox input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    .checkbox label {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        font-weight: bold;
+        color: var(--button-text);
+        background-color: #2c2c2c;
+        padding: 0.5em 1em;
+        border-radius: 4px;
+        filter: opacity(0.5);
+        transition: filter 0.3s ease;
+    }
+
+    .checkbox input[type="checkbox"]:checked + label {
+        filter: opacity(1);
+    }
+
+    .checkbox-icon.hidden {
+        display: none;
+    }
+
+    .checkbox-icon.lucide-icon {
+        color: #bfbfbf;
+    }
+
     /* Accordion */
 
     .accordion {
@@ -401,6 +442,11 @@ body {
         border-color: #f39c12;
     }
 
+    .not-voted h2 {
+        color: var(--text);
+        border-color: var(--text);
+    }
+
     .yes .lucide-icon {
         color: #27ae60;
     }
@@ -411,6 +457,10 @@ body {
 
     .maybe .lucide-icon {
         color: #f39c12;
+    }
+
+    .not-voted .lucide-icon {
+        color: var(--text);
     }
 
     .highlight {
@@ -434,13 +484,17 @@ body {
         opacity: 0.5;
     }
 
+    li.non-voted-placeholder.hidden {
+        display: none;
+    }
+
     .strikethrough {
         text-decoration: line-through;
     }
 
 
     /* MEDIA QUERIES */
-    @media only screen and (max-width: 1200px) {
+    @media only screen and (max-width: 1500px) {
         .placeholder {
             display: none;
         }

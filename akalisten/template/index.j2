@@ -116,6 +116,20 @@
                                 <button class="filter-btn maybe" data-filter="maybe">Vielleicht
                                     Dabei
                                 </button>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="not-voted-checkbox"
+                                           name="not-voted-checkbox" value="unchecked">
+                                    <label for="not-voted-checkbox">
+                                        <span class="icon-text">
+                                            <i data-checkbox="unchecked" data-lucide="square"
+                                               class="lucide-icon checkbox-icon"></i>
+                                            <i data-checkbox="checked"
+                                               data-lucide="square-check-big"
+                                               class="lucide-icon checkbox-icon"></i>
+                                            Keine Antwort
+                                        </span>
+                                    </label>
+                                </div>
                             </div>
                             <div class="category-filter">
                                 <label for="category-select-{{ poll.id }}">Kategorie:</label>
@@ -131,10 +145,11 @@
                         </div>
 
                         <div class="participants">
-                            {% for col_class, col_name, col_icon, attr_name in (
-                                ("yes", "Dabei", "thumbs-up", "sorted_yes"),
-                                ("no", "Nicht Dabei", "thumbs-down", "sorted_sanitized_no"),
-                                ("maybe", "Vielleicht Dabei", "circle-help", "sorted_maybe")
+                            {% for col_class, col_name, col_icon, attr_name, updates_visibility in (
+                                ("yes", "Dabei", "thumbs-up", "sorted_yes", True),
+                                ("no", "Nicht Dabei", "thumbs-down", "sorted_sanitized_no", True),
+                                ("maybe", "Vielleicht Dabei", "circle-help", "sorted_maybe", True),
+                                ("not-voted", "Keine Antwort", "search", "sorted_not_voted", False),
                             ) %}
                                 <div class="column {{ col_class }}">
                                     <h2>
@@ -144,7 +159,7 @@
                                         </span>
                                     </h2>
                                     {% for votes in poll_votes[poll.id].options.values() %}
-                                        {{ render_category(votes, attr_name) }}
+                                        {{ render_category(votes, attr_name, updates_visibility) }}
                                     {% endfor %}
                                 </div>
                             {% endfor %}

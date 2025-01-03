@@ -19,13 +19,28 @@
             const activeFilterButton = tabContent.querySelector('.filter-btn.active');
             const selectedStatus = activeFilterButton ? activeFilterButton.getAttribute('data-filter') : 'all';
             const selectedCategory = getSelectedCategory();
+            const notVotedCheckbox = document.getElementById('not-voted-checkbox');
+            const showNotVoted = notVotedCheckbox && notVotedCheckbox.checked;
+
+            // (un)hilde all li.non-voted-placeholder elements
+            document.querySelectorAll('li.non-voted-placeholder').forEach(el => {
+                console.log(el);
+                el.classList.toggle('hidden', !showNotVoted);
+            });
 
             tabContent.querySelectorAll('.column').forEach(column => {
-                const shouldHideColumn = !(selectedStatus === 'all' || column.classList.contains(selectedStatus));
+                let shouldHideColumn;
+                if (column.classList.contains('not-voted')) {
+                    shouldHideColumn = !showNotVoted;
+                } else {
+                    shouldHideColumn = !(selectedStatus === 'all' || column.classList.contains(selectedStatus));
+                }
                 column.classList.toggle('hidden', shouldHideColumn);
             });
 
             tabContent.querySelectorAll('.category').forEach(category => {
+                // skip the category if "permanent-category" class is present
+                if (category.classList.contains('permanent-category')) return;
                 const shouldHideCategory = !(
                     (
                         selectedCategory === 'all'
@@ -65,6 +80,39 @@
                     }
                 });
             }
+        }
+
+        function setupNotVotedCheckbox() {
+            const notVotedCheckbox = document.getElementById('not-voted-checkbox');
+            if (!notVotedCheckbox) return;
+
+            const uncheckedIcon = document.querySelector('[data-checkbox="unchecked"]');
+            const checkedIcon = document.querySelector('[data-checkbox="checked"]');
+
+            function updateCheckBoxIcon() {
+                if (notVotedCheckbox.checked) {
+                    uncheckedIcon.classList.add('hidden');
+                    checkedIcon.classList.remove('hidden');
+                } else {
+                    uncheckedIcon.classList.remove('hidden');
+                    checkedIcon.classList.add('hidden');
+                }
+            }
+
+            notVotedCheckbox.addEventListener('change', function () {
+                const isChecked = this.checked;
+                //store the state in localStorage
+                localStorage.setItem('notVotedCheckbox', isChecked);
+                updateVisibility();
+                updateCheckBoxIcon();
+            });
+
+            // Restore state from localStorage
+            const savedState = localStorage.getItem('notVotedCheckbox');
+            if (savedState) {
+                notVotedCheckbox.checked = savedState === 'true';
+            }
+            updateCheckBoxIcon();
         }
 
         function handleUnknownOption(select, selectedText) {
@@ -119,7 +167,6 @@
                     const expansionState = JSON.parse(localStorage.getItem('mucken_expansion')) || {};
                     expansionState[this.getAttribute('aria-controls')] = !isOpen;
                     localStorage.setItem('mucken_expansion', JSON.stringify(expansionState));
-                    console.log(expansionState);
                 });
             });
 
@@ -187,6 +234,7 @@
         }
 
         setupFilterButtons();
+        setupNotVotedCheckbox();
         setupCategorySelects();
         setupAccordion();
         setupNameHighlighting();

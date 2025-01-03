@@ -10,10 +10,12 @@ from dotenv import load_dotenv
 from jinja2 import FileSystemLoader, StrictUndefined
 from pydantic import BaseModel
 
+from akalisten.clients.circles import CirclesAPI
 from akalisten.clients.polls import PollAPI
 from akalisten.clients.wordpress import WordPressAPI
 from akalisten.jinja2 import RelImportEnvironment
-from akalisten.polls import PollInfo, PollVotes
+from akalisten.models.polls import PollInfo, PollVotes
+from akalisten.models.register import Registers
 
 load_dotenv(override=True)
 
@@ -40,21 +42,29 @@ async def get_poll_data() -> tuple[dict[int, PollInfo], dict[int, PollVotes]]:
     class TempData(BaseModel):
         polls: dict[int, PollInfo]
         poll_votes: dict[int, PollVotes]
+        registers: Registers
 
     if DEBUG_MODE and DUMMY_DATA.exists():
         tmp_data = TempData.model_validate_json(DUMMY_DATA.read_text(encoding="utf-8"))
         for poll_votes in tmp_data.poll_votes.values():
             poll_votes.sanitize_nos()
     else:
-        tmp_data = TempData(polls={}, poll_votes={})
+        async with CirclesAPI() as circles_client:
+            tmp_data = TempData(
+                polls={}, poll_votes={}, registers=await circles_client.aggregate_registers()
+            )
 
-        async with PollAPI() as client:
-            for poll in await client.get_polls_info():
+        async with PollAPI() as poll_client:
+            for poll in await poll_client.get_polls_info():
                 if not poll.is_active_mucken_liste:
                     continue
-                votes = await client.aggregate_poll_votes(poll.id)
+                votes = await poll_client.aggregate_poll_votes(poll.id)
                 tmp_data.poll_votes[poll.id] = votes
                 tmp_data.polls[poll.id] = poll
+
+        # Compute the members that have not voted yet
+        for poll_votes in tmp_data.poll_votes.values():
+            poll_votes.add_register_users(tmp_data.registers)
 
         if DEBUG_MODE:
             DUMMY_DATA.write_text(tmp_data.model_dump_json(indent=2), encoding="utf-8")

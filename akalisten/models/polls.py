@@ -3,13 +3,15 @@ import datetime as dtm
 import html
 import re
 from collections.abc import Collection, Sequence
-from typing import Literal, Optional, Union
+from typing import Literal
 
 import markdown
 from dateutil.parser import ParserError, parse
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, Field
 
-from akalisten.api_types.polls import Poll, PollOption, PollVote
+from akalisten.models.general import User
+from akalisten.models.raw_api_models.polls import Poll, PollOption, PollVote
+from akalisten.models.register import Registers
 
 _INFO_PATTERN = re.compile(r"(?P<header>#+ Infos\n+)(?P<items>(\* [^:]+ ?[^\n]+(\n|$))+)")
 _INFO_ITEM_PATTERN = re.compile(r"\* (?P<key>[^:]+): ?(?P<value>[^\n]+)(\n|$)")
@@ -17,13 +19,13 @@ _CLEAN_TIME_PATTERN = re.compile(r"(Uhr|ca\.|~|h)\s*")
 
 
 class MuckenInfo(BaseModel):
-    date: Optional[dtm.date] = None
-    location: Optional[str] = None
-    time_m2: Optional[dtm.time] = None
-    time_meeting: Optional[dtm.time] = None
-    time_start: Optional[dtm.time] = None
-    time_end: Optional[dtm.time] = None
-    additional: Optional[str] = None
+    date: dtm.date | None = None
+    location: str | None = None
+    time_m2: dtm.time | None = None
+    time_meeting: dtm.time | None = None
+    time_start: dtm.time | None = None
+    time_end: dtm.time | None = None
+    additional: str | None = None
 
     def is_complete(self) -> bool:
         return all(
@@ -54,13 +56,13 @@ class MuckenInfo(BaseModel):
         )
 
     @property
-    def html_additional(self) -> Optional[str]:
+    def html_additional(self) -> str | None:
         if self.additional is None:
             return None
         return markdown.markdown(self.additional)
 
     @staticmethod
-    def _parse_date_or_time(value: str) -> Optional[dtm.datetime]:
+    def _parse_date_or_time(value: str) -> dtm.datetime | None:
         time_string = _CLEAN_TIME_PATTERN.sub("", value).strip()
         # try a few custom formats first
         with contextlib.suppress(ValueError):
@@ -81,13 +83,13 @@ class MuckenInfo(BaseModel):
         items = match.group("items")
         info_part = match.group(0)
 
-        date: Optional[dtm.date] = None
-        location: Optional[str] = None
-        time_m2: Optional[dtm.time] = None
-        time_meeting: Optional[dtm.time] = None
-        time_start: Optional[dtm.time] = None
-        time_end: Optional[dtm.time] = None
-        additional: Optional[str] = None
+        date: dtm.date | None = None
+        location: str | None = None
+        time_m2: dtm.time | None = None
+        time_meeting: dtm.time | None = None
+        time_start: dtm.time | None = None
+        time_end: dtm.time | None = None
+        additional: str | None = None
 
         for item_match in _INFO_ITEM_PATTERN.finditer(items):
             key = item_match.group("key").strip().lower()
@@ -142,7 +144,7 @@ class MuckenInfo(BaseModel):
 
 class PollInfo(BaseModel):
     poll: Poll
-    _mucken_info: Union[MuckenInfo, Literal["not-computed"]] = "not-computed"
+    _mucken_info: MuckenInfo | Literal["not-computed"] = "not-computed"
 
     @property
     def id(self) -> int:
@@ -174,24 +176,6 @@ class PollInfo(BaseModel):
         return f"https://cloud.akablas.de/index.php/apps/polls/vote/{self.id}"
 
 
-class User(BaseModel):
-    model_config = ConfigDict(frozen=True)
-    name: str
-    id: str
-
-    @property
-    def display_name(self) -> str:
-        if " " not in self.name:
-            return self.name
-        names = self.name.split(" ")
-        # in case the last name has several parts, we take the first letter of each part
-        return f"{names[0]} {''.join(part[0] for part in names[1:])}."
-
-    @property
-    def html_display_name(self) -> str:
-        return html.escape(self.display_name)
-
-
 class PollOptionVotes(BaseModel):
     poll_id: int
     id: int
@@ -199,7 +183,8 @@ class PollOptionVotes(BaseModel):
     yes: set[User] = Field(default_factory=set)
     no: set[User] = Field(default_factory=set)
     maybe: set[User] = Field(default_factory=set)
-    _sanitized_no: Optional[set[User]] = None
+    not_voted: set[User] = Field(default_factory=set)
+    _sanitized_no: set[User] | None = None
 
     @property
     def sanitized_no(self) -> set[User]:
@@ -219,13 +204,22 @@ class PollOptionVotes(BaseModel):
             if (poll_user_answer.yes or poll_user_answer.maybe)
         }
 
+    def add_register_users(self, register_users: Collection[User]) -> None:
+        """Add all users that to the :attr:`not_voted` set that are not yet in the
+        :attr:`yes`, :attr:`no`, or :attr:`maybe` sets.
+        """
+        self.not_voted.update(set(register_users) - self.yes - self.no - self.maybe)
+
     def add_vote(self, vote: PollVote) -> None:
+        """Add a vote to the option. Also removes the user from the :attr:`not_voted` set."""
+        user = User(name=vote.user.displayName, id=vote.user.id)
+
         if vote.answer == "yes":
-            self.yes.add(User(name=vote.user.displayName, id=vote.user.id))
+            self.yes.add(user)
         elif vote.answer == "no":
-            self.no.add(User(name=vote.user.displayName, id=vote.user.id))
+            self.no.add(user)
         elif vote.answer == "maybe":
-            self.maybe.add(User(name=vote.user.displayName, id=vote.user.id))
+            self.maybe.add(user)
 
     @property
     def max_votes(self) -> int:
@@ -234,6 +228,10 @@ class PollOptionVotes(BaseModel):
     @property
     def sanitized_max_votes(self) -> int:
         return max(len(self.yes), len(self.sanitized_no), len(self.maybe))
+
+    @property
+    def sanitized_max_votes_with_not_voted(self) -> int:
+        return max(self.sanitized_max_votes, len(self.not_voted))
 
     @staticmethod
     def _sort_names(names: Collection[User], html_escape: bool) -> Sequence[User]:
@@ -252,6 +250,9 @@ class PollOptionVotes(BaseModel):
 
     def sorted_maybe(self, html_escape: bool = True) -> Sequence[User]:
         return self._sort_names(self.maybe, html_escape=html_escape)
+
+    def sorted_not_voted(self, html_escape: bool = True) -> Sequence[User]:
+        return self._sort_names(self.not_voted, html_escape=html_escape)
 
 
 class PollUserAnswers(BaseModel):
@@ -296,3 +297,10 @@ class PollVotes(BaseModel):
     def sanitize_nos(self) -> None:
         for option in self.options.values():
             option.sanitize_nos(self.users.values())
+
+    def add_register_users(self, registers: Registers) -> None:
+        for option in self.options.values():
+            register = registers.get_from_name(option.text)
+            if register is None:
+                continue
+            option.add_register_users(register.members)

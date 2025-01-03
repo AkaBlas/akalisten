@@ -2,7 +2,7 @@
 [tool.ruff]
 line-length = 99
 show-fixes = true
-target-version = "py39"
+target-version = "py311"
 
 [tool.ruff.lint]
 preview = true
@@ -27,4 +27,4 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 disallow_untyped_decorators = true
 show_error_codes = true
-python_version = "3.9"
+python_version = "3.11"

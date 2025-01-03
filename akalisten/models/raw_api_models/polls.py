@@ -4,7 +4,6 @@ https://github.com/nextcloud/polls/blob/346f37964c53bb6cc132edbb1f113642d2bb2c39
 """
 
 import datetime as dtm
-from typing import Optional, Union
 
 from pydantic import BaseModel
 
@@ -30,19 +29,19 @@ class PollOwner(BaseModel):
     userId: str
     displayName: str
     emailAddress: str
-    subName: Optional[str] = None
-    subtitle: Optional[str] = None
+    subName: str | None = None
+    subtitle: str | None = None
     isNoUser: bool
-    desc: Optional[str] = None
+    desc: str | None = None
     type: str
     id: str
-    user: Optional[str] = None
-    organisation: Optional[str] = None
-    languageCode: Optional[str] = None
-    localeCode: Optional[str] = None
-    timeZone: Optional[str] = None
-    icon: Optional[str] = None
-    categories: Optional[list[str]] = None
+    user: str | None = None
+    organisation: str | None = None
+    languageCode: str | None = None
+    localeCode: str | None = None
+    timeZone: str | None = None
+    icon: str | None = None
+    categories: list[str] | None = None
 
 
 class PollStatus(BaseModel):
@@ -64,7 +63,7 @@ class PollCurrentUserStatus(BaseModel):
     yesVotes: int
     countVotes: int
     shareToken: str
-    groupInvitations: Union[dict[str, str], list[str]]
+    groupInvitations: dict[str, str] | list[str]
 
 
 class PollPermissions(BaseModel):
@@ -114,17 +113,17 @@ class PollVote(BaseModel):
 
 
 class PollOptionOwner(BaseModel):
-    displayName: Optional[str] = None
-    emailAddress: Optional[str] = None
-    id: Optional[str] = None
+    displayName: str | None = None
+    emailAddress: str | None = None
+    id: str | None = None
     isNoUser: bool
     type: str
-    userID: Optional[str] = None
+    userID: str | None = None
 
 
 class PollOptionVotes(BaseModel):
     count: int
-    currentUser: Optional[str] = None
+    currentUser: str | None = None
     maybe: int
     no: int
     yes: int
