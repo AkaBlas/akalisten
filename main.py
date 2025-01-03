@@ -43,7 +43,7 @@ async def get_template_data() -> TemplateData:
     if DEBUG_MODE and DUMMY_DATA.exists():
         template_data = TemplateData.model_validate_json(DUMMY_DATA.read_text(encoding="utf-8"))
         for poll_votes in template_data.mucken_listen.poll_votes.values():
-            poll_votes.sanitize_nos()
+            poll_votes.sanitize_votes()
     else:
         async with CirclesAPI() as circles_client:
             mucken_listen_data = MuckenListenData(
@@ -66,6 +66,8 @@ async def get_template_data() -> TemplateData:
         # Compute the members that have not voted yet
         for poll_votes in mucken_listen_data.poll_votes.values():
             poll_votes.add_register_users(mucken_listen_data.registers)
+            # post-process the votes
+            poll_votes.sanitize_votes()
 
         template_data = TemplateData(mucken_listen=mucken_listen_data, polls=other_polls)
 

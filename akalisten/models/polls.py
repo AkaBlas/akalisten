@@ -224,6 +224,7 @@ class PollOptionVotes(BaseModel):
     maybe: set[User] = Field(default_factory=set)
     not_voted: set[User] = Field(default_factory=set)
     _sanitized_no: set[User] | None = None
+    _sanitized_not_voted: set[User] | None = None
 
     @property
     def sanitized_no(self) -> set[User]:
@@ -234,6 +235,15 @@ class PollOptionVotes(BaseModel):
             raise ValueError("No votes have not been sanitized yet.")
         return self._sanitized_no
 
+    @property
+    def sanitized_not_voted(self) -> set[User]:
+        """The `not_voted` votes without users that have voted yes, no or maybe in any option.
+        Available after :meth:`sanitize_not_voted` has been called.
+        """
+        if self._sanitized_not_voted is None:
+            raise ValueError("Not voted votes have not been sanitized yet.")
+        return self._sanitized_not_voted
+
     def sanitize_nos(self, user_answers: Collection["PollUserAnswers"]) -> None:
         """Compute all users that have voted yes or maybe in any option. This method must have
         been called for :attr:`sanitized_no` to be available."""
@@ -241,6 +251,13 @@ class PollOptionVotes(BaseModel):
             poll_user_answer.user
             for poll_user_answer in user_answers
             if (poll_user_answer.yes or poll_user_answer.maybe)
+        }
+
+    def sanitize_not_voted(self, user_answers: Collection["PollUserAnswers"]) -> None:
+        """Compute all users that have voted yes, no or maybe in any option. This method must have
+        been called for :attr:`sanitized_not_voted` to be available."""
+        self._sanitized_not_voted = self.not_voted - {
+            poll_user_answer.user for poll_user_answer in user_answers
         }
 
     def add_register_users(self, register_users: Collection[User]) -> None:
@@ -270,7 +287,7 @@ class PollOptionVotes(BaseModel):
 
     @property
     def sanitized_max_votes_with_not_voted(self) -> int:
-        return max(self.sanitized_max_votes, len(self.not_voted))
+        return max(self.sanitized_max_votes, len(self.sanitized_not_voted))
 
     @staticmethod
     def _sort_names(names: Collection[User], html_escape: bool) -> Sequence[User]:
@@ -292,6 +309,9 @@ class PollOptionVotes(BaseModel):
 
     def sorted_not_voted(self, html_escape: bool = True) -> Sequence[User]:
         return self._sort_names(self.not_voted, html_escape=html_escape)
+
+    def sorted_sanitized_not_voted(self, html_escape: bool = True) -> Sequence[User]:
+        return self._sort_names(self.sanitized_not_voted, html_escape=html_escape)
 
 
 class PollUserAnswers(BaseModel):
@@ -333,9 +353,10 @@ class PollVotes(BaseModel):
     def add_option(self, poll_option: PollOption) -> None:
         self._get_option_votes(poll_option.text, poll_option.id)
 
-    def sanitize_nos(self) -> None:
+    def sanitize_votes(self) -> None:
         for option in self.options.values():
             option.sanitize_nos(self.users.values())
+            option.sanitize_not_voted(self.users.values())
 
     def add_register_users(self, registers: Registers) -> None:
         for option in self.options.values():
