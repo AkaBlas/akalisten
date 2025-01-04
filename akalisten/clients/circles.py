@@ -1,60 +1,37 @@
 import asyncio
 import os
 from collections.abc import Sequence
-from contextlib import AbstractAsyncContextManager
-from types import TracebackType
-from typing import Self
-from urllib.parse import urlencode
 
-import httpx
-
-from akalisten.clients._utils import response_handler
+from akalisten.clients._utils import BaseAPI
 from akalisten.models.general import User
 from akalisten.models.raw_api_models.circles import Circle, CircleMember, MemberStatus, UserType
 from akalisten.models.register import RegisterCircle, Registers
 
 
-class CirclesAPI(AbstractAsyncContextManager):
+class CirclesAPI(BaseAPI):
     def __init__(self) -> None:
-        self.client = httpx.AsyncClient(
-            auth=(os.environ["NC_USERNAME"], os.environ["NC_PASSWORD"]),
-            timeout=10,
-            headers={"OCS-APIRequest": "true"},
+        super().__init__(
+            base_url="https://cloud.akablas.de/ocs/v2.php/apps/circles/",
+            httpx_kwargs={
+                "auth": (os.environ["NC_USERNAME"], os.environ["NC_PASSWORD"]),
+                "headers": {"OCS-APIRequest": "true"},
+            },
         )
-        self.base_url = "https://cloud.akablas.de/ocs/v2.php/apps/circles/"
 
-    async def __aenter__(self) -> Self:
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> None:
-        await self.client.aclose()
-
-    def _build_url(self, endpoint: str, params: dict[str, str] | None = None) -> str:
-        url = self.base_url + endpoint
-        params = (params or {}) | {"format": "json"}
-        if params:
-            url += "?" + urlencode(params)
-        return url
+    def build_url(self, endpoint: str, params: dict[str, str] | None = None) -> str:
+        return super().build_url(endpoint=endpoint, params=(params or {}) | {"format": "json"})
 
     async def get_circles(self) -> Sequence[Circle]:
-        response = await self.client.get(self._build_url("circles"))
-        with response_handler(response):
-            return [Circle(**data) for data in response.json()["ocs"]["data"]]
+        async with self.json_content("circles") as json:
+            return [Circle(**data) for data in json["ocs"]["data"]]
 
     async def get_circle_details(self, circle_id: str) -> Circle:
-        response = await self.client.get(self._build_url(f"circles/{circle_id}"))
-        with response_handler(response):
-            return Circle(**response.json()["ocs"]["data"])
+        async with self.json_content(f"circles/{circle_id}") as json:
+            return Circle(**json["ocs"]["data"])
 
     async def get_circle_members(self, circle_id: str) -> Sequence[CircleMember]:
-        response = await self.client.get(self._build_url(f"circles/{circle_id}/members"))
-        with response_handler(response):
-            return [CircleMember(**data) for data in response.json()["ocs"]["data"]]
+        async with self.json_content(f"circles/{circle_id}/members") as json:
+            return [CircleMember(**data) for data in json["ocs"]["data"]]
 
     async def aggregate_registers(self) -> Registers:
         circles = await self.get_circles()

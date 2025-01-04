@@ -1,64 +1,49 @@
 import os
 from collections.abc import Sequence
-from contextlib import AbstractAsyncContextManager
-from types import TracebackType
-from typing import Self
 
 import httpx
 
-from akalisten.clients._utils import response_handler
+from akalisten.clients._utils import BaseAPI
 from akalisten.models.polls import PollInfo, PollVotes
 from akalisten.models.raw_api_models.polls import Poll, PollOption, PollShare, PollVote
 
 
-class PollAPI(AbstractAsyncContextManager):
+class PollAPI(BaseAPI):
     def __init__(self) -> None:
+        super().__init__(
+            base_url="https://cloud.akablas.de/index.php/apps/polls/api/v1.0/",
+            httpx_kwargs={"auth": (os.environ["NC_USERNAME"], os.environ["NC_PASSWORD"])},
+        )
+
         self.client = httpx.AsyncClient(
             auth=(os.environ["NC_USERNAME"], os.environ["NC_PASSWORD"]), timeout=10
         )
-        self.base_url = "https://cloud.akablas.de/index.php/apps/polls/api/v1.0/"
-
-    async def __aenter__(self) -> Self:
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> None:
-        await self.client.aclose()
 
     async def get_polls(self) -> Sequence[Poll]:
-        response = await self.client.get(self.base_url + "polls")
-        with response_handler(response):
-            return [Poll(**poll) for poll in response.json()["polls"]]
+        async with self.json_content("polls") as json:
+            return [Poll(**poll) for poll in json["polls"]]
 
     async def get_polls_info(self) -> Sequence[PollInfo]:
         return [PollInfo(poll=poll) for poll in await self.get_polls()]
 
     async def get_poll(self, poll_id: int) -> Poll:
-        response = await self.client.get(self.base_url + f"poll/{poll_id}")
-        with response_handler(response):
-            return Poll(**response.json())
+        async with self.json_content(f"poll/{poll_id}") as json:
+            return Poll(**json)
 
     async def get_poll_info(self, poll_id: int) -> PollInfo:
         return PollInfo(poll=await self.get_poll(poll_id))
 
     async def get_poll_options(self, poll_id: int) -> Sequence[PollOption]:
-        response = await self.client.get(self.base_url + f"poll/{poll_id}/options")
-        with response_handler(response):
-            return [PollOption(**option) for option in response.json()["options"]]
+        async with self.json_content(f"poll/{poll_id}/options") as json:
+            return [PollOption(**option) for option in json["options"]]
 
     async def get_poll_votes(self, poll_id: int) -> Sequence[PollVote]:
-        response = await self.client.get(self.base_url + f"poll/{poll_id}/votes")
-        with response_handler(response):
-            return [PollVote(**vote) for vote in response.json()["votes"]]
+        async with self.json_content(f"poll/{poll_id}/votes") as json:
+            return [PollVote(**vote) for vote in json["votes"]]
 
     async def get_poll_shares(self, poll_id: int) -> Sequence[PollShare]:
-        response = await self.client.get(self.base_url + f"poll/{poll_id}/shares")
-        with response_handler(response):
-            return [PollShare(**share) for share in response.json()["shares"]]
+        async with self.json_content(f"poll/{poll_id}/shares") as json:
+            return [PollShare(**share) for share in json["shares"]]
 
     async def get_public_share_token(self, poll_id: int) -> set[str]:
         shares = await self.get_poll_shares(poll_id)

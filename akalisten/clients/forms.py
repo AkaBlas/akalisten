@@ -1,57 +1,30 @@
 import asyncio
 import os
 from collections.abc import Sequence
-from contextlib import AbstractAsyncContextManager
-from types import TracebackType
-from typing import Literal, Self
-from urllib.parse import urlencode
+from typing import Literal
 
-import httpx
-
-from akalisten.clients._utils import response_handler
+from akalisten.clients._utils import BaseAPI
 from akalisten.models.forms import FormInfo
 from akalisten.models.raw_api_models.forms import CondensedForm, FullForm
 
 
-class FormsAPI(AbstractAsyncContextManager):
+class FormsAPI(BaseAPI):
     def __init__(self) -> None:
-        self.client = httpx.AsyncClient(
-            auth=(os.environ["NC_USERNAME"], os.environ["NC_PASSWORD"]),
-            timeout=10,
-            headers={"OCS-APIRequest": "true", "Accept": "application/json"},
+        super().__init__(
+            base_url="https://cloud.akablas.de/ocs/v2.php/apps/forms/api/v3/forms",
+            httpx_kwargs={
+                "auth": (os.environ["NC_USERNAME"], os.environ["NC_PASSWORD"]),
+                "headers": {"OCS-APIRequest": "true", "Accept": "application/json"},
+            },
         )
-        self.base_url = "https://cloud.akablas.de/ocs/v2.php/apps/forms/api/v3/forms"
-
-    async def __aenter__(self) -> Self:
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> None:
-        await self.client.aclose()
-
-    def _build_url(
-        self, endpoint: str | None = None, parameters: dict[str, str] | None = None
-    ) -> str:
-        url = self.base_url
-        if endpoint:
-            url += f"/{endpoint}"
-        if parameters:
-            url += f"?{urlencode(parameters)}"
-        return url
 
     async def get_forms(self, form_type: Literal["owned", "shared"]) -> Sequence[CondensedForm]:
-        response = await self.client.get(self._build_url(parameters={"type": form_type}))
-        with response_handler(response):
-            return [CondensedForm(**data) for data in response.json()["ocs"]["data"]]
+        async with self.json_content("", params={"type": form_type}) as json:
+            return [CondensedForm(**data) for data in json["ocs"]["data"]]
 
     async def get_form(self, form_id: int) -> FullForm:
-        response = await self.client.get(self._build_url(endpoint=str(form_id)))
-        with response_handler(response):
-            return FullForm(**response.json()["ocs"]["data"])
+        async with self.json_content(str(form_id)) as json:
+            return FullForm(**json["ocs"]["data"])
 
     async def get_all_forms(self) -> Sequence[FormInfo]:
         async with asyncio.TaskGroup() as group:
