@@ -246,6 +246,21 @@
             let newScheme = calculateNewScheme(savedColorScheme, prefersDarkScheme);
             document.documentElement.setAttribute("data-color-scheme", newScheme);
             localStorage.setItem("color-scheme", newScheme);
+
+            // Try forwarding the color scheme to iframes
+            // might not work in all cases, also due to cross-origin restrictions
+            const styleElement = document.createElement('style');
+            styleElement.textContent = `
+              @media (prefers-color-scheme: dark) {
+                html { filter: contrast(var(--prefers-color-scheme)); }
+              }
+            `;
+            document.querySelectorAll('iframe').forEach(iframe => {
+                iframe.style.setProperty('--prefers-color-scheme', newScheme);
+                if (iframe.contentDocument && iframe.contentDocument.head) {
+                    iframe.contentDocument.head.appendChild(styleElement);
+                }
+            });
         }
 
         function setupColorScheme() {

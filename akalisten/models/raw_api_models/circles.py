@@ -6,10 +6,11 @@ See also https://github.com/nextcloud/circles/issues/1818
 NOTE: Everything is reverse-engineered from the API responses.
 """
 
-import datetime as dtm
 from enum import IntEnum, StrEnum
 
 from pydantic import BaseModel
+
+from akalisten.clients._utils import RequiredDateTimeField
 
 # ==============================
 # Enums
@@ -81,7 +82,7 @@ class InheritedBy(BaseModel):
 
 class BasedOn(BaseModel):
     config: int
-    creation: dtm.datetime
+    creation: RequiredDateTimeField
     description: str
     displayName: str
     id: str
@@ -112,12 +113,12 @@ class Member(BaseModel):
     contactId: str
     contactMeta: str
     displayName: str
-    displayUpdate: dtm.datetime
+    displayUpdate: RequiredDateTimeField
     id: str
     inheritedBy: InheritedBy | None = None
     instance: str
     invitedBy: InvitedBy
-    joined: dtm.datetime
+    joined: RequiredDateTimeField
     level: MemberLevel
     local: bool
     notes: Notes
@@ -134,7 +135,7 @@ class Settings(BaseModel):
 
 class Circle(BaseModel):
     config: int
-    creation: dtm.datetime
+    creation: RequiredDateTimeField
     description: str
     displayName: str
     id: str
@@ -154,11 +155,11 @@ class CircleMember(BaseModel):
     circleId: str
     contactId: str
     displayName: str
-    displayUpdate: dtm.datetime
+    displayUpdate: RequiredDateTimeField
     id: str
     instance: str
     invitedBy: InvitedBy
-    joined: dtm.datetime
+    joined: RequiredDateTimeField
     level: MemberLevel
     local: bool
     notes: Notes

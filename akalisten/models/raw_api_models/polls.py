@@ -3,9 +3,9 @@ Documentation:
 https://github.com/nextcloud/polls/blob/346f37964c53bb6cc132edbb1f113642d2bb2c39/docs/API_v1.0.md
 """
 
-import datetime as dtm
-
 from pydantic import BaseModel, HttpUrl
+
+from akalisten.clients._utils import OptionalDateTimeField, RequiredDateTimeField
 
 
 class PollConfiguration(BaseModel):
@@ -17,9 +17,9 @@ class PollConfiguration(BaseModel):
     allowProposals: str
     anonymous: bool
     autoReminder: bool
-    expire: dtm.datetime
+    expire: OptionalDateTimeField
     hideBookedUp: bool
-    proposalsExpire: dtm.datetime
+    proposalsExpire: OptionalDateTimeField
     showResults: str
     useNo: bool
     maxVotesPerOption: int
@@ -45,11 +45,11 @@ class PollOwner(BaseModel):
 
 
 class PollStatus(BaseModel):
-    lastInteraction: dtm.datetime
-    created: dtm.datetime
+    lastInteraction: RequiredDateTimeField
+    created: RequiredDateTimeField
     deleted: bool
     expired: bool
-    relevantThreshold: dtm.datetime
+    relevantThreshold: RequiredDateTimeField
 
 
 class PollCurrentUserStatus(BaseModel):
@@ -104,7 +104,7 @@ class PollVoteUser(BaseModel):
 
 class PollVote(BaseModel):
     answer: str
-    deleted: dtm.datetime
+    deleted: OptionalDateTimeField
     id: int
     optionId: int
     optionText: str
@@ -140,7 +140,7 @@ class PollOption(BaseModel):
     owner: PollOptionOwner
     pollId: int
     text: str
-    timestamp: dtm.datetime
+    timestamp: OptionalDateTimeField
     votes: PollOptionVotes
 
 

@@ -3,6 +3,7 @@ import os
 from collections.abc import Sequence
 from contextlib import AbstractAsyncContextManager
 from types import TracebackType
+from typing import Self
 from urllib.parse import urlencode
 
 import httpx
@@ -22,7 +23,7 @@ class CirclesAPI(AbstractAsyncContextManager):
         )
         self.base_url = "https://cloud.akablas.de/ocs/v2.php/apps/circles/"
 
-    async def __aenter__(self) -> "CirclesAPI":
+    async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(

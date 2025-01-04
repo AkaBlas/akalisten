@@ -1,0 +1,64 @@
+{% macro render_forms(forms) %}
+    {% for form in forms %}
+        <div class="accordion" data-state="closed">
+            <button class="accordion-header" aria-expanded="false"
+                    aria-controls="form-{{ form.id }}">
+                {{ form.html_title }}
+                <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
+            </button>
+            <div class="accordion-content" id="form-{{ form.id }}" hidden>
+                <div class="links-container">
+                    <a href="{{ form.url }}" target="_blank" rel="noopener noreferrer"
+                       class="pseudo-button links-entry">
+                        <div class="icon-text">
+                            <i data-lucide="link" class="lucide-icon"></i>
+                            <span>Ausfüllen mit AkaCloud-Account</span>
+                        </div>
+                    </a>
+                    {% if form.public_url %}
+                        <a href="{{ form.public_url }}" target="_blank" rel="noopener noreferrer"
+                           class="pseudo-button links-entry">
+                            <div class="icon-text">
+                                <i data-lucide="link" class="lucide-icon"></i>
+                                <span>Ausfüllen ohne AkaCloud-Account</span>
+                            </div>
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="form-info">
+                    {% if form.expire_date %}
+                        <p>
+                        <span class="icon-text">
+                            <i data-lucide="calendar-clock" class="lucide-icon lg"></i>
+                            <b>Formular offen bis:</b> {{ form.expire_date.strftime('%d.%m.%Y %H:%M') }} Uhr
+                        </span>
+                        </p>
+                    {% endif %}
+                    {% if form.html_description %}
+                        <p>
+                            <i data-lucide="info" class="lucide-icon lg"></i>
+                        </p>
+                        {{ form.html_description }}
+                    {% endif %}
+                </div>
+                {% if form.embed_url %}
+                    <div class="accordion" data-state="closed">
+                        <button class="accordion-header" aria-expanded="false"
+                                aria-controls="form-{{ form.id }}">
+                            <span class="icon-text">
+                                <i data-lucide="pencil" class="lucide-icon lg"></i>
+                                Ohne AkaCloud-Account direkt ausfüllen
+                            </span>
+                            <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
+                        </button>
+                        <div class="accordion-content embedding-container" id="form-{{ form.id }}"
+                             hidden>
+                            <iframe src="{{ form.embed_url }}" width="100%" height="800px"
+                                    class="embedding-content"></iframe>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endmacro %}

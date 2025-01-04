@@ -1,6 +1,7 @@
 import os
 from contextlib import AbstractAsyncContextManager
 from types import TracebackType
+from typing import Self
 
 import httpx
 
@@ -12,7 +13,7 @@ class WordPressAPI(AbstractAsyncContextManager):
         )
         self.base_url = "https://akablas.de/"
 
-    async def __aenter__(self) -> "WordPressAPI":
+    async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(

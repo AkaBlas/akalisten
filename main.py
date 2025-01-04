@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from jinja2 import FileSystemLoader, StrictUndefined
 
 from akalisten.clients.circles import CirclesAPI
+from akalisten.clients.forms import FormsAPI
 from akalisten.clients.polls import PollAPI
 from akalisten.clients.wordpress import WordPressAPI
 from akalisten.jinja2 import MuckenListenData, RelImportEnvironment, TemplateData
@@ -69,7 +70,14 @@ async def get_template_data() -> TemplateData:
             # post-process the votes
             poll_votes.sanitize_votes()
 
-        template_data = TemplateData(mucken_listen=mucken_listen_data, polls=other_polls)
+        async with FormsAPI() as forms_client:
+            forms = list(
+                filter(lambda f: f.is_active_public_form, await forms_client.get_all_forms())
+            )
+
+        template_data = TemplateData(
+            mucken_listen=mucken_listen_data, polls=other_polls, forms=forms
+        )
 
         if DEBUG_MODE:
             DUMMY_DATA.write_text(template_data.model_dump_json(indent=2), encoding="utf-8")
@@ -90,6 +98,7 @@ async def main() -> None:
     kwargs = {
         "mucken_listen": template_data.mucken_listen,
         "polls": template_data.polls,
+        "forms": template_data.forms,
         "now": dtm.datetime.now(timezone),
     }
 

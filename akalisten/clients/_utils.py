@@ -1,7 +1,10 @@
+import datetime as dtm
 from collections.abc import Iterator
 from contextlib import contextmanager
+from typing import Annotated
 
 import httpx
+from pydantic import BeforeValidator
 
 
 @contextmanager
@@ -21,3 +24,13 @@ def response_handler(response: httpx.Response) -> Iterator[None]:
             f"Failed to parse API response `{response.content!r}` with status "
             f"`{response.status_code}`."
         ) from exc
+
+
+def _parse_datetime(value: str | int) -> str | int | None:
+    if value in [0, "0"]:
+        return None
+    return value
+
+
+OptionalDateTimeField = Annotated[dtm.datetime | None, BeforeValidator(_parse_datetime)]
+RequiredDateTimeField = Annotated[dtm.datetime, BeforeValidator(_parse_datetime)]

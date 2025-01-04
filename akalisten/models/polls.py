@@ -170,9 +170,7 @@ class PollInfo(BaseModel):
 
     @property
     def expire_date(self) -> dtm.datetime | None:
-        if (date := self.poll.configuration.expire) != dtm.datetime(1970, 1, 1, tzinfo=dtm.UTC):
-            return date
-        return None
+        return self.poll.configuration.expire
 
     @property
     def is_active_mucken_liste(self) -> bool:

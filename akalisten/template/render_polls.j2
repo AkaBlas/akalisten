@@ -7,9 +7,9 @@
                 <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
             </button>
             <div class="accordion-content" id="poll-{{ poll.id }}" hidden>
-                <div class="poll-links-container">
+                <div class="links-container">
                     <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer"
-                       class="pseudo-button poll-link">
+                       class="pseudo-button links-entry">
                         <div class="icon-text">
                             <i data-lucide="link" class="lucide-icon"></i>
                             <span>Teilnehmen mit AkaCloud-Account</span>
@@ -17,7 +17,7 @@
                     </a>
                     {% if poll.public_url %}
                         <a href="{{ poll.public_url }}" target="_blank" rel="noopener noreferrer"
-                           class="pseudo-button poll-link">
+                           class="pseudo-button links-entry">
                             <div class="icon-text">
                                 <i data-lucide="link" class="lucide-icon"></i>
                                 <span>Teilnehmen ohne AkaCloud-Account</span>

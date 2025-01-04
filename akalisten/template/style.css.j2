@@ -181,13 +181,13 @@ body {
         text-decoration: none;
     }
 
-    .poll-links-container {
+    .links-container {
         display: flex;
         gap: 10px;
         width: 100%;
     }
 
-    .poll-link {
+    .links-entry {
         width: 100%;
     }
 
@@ -556,6 +556,14 @@ body {
         text-decoration: line-through;
     }
 
+    .embedding-container {
+        padding: 0;
+    }
+
+    .embedding-content {
+        border: 0;
+    }
+
 
     /* MEDIA QUERIES */
     @media only screen and (max-width: 1500px) {
@@ -568,10 +576,10 @@ body {
         .multi-column-list {
             column-count: 2;
         }
-        .poll-links-container {
+        .links-container {
             flex-direction: column;
         }
-        .poll-link {
+        .links-entry {
             width: initial;
         }
     }
