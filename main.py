@@ -23,7 +23,9 @@ load_dotenv(override=True)
 
 
 ROOT = Path(__file__).parent
-DUMMY_DATA = ROOT / "dummy_data.json"
+OUTPUT = ROOT / "output"
+DUMMY_DATA = OUTPUT / "dummy_data.json"
+INDEX = OUTPUT / "index.html"
 LOGS = ROOT / "logs"
 LOGS.mkdir(exist_ok=True)
 
@@ -86,6 +88,8 @@ async def get_template_data() -> TemplateData:
 
 
 async def main() -> None:
+    OUTPUT.mkdir(exist_ok=True)
+
     template_data = await get_template_data()
 
     environment = RelImportEnvironment(
@@ -103,7 +107,7 @@ async def main() -> None:
     }
 
     # Write to file
-    (ROOT / "index.html").write_text(
+    INDEX.write_text(
         environment.get_template("index.j2").render(wordpress=False, **kwargs), encoding="utf-8"
     )
 
