@@ -8,6 +8,14 @@ class User(BaseModel):
     name: str
     id: str
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, User):
+            return NotImplemented
+        return self.id == other.id
+
+    def __hash__(self) -> int:
+        return hash(self.id)
+
     @property
     def display_name(self) -> str:
         if " " not in self.name:
