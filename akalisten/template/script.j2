@@ -1,7 +1,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const tabContent = document.querySelector('.mucken');
-        if (!tabContent) return;
+        const muckenTabContent = document.querySelector('.mucken');
 
         function getSelectedCategory() {
             // Simply selecting the first element doesn't suffice b/c the selected category might
@@ -16,7 +15,8 @@
         }
 
         function updateVisibility() {
-            const activeFilterButton = tabContent.querySelector('.filter-btn.active');
+            if (!muckenTabContent) return;
+            const activeFilterButton = muckenTabContent.querySelector('.filter-btn.active');
             const selectedStatus = activeFilterButton ? activeFilterButton.getAttribute('data-filter') : 'all';
             const selectedCategory = getSelectedCategory();
             const notVotedCheckbox = document.getElementById('not-voted-checkbox');
@@ -27,7 +27,7 @@
                 el.classList.toggle('hidden', !showNotVoted);
             });
 
-            tabContent.querySelectorAll('.column').forEach(column => {
+            muckenTabContent.querySelectorAll('.column').forEach(column => {
                 let shouldHideColumn;
                 if (column.classList.contains('not-voted')) {
                     shouldHideColumn = !showNotVoted;
@@ -37,7 +37,7 @@
                 column.classList.toggle('hidden', shouldHideColumn);
             });
 
-            tabContent.querySelectorAll('.category').forEach(category => {
+            muckenTabContent.querySelectorAll('.category').forEach(category => {
                 const shouldHideCategory = !(
                     (
                         selectedCategory === 'all'
@@ -53,7 +53,8 @@
         }
 
         function setupFilterButtons() {
-            const filterButtons = tabContent.querySelectorAll('.filter-btn');
+            if (!muckenTabContent) return;
+            const filterButtons = muckenTabContent.querySelectorAll('.filter-btn');
             filterButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const selectedFilter = this.getAttribute('data-filter');
@@ -151,6 +152,7 @@
 
         function setupAccordion() {
             const accordionHeaders = document.querySelectorAll('.accordion-header');
+            console.log(accordionHeaders);
             accordionHeaders.forEach(header => {
                 header.addEventListener('click', function () {
                     const isOpen = this.getAttribute('aria-expanded') === 'true';
@@ -181,7 +183,8 @@
         }
 
         function setupNameHighlighting() {
-            const muckeElements = tabContent.querySelectorAll('.mucke');
+            if (!muckenTabContent) return;
+            const muckeElements = muckenTabContent.querySelectorAll('.mucke');
             let currentHighlightedUser = null;
             muckeElements.forEach(mucke => {
                 const nameElements = mucke.querySelectorAll('.category ul li');
