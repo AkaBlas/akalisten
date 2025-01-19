@@ -14,3 +14,7 @@ class WordPressAPI(BaseAPI):
         await self.request(
             method="POST", endpoint=f"pages/{page_id}", httpx_kwargs={"json": {"content": content}}
         )
+
+    async def get_page_raw_content(self, page_id: int) -> str:
+        async with self.json_content(f"pages/{page_id}?context=edit") as json:
+            return json["content"]["raw"]

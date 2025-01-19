@@ -2,6 +2,7 @@ import asyncio
 import datetime as dtm
 import logging
 import os
+import re
 import zoneinfo
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
@@ -66,21 +67,19 @@ async def main() -> None:
         return
 
     # Update WordPress Page
-    wp_content = environment.get_template("index.j2").render(wordpress=True, **kwargs)
+    wp_content = environment.get_template("wordpress.j2").render(wordpress=True, **kwargs)
     async with WordPressAPI() as wp_client:
-        await wp_client.edit_page(
-            int(os.getenv("WP_PAGE_ID")),  # type: ignore[arg-type]
-            (
-                "<!-- wp:paragraph -->"
-                '<p><a href="https://listen.akablas.de" target="_blank" rel="noreferrer noopener">'
-                " Klicke hier</a>, um den Inhalt unten in einer neuen Seite zu öffnen. Die "
-                "Zugangsdaten sie die gleichen wie für den internen Bereich.</p>"
-                "<!-- /wp:paragraph -->"
-                "<!-- wp:html -->"
-                f"{wp_content}"
-                "<!-- /wp:html -->"
-            ),
-        )
+        page_id = int(os.getenv("WP_PAGE_ID"))  # type: ignore[arg-type]
+
+        current_content = await wp_client.get_page_raw_content(page_id)
+
+        pattern = re.compile(r"Zuletzt aktualisiert: [\d\.: ]+\n")
+        compare_wp_content = pattern.sub("", wp_content)
+        compare_current_content = pattern.sub("", current_content)
+
+        if compare_wp_content == compare_current_content:
+            return
+        await wp_client.edit_page(page_id, wp_content)
 
 
 if __name__ == "__main__":
