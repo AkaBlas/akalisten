@@ -1,4 +1,5 @@
 {% from 'render_forms.j2' import render_forms %}
+{% from 'render_links.j2' import render_links %}
 {% from 'render_muckenlisten.j2' import render_muckenlisten %}
 {% from 'render_polls.j2' import render_polls %}
 <!DOCTYPE html>
@@ -73,6 +74,10 @@
                     <i data-lucide="heart-crack" class="lucide-icon"></i>
                 </span>
             </p>
+        {% endif %}
+        {% if links %}
+            <h2>Link-Sammlung</h2>
+            {{ render_links(links) }}
         {% endif %}
     </div>
     <footer>

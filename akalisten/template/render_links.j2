@@ -1,0 +1,19 @@
+{% from 'render_link.j2' import render_link %}
+{% macro render_links(links) %}
+    <div class="accordion" data-state="closed">
+        <button class="accordion-header" aria-expanded="false"
+                aria-controls="links-accordion">
+            Ausklappen
+            <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
+        </button>
+        <div class="accordion-content" id="links-accordion" hidden>
+            <ul>
+                {% for link in links %}
+                    <li>
+                        {{ render_link(link) }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endmacro %}

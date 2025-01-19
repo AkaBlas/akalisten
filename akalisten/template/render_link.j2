@@ -1,0 +1,41 @@
+{% macro render_link(link) %}
+    <p>
+        <b>
+            {{ link.html_title }}
+        </b>
+    </p>
+    <div class="link-info">
+    <div class="links-container">
+        {% if link.basic_url %}
+            <a href="{{ link.basic_url }}" target="_blank" rel="noopener noreferrer"
+               class="pseudo-button links-entry">
+                <div class="icon-text">
+                    <i data-lucide="{{ link.icon }}" class="lucide-icon"></i>
+                    {% if link.login_url %}
+                        <span>Öffnen ohne AkaCloud-Account</span>
+                    {% else %}
+                        <span>Öffnen</span>
+                    {% endif %}
+                </div>
+            </a>
+        {% endif %}
+        {% if link.login_url %}
+            <a href="{{ link.login_url }}" target="_blank" rel="noopener noreferrer"
+               class="pseudo-button links-entry">
+                <div class="icon-text">
+                    <i data-lucide="{{ link.icon }}" class="lucide-icon"></i>
+                    <span>Öffnen mit AkaCloud-Account</span>
+                </div>
+            </a>
+        {% endif %}
+    </div>
+    {% if link.html_description %}
+        <p>
+            <span class="icon-text">
+                <i data-lucide="info" class="lucide-icon lg"></i>
+                {{ link.html_description }}
+            </span>
+        </p>
+    {% endif %}
+    </div>
+{% endmacro %}

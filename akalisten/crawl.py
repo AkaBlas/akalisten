@@ -4,12 +4,13 @@ format that can be used by the Jinja2 template
 
 from pathlib import Path
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .clients.circles import CirclesAPI
 from .clients.forms import FormsAPI
 from .clients.polls import PollAPI
 from .models.forms import FormInfo
+from .models.links import Link, Links
 from .models.polls import PollInfo, PollVotes
 from .models.register import Registers
 
@@ -24,9 +25,22 @@ class TemplateData(BaseModel):
     mucken_listen: MuckenListenData
     polls: list[PollInfo]
     forms: list[FormInfo]
+    links: list[Link] = Field(default_factory=list)
 
 
-async def get_template_data(debug: bool, dummy_data_path: Path) -> TemplateData:
+def get_links(path: Path | str) -> list[Link]:
+    effective_path = Path(path)
+    if not effective_path.exists():
+        links = Links()
+    else:
+        links = Links.model_validate_json(effective_path.read_text(encoding="utf-8"))
+
+    return links.root
+
+
+async def get_template_data(
+    debug: bool, dummy_data_path: Path, links_path: Path | str
+) -> TemplateData:
     if debug and dummy_data_path.exists():
         template_data = TemplateData.model_validate_json(
             dummy_data_path.read_text(encoding="utf-8")
@@ -64,10 +78,11 @@ async def get_template_data(debug: bool, dummy_data_path: Path) -> TemplateData:
             )
 
         template_data = TemplateData(
-            mucken_listen=mucken_listen_data, polls=other_polls, forms=forms
+            mucken_listen=mucken_listen_data, polls=other_polls, forms=forms, links=[]
         )
 
         if debug:
             dummy_data_path.write_text(template_data.model_dump_json(indent=2), encoding="utf-8")
 
+    template_data.links = get_links(links_path)
     return template_data

@@ -166,3 +166,4 @@ tmp/
 dummy_data.json
 *.html
 /output/
+/data/*
