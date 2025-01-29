@@ -1,0 +1,57 @@
+{% macro render_lists(lists) %}
+    {% for list in lists %}
+        <div class="accordion" data-state="closed">
+            <button class="accordion-header" aria-expanded="false"
+                    aria-controls="list-{{ list.id }}">
+                {{ list.html_title }}
+                <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
+            </button>
+            <div class="accordion-content" id="list-{{ list.id }}" hidden>
+                <div class="links-container">
+                    {% if list.available_offline %}
+                        <div class="pseudo-button non-clickable links-entry">
+                            <div class="icon-text">
+                                <i data-lucide="wifi-off" class="lucide-icon"></i>
+                                <span>Offline bei der Probe</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if list.login_url %}
+                        <a href="{{ list.login_url }}" target="_blank" rel="noopener noreferrer"
+                           class="pseudo-button links-entry">
+                            <div class="icon-text">
+                                <i data-lucide="link" class="lucide-icon"></i>
+                                <span>Teilnehmen mit AkaCloud-Account</span>
+                            </div>
+                        </a>
+                    {% endif %}
+                    {% if list.basic_url %}
+                        <a href="{{ list.basic_url }}" target="_blank" rel="noopener noreferrer"
+                           class="pseudo-button links-entry">
+                            <div class="icon-text">
+                                <i data-lucide="link" class="lucide-icon"></i>
+                                <span>Teilnehmen ohne AkaCloud-Account</span>
+                            </div>
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="list-info">
+                    {% if list.expire_date %}
+                        <p>
+                        <span class="icon-text">
+                            <i data-lucide="calendar-clock" class="lucide-icon lg"></i>
+                            <b>Liste verfügbar bis:</b> {{ list.expire_date.strftime('%d.%m.%Y') }}
+                        </span>
+                        </p>
+                    {% endif %}
+                    {% if list.html_description %}
+                        <p>
+                            <i data-lucide="info" class="lucide-icon lg"></i>
+                        </p>
+                        {{ list.html_description }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endmacro %}

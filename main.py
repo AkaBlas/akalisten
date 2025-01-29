@@ -23,6 +23,7 @@ DUMMY_DATA_PATH = OUTPUT_DIR / "dummy_data.json"
 INDEX_PATH = OUTPUT_DIR / "index.html"
 DATA_PATH = ROOT / "data"
 LINKS_PATH = DATA_PATH / "links.json"
+LISTS_PATH = DATA_PATH / "lists.json"
 LOGS_DIR = ROOT / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
 DEBUG_MODE = os.getenv("DEBUG") is not None
@@ -44,7 +45,10 @@ logging.basicConfig(
 
 async def main() -> None:
     template_data = await get_template_data(
-        debug=DEBUG_MODE, dummy_data_path=DUMMY_DATA_PATH, links_path=LINKS_PATH
+        debug=DEBUG_MODE,
+        dummy_data_path=DUMMY_DATA_PATH,
+        links_path=LINKS_PATH,
+        lists_path=LISTS_PATH,
     )
 
     environment = RelImportEnvironment(
@@ -56,6 +60,7 @@ async def main() -> None:
     timezone = zoneinfo.ZoneInfo("Europe/Berlin")
     kwargs = {
         "links": template_data.links,
+        "lists": template_data.lists,
         "mucken_listen": template_data.mucken_listen,
         "polls": template_data.polls,
         "forms": template_data.forms,

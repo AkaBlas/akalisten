@@ -11,6 +11,7 @@ from .clients.forms import FormsAPI
 from .clients.polls import PollAPI
 from .models.forms import FormInfo
 from .models.links import Link, Links
+from .models.lists import List, Lists
 from .models.polls import PollInfo, PollVotes
 from .models.register import Registers
 
@@ -26,6 +27,7 @@ class TemplateData(BaseModel):
     polls: list[PollInfo]
     forms: list[FormInfo]
     links: list[Link] = Field(default_factory=list)
+    lists: list[List] = Field(default_factory=list)
 
 
 def get_links(path: Path | str) -> list[Link]:
@@ -38,8 +40,18 @@ def get_links(path: Path | str) -> list[Link]:
     return links.root
 
 
+def get_lists(path: Path | str) -> list[List]:
+    effective_path = Path(path)
+    if not effective_path.exists():
+        lists = Lists()
+    else:
+        lists = Lists.model_validate_json(effective_path.read_text(encoding="utf-8"))
+
+    return lists.root
+
+
 async def get_template_data(
-    debug: bool, dummy_data_path: Path, links_path: Path | str
+    debug: bool, dummy_data_path: Path, links_path: Path | str, lists_path: Path | str
 ) -> TemplateData:
     if debug and dummy_data_path.exists():
         template_data = TemplateData.model_validate_json(
@@ -85,4 +97,5 @@ async def get_template_data(
             dummy_data_path.write_text(template_data.model_dump_json(indent=2), encoding="utf-8")
 
     template_data.links = get_links(links_path)
+    template_data.lists = get_lists(lists_path)
     return template_data

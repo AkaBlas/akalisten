@@ -1,5 +1,6 @@
 {% from 'render_forms.j2' import render_forms %}
 {% from 'render_links.j2' import render_links %}
+{% from 'render_lists.j2' import render_lists %}
 {% from 'render_muckenlisten.j2' import render_muckenlisten %}
 {% from 'render_polls.j2' import render_polls %}
 <!DOCTYPE html>
@@ -72,6 +73,17 @@
                 <span class="icon-text">
                     Keine Formulare gefunden.
                     <i data-lucide="heart-crack" class="lucide-icon"></i>
+                </span>
+            </p>
+        {% endif %}
+        <h2>Aktuelle andere Listen</h2>
+        {% if lists %}
+            {{ render_lists(lists) }}
+        {% else %}
+            <p>
+                <span class="icon-text">
+                    Keine Listen gefunden.
+                    <i data-lucide="text-select" class="lucide-icon"></i>
                 </span>
             </p>
         {% endif %}
