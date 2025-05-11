@@ -2,6 +2,7 @@
 format that can be used by the Jinja2 template
 """
 
+import datetime as dtm
 from pathlib import Path
 
 from pydantic import BaseModel, Field
@@ -47,7 +48,11 @@ def get_lists(path: Path | str) -> list[List]:
     else:
         lists = Lists.model_validate_json(effective_path.read_text(encoding="utf-8"))
 
-    return lists.root
+    return [
+        list_
+        for list_ in lists.root
+        if list_.expire_date is None or list_.expire_date >= dtm.datetime.now()  # noqa: DTZ005
+    ]
 
 
 async def get_template_data(
