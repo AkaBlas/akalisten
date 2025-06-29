@@ -3,7 +3,9 @@ Documentation:
 https://github.com/nextcloud/polls/blob/346f37964c53bb6cc132edbb1f113642d2bb2c39/docs/API_v1.0.md
 """
 
-from pydantic import BaseModel, HttpUrl
+from typing import Annotated
+
+from pydantic import BaseModel, BeforeValidator, HttpUrl
 
 from akalisten.clients._utils import OptionalDateTimeField, RequiredDateTimeField
 
@@ -41,14 +43,16 @@ class PollOwner(BaseModel):
     localeCode: str | None = None
     timeZone: str | None = None
     icon: str | None = None
-    categories: list[str] | None = None
+    categories: Annotated[list[str] | None, BeforeValidator(lambda v: None if v == "" else v)] = (
+        None
+    )
 
 
 class PollStatus(BaseModel):
     lastInteraction: RequiredDateTimeField
     created: RequiredDateTimeField
-    deleted: bool
-    expired: bool
+    deleted: bool | None = None
+    expired: bool | None = None
     relevantThreshold: RequiredDateTimeField
 
 
@@ -137,7 +141,7 @@ class PollOption(BaseModel):
     id: int
     locked: bool
     order: int
-    owner: PollOptionOwner
+    owner: PollOptionOwner | None = None
     pollId: int
     text: str
     timestamp: OptionalDateTimeField
@@ -149,8 +153,8 @@ class PollShare(BaseModel):
     id: int
     token: str
     pollId: int
-    userId: str
-    emailAddress: str
+    userId: str | None = None
+    emailAddress: str | None = None
     invitationSent: bool
     reminderSent: bool
     locked: bool

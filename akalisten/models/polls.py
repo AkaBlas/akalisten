@@ -194,7 +194,7 @@ class PollInfo(BaseModel):
     def is_active_poll(self) -> bool:
         if self.poll.status.deleted:
             return False
-        if (date := self.mucken_info.date) and date < dtm.date.today():  # noqa: DTZ011
+        if (date := self.poll.status.relevantThreshold.date()) and date <= dtm.date.today():  # noqa: DTZ011
             return False
 
         return self.poll.configuration.access != "private"

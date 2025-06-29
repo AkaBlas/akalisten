@@ -151,7 +151,7 @@ class Circle(BaseModel):
 
 class CircleMember(BaseModel):
     basedOn: BasedOn
-    circle: Circle
+    circle: Circle | None = None
     circleId: str
     contactId: str
     displayName: str
