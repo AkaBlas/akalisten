@@ -178,6 +178,8 @@ class PollInfo(BaseModel):
             return False
         if (date := self.mucken_info.date) and date < dtm.date.today():  # noqa: DTZ011
             return False
+        if "mensaflyern" in self.poll.configuration.title.lower():
+            return False
 
         text_conditions = (
             "muckenliste" in self.poll.configuration.title.lower(),
