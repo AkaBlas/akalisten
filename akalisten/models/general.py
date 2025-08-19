@@ -1,4 +1,5 @@
 import html
+import re
 
 from pydantic import BaseModel, ConfigDict
 
@@ -18,9 +19,11 @@ class User(BaseModel):
 
     @property
     def display_name(self) -> str:
-        if " " not in self.name:
-            return self.name
-        names = self.name.split(" ")
+        # remove any text in parentheses, e.g. "John Doe (JD)" - sometimes used for nicknames
+        name = re.sub(r" *\([^\)]+\) *", "", self.name).strip()
+        if " " not in name:
+            return name
+        names = name.split(" ")
         # in case the last name has several parts, we take the first letter of each part
         return f"{names[0]} {''.join(part[0] for part in names[1:])}."
 
