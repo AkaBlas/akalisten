@@ -49,7 +49,7 @@ class PollOwner(BaseModel):
 
 
 class PollStatus(BaseModel):
-    lastInteraction: RequiredDateTimeField
+    lastInteraction: OptionalDateTimeField
     created: RequiredDateTimeField
     deleted: bool | None = None
     expired: bool | None = None
