@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - master
-  # for pull request validation
-  pull_request:
-    branches:
-      - master
   schedule:
     # run at 30 minute interval with 7 Minute offset to avoid clashing with other workflows
     - cron: '7,37 * * * *'
