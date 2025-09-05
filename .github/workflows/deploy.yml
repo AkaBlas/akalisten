@@ -1,0 +1,94 @@
+name: Build and Deploy via FTPS
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    # run at 30 minute interval with 7 Minute offset to avoid clashing with other workflows
+    - cron: '7,37 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install lftp
+        run: sudo apt-get install -y lftp
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: '**/requirements*.txt'
+
+      - name: Retrieve Additional Files via FTPS
+        env:
+          FTPS_HOST: ${{ secrets.SFTP_SERVER_HOST }}
+          FTPS_USER: ${{ secrets.SFTP_USER }}
+          FTPS_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+        run: |
+          lftp <<EOF
+          # Enable SSL/TLS for secure connection
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+      
+          # Connect to the FTPS server
+          open -u $FTPS_USER,$FTPS_PASSWORD ftp://$FTPS_HOST
+      
+          # copy the remote directory /data to the local directory ./data
+          mirror \
+            --only-newer \
+            --parallel=10 \
+            /data \
+            ./data
+      
+          # Close the connection
+          bye
+          EOF
+
+      - name: Install dependencies
+        run: |
+          python -W ignore -m pip install --upgrade pip
+          python -W ignore -m pip install -r requirements.txt
+
+      - name: Build AkaListen
+        env:
+          NC_USERNAME: ${{ secrets.NC_USERNAME }}
+          NC_PASSWORD: ${{ secrets.NC_PASSWORD }}
+          WP_USERNAME: ${{ secrets.WP_USERNAME }}
+          WP_PASSWORD: ${{ secrets.WP_PASSWORD }}
+          WP_PAGE_ID: ${{ secrets.WP_PAGE_ID }}
+        run: python main.py
+
+      - name: Deploy with FTPS
+        env:
+          FTPS_HOST: ${{ secrets.SFTP_SERVER_HOST }}
+          FTPS_USER: ${{ secrets.SFTP_USER }}
+          FTPS_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+        run: |
+          lftp <<EOF
+          # Enable SSL/TLS for secure connection
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+      
+          # Connect to the FTPS server
+          open -u $FTPS_USER,$FTPS_PASSWORD ftp://$FTPS_HOST
+      
+          # Use the mirror command to sync files
+          mirror \
+            -R \
+            --only-newer \
+            --exclude '/.htaccess' \
+            --exclude '/.htpasswd' \
+            --parallel=10 \
+            ./output \
+            /
+      
+          # Close the connection
+          bye
+          EOF
+
