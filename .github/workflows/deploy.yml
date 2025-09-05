@@ -31,7 +31,13 @@ jobs:
           python -W ignore -m pip install --upgrade pip
           python -W ignore -m pip install -r requirements.txt
 
-      - name: Build website
+      - name: Build AkaListen
+        env:
+          NC_USERNAME: ${{ secrets.NC_USERNAME }}
+          NC_PASSWORD: ${{ secrets.NC_PASSWORD }}
+          WP_USERNAME: ${{ secrets.WP_USERNAME }}
+          WP_PASSWORD: ${{ secrets.WP_PASSWORD }}
+          WP_PAGE_ID: ${{ secrets.WP_PAGE_ID }}
         run: python main.py
 
       - name: Install lftp
