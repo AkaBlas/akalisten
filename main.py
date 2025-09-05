@@ -4,7 +4,6 @@ import logging
 import os
 import re
 import zoneinfo
-from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -24,22 +23,10 @@ INDEX_PATH = OUTPUT_DIR / "index.html"
 DATA_PATH = ROOT / "data"
 LINKS_PATH = DATA_PATH / "links.json"
 LISTS_PATH = DATA_PATH / "lists.json"
-LOGS_DIR = ROOT / "logs"
-LOGS_DIR.mkdir(exist_ok=True)
 DEBUG_MODE = os.getenv("DEBUG") is not None
 
-handler = TimedRotatingFileHandler(
-    filename=LOGS_DIR / "akalisten.log",
-    when="midnight",
-    interval=1,
-    backupCount=30,
-    encoding="utf-8",
-)
-
 logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.WARNING,
-    handlers=[handler] if not DEBUG_MODE else [logging.StreamHandler()],
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.WARNING
 )
 
 
@@ -93,7 +80,4 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except Exception as exc:
-        logging.exception(exc)
+    asyncio.run(main())
