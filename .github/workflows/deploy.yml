@@ -3,11 +3,11 @@ name: Build and Deploy via FTPS
 on:
   push:
     branches:
-      - main
+      - master
   # for pull request validation
   pull_request:
     branches:
-      - main
+      - master
   schedule:
     # run at 30 minute interval with 7 Minute offset to avoid clashing with other workflows
     - cron: '7,37 * * * *'
