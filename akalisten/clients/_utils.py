@@ -7,6 +7,7 @@ from typing import Annotated, Any, Self
 from urllib.parse import urlencode
 
 import httpx
+import httpx_retries
 from pydantic import BeforeValidator
 
 
@@ -24,7 +25,11 @@ class BaseAPI(AbstractAsyncContextManager, ABC):
     """Simple base class for API clients using the `httpx` library."""
 
     def __init__(self, base_url: str, httpx_kwargs: dict[str, Any] | None = None) -> None:
-        self._client = httpx.AsyncClient(timeout=10, **(httpx_kwargs or {}))
+        self._client = httpx.AsyncClient(
+            timeout=10,
+            transport=httpx_retries.RetryTransport(retry=httpx_retries.Retry(total=5)),
+            **(httpx_kwargs or {}),
+        )
         self._base_url: str = base_url
 
     async def __aenter__(self) -> Self:
