@@ -1,0 +1,9 @@
+{% from 'render_card.j2' import render_card %}
+{% macro render_card_grid(cards) %}
+<div class="row g-4">
+    {% for card in cards %}
+        {{ render_card(card.title, card.body, card.buttons, card.width if card.width is defined else "col-12 col-md-6 col-lg-4") }}
+    {% endfor %}
+</div>
+{% endmacro %}
+

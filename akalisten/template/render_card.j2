@@ -1,0 +1,37 @@
+{% macro render_card(title, body, buttons, width="") %}
+<div class="{{ width }}">
+    {% set has_body = body is defined and body %}
+    {% set button_count = buttons|length %}
+    {% if not has_body and button_count == 1 %}
+        {% set btn = buttons[0] %}
+        <a href="{{ btn.target }}" target="_blank" rel="noopener noreferrer"
+           class="{{ btn.css_class if btn.css_class is defined else 'btn btn-outline-primary' }} d-flex align-items-center w-100">
+            <i class="bi bi-{{ btn.icon }} me-2"></i>
+            {{ btn.text }}
+        </a>
+    {% else %}
+        <div class="card h-100">
+            <div class="card-header">
+                {{ title }}
+            </div>
+            <div class="card-body d-flex flex-column">
+                {% if has_body %}
+                    <div class="mb-3">
+                        {{ body }}
+                    </div>
+                {% endif %}
+                <div class="mt-auto d-flex flex-column gap-2 flex-wrap">
+                    {% for btn in buttons %}
+                        <a href="{{ btn.target }}" target="_blank" rel="noopener noreferrer"
+                           class="{{ btn.css_class if btn.css_class is defined else 'btn btn-outline-primary' }} d-flex align-items-center text-start">
+                            <i class="bi bi-{{ btn.icon }} me-2"></i>
+                            {{ btn.text }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endmacro %}
+

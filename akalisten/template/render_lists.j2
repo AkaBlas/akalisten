@@ -1,54 +1,51 @@
+{% from 'render_card_grid.j2' import render_card_grid %}
 {% macro render_lists(lists) %}
-    <div class="row g-4">
-        {% for list in lists %}
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100">
-                    <div class="card-header">
-                        {{ list.html_title }}
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <div class="mb-3">
-                            {% if list.expire_date %}
-                                <p class="mb-2">
-                                <span class="d-flex align-items-center">
-                                    <i class="bi bi-calendar-week me-2"></i>
-                                    <b>Liste verfügbar bis:</b>&nbsp;{{ list.expire_date.strftime('%d.%m.%Y') }}
-                                </span>
-                                </p>
-                            {% endif %}
-                            {% if list.html_description %}
-                                <p class="card-text mb-0">
-                                    {{ list.html_description }}
-                                </p>
-                            {% endif %}
-                        </div>
-                        <div class="mt-auto d-flex flex-column gap-2">
-                            {% if list.available_offline %}
-                                <div class="btn btn-outline-secondary disabled d-flex align-items-center">
-                                    <i class="bi bi-wifi-off me-2"></i>
-                                    Eintragen offline bei der Probe
-                                </div>
-                            {% endif %}
-                            {% if list.login_url %}
-                                <a href="{{ list.login_url }}" target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="btn btn-outline-success d-flex align-items-center text-start">
-                                    <i class="bi bi-cloud-check me-2"></i>
-                                    Eintragen mit AkaCloud-Account
-                                </a>
-                            {% endif %}
-                            {% if list.basic_url %}
-                                <a href="{{ list.basic_url }}" target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="btn btn-outline-primary d-flex align-items-center text-start">
-                                    <i class="bi bi-pencil-fill me-2"></i>
-                                    Eintragen ohne AkaCloud-Account
-                                </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+{% set cards = [] %}
+{% for list in lists %}
+    {% set body %}
+        {% if list.expire_date %}
+            <p class="mb-2">
+                <span class="d-flex align-items-center">
+                    <i class="bi bi-calendar-week me-2"></i>
+                    <b>Liste verfügbar bis:</b>&nbsp;{{ list.expire_date.strftime('%d.%m.%Y') }}
+                </span>
+            </p>
+        {% endif %}
+        {% if list.html_description %}
+            <p class="card-text mb-0">
+                {{ list.html_description }}
+            </p>
+        {% endif %}
+        {% if list.available_offline %}
+            <div class="btn btn-outline-secondary disabled d-flex align-items-center mt-3">
+                <i class="bi bi-wifi-off me-2"></i>
+                Eintragen offline bei der Probe
             </div>
-        {% endfor %}
-    </div>
+        {% endif %}
+    {% endset %}
+    {% set buttons = [] %}
+    {% if list.login_url %}
+        {% set _ = buttons.append({
+            "icon": "cloud-check",
+            "text": "Eintragen mit AkaCloud-Account",
+            "target": list.login_url,
+            "css_class": "btn btn-outline-success"
+        }) %}
+    {% endif %}
+    {% if list.basic_url %}
+        {% set _ = buttons.append({
+            "icon": "pencil-fill",
+            "text": "Eintragen ohne AkaCloud-Account",
+            "target": list.basic_url,
+            "css_class": "btn btn-outline-primary"
+        }) %}
+    {% endif %}
+    {% set card = {
+        "title": list.html_title,
+        "body": body,
+        "buttons": buttons
+    } %}
+    {% set _ = cards.append(card) %}
+{% endfor %}
+{{ render_card_grid(cards) }}
 {% endmacro %}

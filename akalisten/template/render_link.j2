@@ -1,52 +1,27 @@
 {% macro render_link(link) %}
 {% set has_description = link.html_description is defined and link.html_description %}
-{% set button_count = (1 if link.basic_url else 0) + (1 if link.login_url else 0) %}
-{% if not has_description and button_count == 1 %}
-    {% if link.basic_url %}
-        <a href="{{ link.basic_url }}" target="_blank" rel="noopener noreferrer"
-           class="btn btn-outline-primary d-flex align-items-center w-100">
-            <i class="bi bi-{{ link.icon }} me-2"></i>
-            {{ link.html_title }}
-        </a>
-    {% elif link.login_url %}
-        <a href="{{ link.login_url }}" target="_blank" rel="noopener noreferrer"
-           class="btn btn-outline-success d-flex align-items-center w-100">
-            <i class="bi bi-{{ link.icon }} me-2"></i>
-            {{ link.html_title }}
-        </a>
-    {% endif %}
-{% else %}
-    <div class="card h-100">
-        <div class="card-header">
-            {{ link.html_title }}
-        </div>
-        <div class="card-body d-flex flex-column">
-            {% if link.html_description %}
-                <p class="card-text mb-3">
-                    {{ link.html_description }}
-                </p>
-            {% endif %}
-            <div class="mt-auto d-flex flex-column gap-2 flex-wrap">
-                {% if link.basic_url %}
-                    <a href="{{ link.basic_url }}" target="_blank" rel="noopener noreferrer"
-                       class="btn btn-outline-primary d-flex align-items-center">
-                        <i class="bi bi-{{ link.icon }} me-2"></i>
-                        {% if link.login_url %}
-                            Öffnen ohne AkaCloud-Account
-                        {% else %}
-                            Öffnen
-                        {% endif %}
-                    </a>
-                {% endif %}
-                {% if link.login_url %}
-                    <a href="{{ link.login_url }}" target="_blank" rel="noopener noreferrer"
-                       class="btn btn-outline-success d-flex align-items-center">
-                        <i class="bi bi-{{ link.icon }} me-2"></i>
-                        Öffnen mit AkaCloud-Account
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+{% set buttons = [] %}
+{% if link.basic_url %}
+    {% set _ = buttons.append({
+        "icon": link.icon,
+        "text": link.login_url and "Öffnen ohne AkaCloud-Account" or "Öffnen",
+        "target": link.basic_url,
+        "css_class": "btn btn-outline-primary"
+    }) %}
 {% endif %}
+{% if link.login_url %}
+    {% set _ = buttons.append({
+        "icon": link.icon,
+        "text": "Öffnen mit AkaCloud-Account",
+        "target": link.login_url,
+        "css_class": "btn btn-outline-success"
+    }) %}
+{% endif %}
+{% set body = link.html_description if has_description else "" %}
+{% set card = {
+    "title": link.html_title,
+    "body": body,
+    "buttons": buttons
+} %}
+{{ card }}
 {% endmacro %}
