@@ -1,0 +1,53 @@
+:root {
+    /* initial best guess of the header height */
+    /* will be refined after loading the page using JS */
+    --header-height: 4rem;
+}
+
+body {
+    padding-top: var(--header-height);
+    transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+body, .custom-navbar, footer {
+    transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.custom-navbar {
+    padding: .75rem 0;
+    background-color: var(--bs-body-bg);
+    /*background-color: transparent;*/
+    transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.custom-navbar.scroll-up {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+.custom-navbar.scroll-down {
+    transform: translateY(-100%);
+}
+
+.bi {
+    /*color: var(--bs-primary);*/
+    /*width: 1.25em;*/
+    /*height: 1.25em;*/
+    /*flex: none;*/
+}
+
+.bi.lg {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.bi.sml {
+    /*width: 0.75em;*/
+    /*height: 0.75em;*/
+}
+
+.icon-text {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: normal;
+    gap: 0.5ex;
+}
