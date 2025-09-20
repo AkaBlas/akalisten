@@ -1,7 +1,15 @@
 {% macro render_forms(forms) %}
 <div class="row g-4">
     {% for form in forms %}
-        <div class="col-12 col-md-6 col-lg-4">
+        {% set desc_len = form.html_description|length if form.html_description is defined and form.html_description else 0 %}
+        {% if desc_len > 600 %}
+            {% set col_class = "col-12 col-md-12 col-lg-12" %}
+        {% elif desc_len > 300 %}
+            {% set col_class = "col-12 col-md-6 col-lg-6" %}
+        {% else %}
+            {% set col_class = "col-12 col-md-6 col-lg-4" %}
+        {% endif %}
+        <div class="{{ col_class }}">
             <div class="card h-100 mb-3">
                 <div class="card-header">
                     {{ form.html_title }}
