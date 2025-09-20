@@ -1,41 +1,52 @@
 {% macro render_link(link) %}
-    <p>
-        <b>
+{% set has_description = link.html_description is defined and link.html_description %}
+{% set button_count = (1 if link.basic_url else 0) + (1 if link.login_url else 0) %}
+{% if not has_description and button_count == 1 %}
+    {% if link.basic_url %}
+        <a href="{{ link.basic_url }}" target="_blank" rel="noopener noreferrer"
+           class="btn btn-outline-primary d-flex align-items-center w-100">
+            <i class="bi bi-{{ link.icon }} me-2"></i>
             {{ link.html_title }}
-        </b>
-    </p>
-    <div class="link-info">
-    <div class="links-container">
-        {% if link.basic_url %}
-            <a href="{{ link.basic_url }}" target="_blank" rel="noopener noreferrer"
-               class="pseudo-button links-entry">
-                <div class="icon-text">
-                    <i data-lucide="{{ link.icon }}" class="lucide-icon"></i>
-                    {% if link.login_url %}
-                        <span>Öffnen ohne AkaCloud-Account</span>
-                    {% else %}
-                        <span>Öffnen</span>
-                    {% endif %}
-                </div>
-            </a>
-        {% endif %}
-        {% if link.login_url %}
-            <a href="{{ link.login_url }}" target="_blank" rel="noopener noreferrer"
-               class="pseudo-button links-entry">
-                <div class="icon-text">
-                    <i data-lucide="{{ link.icon }}" class="lucide-icon"></i>
-                    <span>Öffnen mit AkaCloud-Account</span>
-                </div>
-            </a>
-        {% endif %}
-    </div>
-    {% if link.html_description %}
-        <p>
-            <span class="icon-text">
-                <i data-lucide="info" class="lucide-icon lg"></i>
-                {{ link.html_description }}
-            </span>
-        </p>
+        </a>
+    {% elif link.login_url %}
+        <a href="{{ link.login_url }}" target="_blank" rel="noopener noreferrer"
+           class="btn btn-outline-success d-flex align-items-center w-100">
+            <i class="bi bi-{{ link.icon }} me-2"></i>
+            {{ link.html_title }}
+        </a>
     {% endif %}
+{% else %}
+    <div class="card h-100">
+        <div class="card-header">
+            {{ link.html_title }}
+        </div>
+        <div class="card-body d-flex flex-column">
+            {% if link.html_description %}
+                <p class="card-text mb-3">
+                    {{ link.html_description }}
+                </p>
+            {% endif %}
+            <div class="mt-auto d-flex gap-2 flex-wrap">
+                {% if link.basic_url %}
+                    <a href="{{ link.basic_url }}" target="_blank" rel="noopener noreferrer"
+                       class="btn btn-outline-primary d-flex align-items-center">
+                        <i class="bi bi-{{ link.icon }} me-2"></i>
+                        {% if link.login_url %}
+                            Öffnen ohne AkaCloud-Account
+                        {% else %}
+                            Öffnen
+                        {% endif %}
+                    </a>
+                {% endif %}
+                {% if link.login_url %}
+                    <a href="{{ link.login_url }}" target="_blank" rel="noopener noreferrer"
+                       class="btn btn-outline-success d-flex align-items-center">
+                        <i class="bi bi-{{ link.icon }} me-2"></i>
+                        Öffnen mit AkaCloud-Account
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
+{% endif %}
 {% endmacro %}

@@ -80,7 +80,13 @@
 </header>
 
 <main class="flex-shrink-0 py-4">
-    {# Hier können Inhalte eingefügt werden #}
+    {% if links %}
+        <div class="container">
+            <h2>Link-Sammlung</h2>
+            <hr class="mt-3 mb-4 text-body-secondary">
+            {{ render_links(links) }}
+        </div>
+    {% endif %}
 </main>
 
 <footer class="footer mt-auto py-3 bg-body-tertiary text-body-secondary">
