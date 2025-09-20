@@ -1,57 +1,54 @@
 {% macro render_lists(lists) %}
-    {% for list in lists %}
-        <div class="accordion" data-state="closed">
-            <button class="accordion-header" aria-expanded="false"
-                    aria-controls="list-{{ list.id }}">
-                {{ list.html_title }}
-                <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
-            </button>
-            <div class="accordion-content" id="list-{{ list.id }}" hidden>
-                <div class="links-container">
-                    {% if list.available_offline %}
-                        <div class="pseudo-button non-clickable links-entry">
-                            <div class="icon-text">
-                                <i data-lucide="wifi-off" class="lucide-icon"></i>
-                                <span>Offline bei der Probe</span>
-                            </div>
+    <div class="row g-4">
+        {% for list in lists %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        {{ list.html_title }}
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-3">
+                            {% if list.expire_date %}
+                                <p class="mb-2">
+                                <span class="d-flex align-items-center">
+                                    <i class="bi bi-calendar-week me-2"></i>
+                                    <b>Liste verfügbar bis:</b>&nbsp;{{ list.expire_date.strftime('%d.%m.%Y') }}
+                                </span>
+                                </p>
+                            {% endif %}
+                            {% if list.html_description %}
+                                <p class="card-text mb-0">
+                                    {{ list.html_description }}
+                                </p>
+                            {% endif %}
                         </div>
-                    {% endif %}
-                    {% if list.login_url %}
-                        <a href="{{ list.login_url }}" target="_blank" rel="noopener noreferrer"
-                           class="pseudo-button links-entry">
-                            <div class="icon-text">
-                                <i data-lucide="link" class="lucide-icon"></i>
-                                <span>Teilnehmen mit AkaCloud-Account</span>
-                            </div>
-                        </a>
-                    {% endif %}
-                    {% if list.basic_url %}
-                        <a href="{{ list.basic_url }}" target="_blank" rel="noopener noreferrer"
-                           class="pseudo-button links-entry">
-                            <div class="icon-text">
-                                <i data-lucide="link" class="lucide-icon"></i>
-                                <span>Teilnehmen ohne AkaCloud-Account</span>
-                            </div>
-                        </a>
-                    {% endif %}
-                </div>
-                <div class="list-info">
-                    {% if list.expire_date %}
-                        <p>
-                        <span class="icon-text">
-                            <i data-lucide="calendar-clock" class="lucide-icon lg"></i>
-                            <b>Liste verfügbar bis:</b> {{ list.expire_date.strftime('%d.%m.%Y') }}
-                        </span>
-                        </p>
-                    {% endif %}
-                    {% if list.html_description %}
-                        <p>
-                            <i data-lucide="info" class="lucide-icon lg"></i>
-                        </p>
-                        {{ list.html_description }}
-                    {% endif %}
+                        <div class="mt-auto d-flex flex-column gap-2">
+                            {% if list.available_offline %}
+                                <div class="btn btn-outline-secondary disabled d-flex align-items-center">
+                                    <i class="bi bi-wifi-off me-2"></i>
+                                    Offline bei der Probe
+                                </div>
+                            {% endif %}
+                            {% if list.login_url %}
+                                <a href="{{ list.login_url }}" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-outline-success d-flex align-items-center text-start">
+                                    <i class="bi bi-cloud-check me-2"></i>
+                                    Teilnehmen mit AkaCloud-Account
+                                </a>
+                            {% endif %}
+                            {% if list.basic_url %}
+                                <a href="{{ list.basic_url }}" target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="btn btn-outline-primary d-flex align-items-center text-start">
+                                    <i class="bi bi-pencil-fill me-2"></i>
+                                    Teilnehmen ohne AkaCloud-Account
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
 {% endmacro %}
