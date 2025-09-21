@@ -3,12 +3,21 @@
 {% set cards = [] %}
 {% for form in forms %}
     {% set desc_len = form.html_description|length if form.html_description is defined and form.html_description else 0 %}
-    {% if desc_len > 600 %}
+    {% set embedding = None %}
+    {% if form.embed_url %}
+        {% set embedding = {
+            "title": "Ohne AkaCloud-Account direkt ausfüllen",
+            "embed_url": form.embed_url
+        } %}
         {% set columns = 3 %}
-    {% elif desc_len > 300 %}
-        {% set columns = 2 %}
     {% else %}
-        {% set columns = 1 %}
+        {% if desc_len > 600 %}
+            {% set columns = 3 %}
+        {% elif desc_len > 300 %}
+            {% set columns = 2 %}
+        {% else %}
+            {% set columns = 1 %}
+        {% endif %}
     {% endif %}
     {% set body %}
         {% if form.expire_date %}
@@ -41,13 +50,6 @@
             "target": form.public_url,
             "css_class": "btn btn-outline-primary"
         }) %}
-    {% endif %}
-    {% set embedding = None %}
-    {% if form.embed_url %}
-        {% set embedding = {
-            "title": "Ohne AkaCloud-Account direkt ausfüllen",
-            "embed_url": form.embed_url
-        } %}
     {% endif %}
     {% set card = {
         "title": form.html_title,
