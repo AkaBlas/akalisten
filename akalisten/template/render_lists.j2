@@ -3,9 +3,9 @@
 {% set cards = [] %}
 {% for list in lists %}
     {% set desc_len = list.html_description|length if list.html_description is defined and list.html_description else 0 %}
-    {% if desc_len > 600 %}
+    {% if desc_len > 1000 %}
         {% set columns = 3 %}
-    {% elif desc_len > 300 %}
+    {% elif desc_len > 500 %}
         {% set columns = 2 %}
     {% else %}
         {% set columns = 1 %}

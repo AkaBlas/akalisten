@@ -1,45 +1,55 @@
+{% from 'render_card_grid.j2' import render_card_grid %}
 {% macro render_polls(polls) %}
-    {% for poll in polls %}
-        <div class="accordion" data-state="closed">
-            <button class="accordion-header" aria-expanded="false"
-                    aria-controls="poll-{{ poll.id }}">
-                {{ poll.html_title }}
-                <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
-            </button>
-            <div class="accordion-content" id="poll-{{ poll.id }}" hidden>
-                <div class="links-container">
-                    <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer"
-                       class="pseudo-button links-entry">
-                        <div class="icon-text">
-                            <i data-lucide="link" class="lucide-icon"></i>
-                            <span>Teilnehmen mit AkaCloud-Account</span>
-                        </div>
-                    </a>
-                    {% if poll.public_url %}
-                        <a href="{{ poll.public_url }}" target="_blank" rel="noopener noreferrer"
-                           class="pseudo-button links-entry">
-                            <div class="icon-text">
-                                <i data-lucide="link" class="lucide-icon"></i>
-                                <span>Teilnehmen ohne AkaCloud-Account</span>
-                            </div>
-                        </a>
-                    {% endif %}
-                </div>
-                <div class="poll-info">
-                    {% if poll.expire_date %}
-                        <p>
-                        <span class="icon-text">
-                            <i data-lucide="calendar-clock" class="lucide-icon lg"></i>
-                            <b>Umfrage endet am:</b> {{ poll.expire_date.strftime('%d.%m.%Y %H:%M') }} Uhr
-                        </span>
-                        </p>
-                    {% endif %}
-                    <p>
-                        <i data-lucide="info" class="lucide-icon lg"></i>
-                    </p>
-                    {{ poll.html_description }}
-                </div>
-            </div>
-        </div>
-    {% endfor %}
+{% set cards = [] %}
+{% for poll in polls %}
+    {% set desc_len = poll.html_description|length if poll.html_description is defined and poll.html_description else 0 %}
+    {% set embedding = None %}
+    {% if desc_len > 1000 %}
+        {% set columns = 3 %}
+    {% elif desc_len > 500 %}
+        {% set columns = 2 %}
+    {% else %}
+        {% set columns = 1 %}
+    {% endif %}
+    {% set body %}
+        {% if poll.expire_date %}
+            <p class="mb-2">
+                <span class="d-flex align-items-center">
+                    <i class="bi bi-calendar-week me-2"></i>
+                    <b>Umfrage endet am:</b>&nbsp;{{ poll.expire_date.strftime('%d.%m.%Y %H:%M') }} Uhr
+                </span>
+            </p>
+        {% endif %}
+        {% if poll.html_description %}
+            <p class="card-text mb-0">
+                {{ poll.html_description }}
+            </p>
+        {% endif %}
+    {% endset %}
+    {% set buttons = [] %}
+    {% if poll.url %}
+        {% set _ = buttons.append({
+            "icon": "cloud-check",
+            "text": "Teilnehmen mit AkaCloud-Account",
+            "target": poll.url,
+            "css_class": " btn-outline-success"
+        }) %}
+    {% endif %}
+    {% if poll.public_url %}
+        {% set _ = buttons.append({
+            "icon": "pencil-fill",
+            "text": "Teilnehmen ohne AkaCloud-Account",
+            "target": poll.public_url,
+            "css_class": " btn-outline-primary"
+        }) %}
+    {% endif %}
+    {% set card = {
+        "title": poll.html_title,
+        "body": body,
+        "buttons": buttons,
+        "columns": columns,
+    } %}
+    {% set _ = cards.append(card) %}
+{% endfor %}
+{{ render_card_grid(cards) }}
 {% endmacro %}
