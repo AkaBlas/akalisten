@@ -18,7 +18,7 @@
         <a href="{{ btn.target }}" target="_blank" rel="noopener noreferrer"
            class="btn {{ btn.css_class if btn.css_class is defined else 'btn btn-outline-primary' }} d-flex align-items-center w-100 {{ action_class }}">
             <i class="bi bi-{{ btn.icon }} me-2"></i>
-            {{ btn.text }}
+            {{ title }}
         </a>
     {% else %}
         <div class="card h-100">
