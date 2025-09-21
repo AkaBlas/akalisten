@@ -42,30 +42,21 @@
             "css_class": "btn btn-outline-primary"
         }) %}
     {% endif %}
+    {% set embedding = None %}
+    {% if form.embed_url %}
+        {% set embedding = {
+            "title": "Ohne AkaCloud-Account direkt ausfüllen",
+            "embed_url": form.embed_url
+        } %}
+    {% endif %}
     {% set card = {
         "title": form.html_title,
         "body": body,
         "buttons": buttons,
-        "columns": columns
+        "columns": columns,
+        "embedding": embedding
     } %}
     {% set _ = cards.append(card) %}
 {% endfor %}
 {{ render_card_grid(cards) }}
-{# Einbettung bleibt separat #}
-{% for form in forms %}
-    {% if form.embed_url %}
-        <div class="card mt-3">
-            <div class="card-header">
-                <span class="d-flex align-items-center">
-                    <i class="bi bi-pencil-square me-2"></i>
-                    Ohne AkaCloud-Account direkt ausfüllen
-                </span>
-            </div>
-            <div class="card-body">
-                <iframe src="{{ form.embed_url }}" width="100%" height="800px"
-                        class="embedding-content"></iframe>
-            </div>
-        </div>
-    {% endif %}
-{% endfor %}
 {% endmacro %}

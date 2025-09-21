@@ -2,11 +2,7 @@
 {% macro render_card_grid(cards) %}
     <div class="row g-4">
         {% for card in cards %}
-            {% if card.columns is defined %}
-                {{ render_card(card.title, card.body, card.buttons, card.columns) }}
-            {% else %}
-                {{ render_card(card.title, card.body, card.buttons) }}
-            {% endif %}
+            {{ render_card(**card) }}
         {% endfor %}
     </div>
 {% endmacro %}

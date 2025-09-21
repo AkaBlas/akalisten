@@ -1,4 +1,4 @@
-{% macro render_card(title, body, buttons, columns=1) %}
+{% macro render_card(title, body, buttons, columns=1, embedding=None) %}
 {% if columns == 3 %}
     {% set width = "col-12 col-md-12 col-lg-12" %}
 {% elif columns == 2 %}
@@ -9,7 +9,7 @@
 <div class="{{ width }}">
     {% set has_body = body is defined and body %}
     {% set button_count = buttons|length %}
-    {% if not has_body and button_count == 1 %}
+    {% if not has_body and button_count == 1 and not embedding %}
         {% set btn = buttons[0] %}
         <a href="{{ btn.target }}" target="_blank" rel="noopener noreferrer"
            class="{{ btn.css_class if btn.css_class is defined else 'btn btn-outline-primary' }} d-flex align-items-center w-100">
@@ -35,6 +35,31 @@
                             {{ btn.text }}
                         </a>
                     {% endfor %}
+                    {% if embedding %}
+                        {% set acc_id = "embedAccordion" ~ loop.index if loop is defined else "embedAccordion" %}
+                        <div class="accordion" id="{{ acc_id }}">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="{{ acc_id }}-heading">
+                                    <button class="accordion-button collapsed py-2" type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#{{ acc_id }}-collapse"
+                                            aria-expanded="false"
+                                            aria-controls="{{ acc_id }}-collapse">
+                                        <i class="bi bi-box-arrow-up-right me-2"></i>
+                                        {{ embedding.title }}
+                                    </button>
+                                </h2>
+                                <div id="{{ acc_id }}-collapse" class="accordion-collapse collapse"
+                                     aria-labelledby="{{ acc_id }}-heading"
+                                     data-bs-parent="#{{ acc_id }}">
+                                    <div class="accordion-body">
+                                        <iframe src="{{ embedding.embed_url }}" width="100%" height="800px"
+                                                class="embedding-content"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
