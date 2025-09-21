@@ -46,6 +46,7 @@ class FormInfo(BaseModel):
 
     @property
     def embed_url(self) -> str | None:
+        # Currently doesn't work. See https://github.com/nextcloud/forms/issues/2931
         if Permission.EMBED not in self.form.permissions:
             return None
         if not (hash_value := self.public_share_hash):
