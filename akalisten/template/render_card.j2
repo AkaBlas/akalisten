@@ -1,4 +1,11 @@
-{% macro render_card(title, body, buttons, width="") %}
+{% macro render_card(title, body, buttons, columns=1) %}
+{% if columns == 3 %}
+    {% set width = "col-12 col-md-12 col-lg-12" %}
+{% elif columns == 2 %}
+    {% set width = "col-12 col-md-6 col-lg-6" %}
+{% else %}
+    {% set width = "col-12 col-md-6 col-lg-4" %}
+{% endif %}
 <div class="{{ width }}">
     {% set has_body = body is defined and body %}
     {% set button_count = buttons|length %}
@@ -34,4 +41,3 @@
     {% endif %}
 </div>
 {% endmacro %}
-

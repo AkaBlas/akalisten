@@ -4,11 +4,11 @@
 {% for form in forms %}
     {% set desc_len = form.html_description|length if form.html_description is defined and form.html_description else 0 %}
     {% if desc_len > 600 %}
-        {% set col_class = "col-12 col-md-12 col-lg-12" %}
+        {% set columns = 3 %}
     {% elif desc_len > 300 %}
-        {% set col_class = "col-12 col-md-6 col-lg-6" %}
+        {% set columns = 2 %}
     {% else %}
-        {% set col_class = "col-12 col-md-6 col-lg-4" %}
+        {% set columns = 1 %}
     {% endif %}
     {% set body %}
         {% if form.expire_date %}
@@ -46,7 +46,7 @@
         "title": form.html_title,
         "body": body,
         "buttons": buttons,
-        "width": col_class
+        "columns": columns
     } %}
     {% set _ = cards.append(card) %}
 {% endfor %}
