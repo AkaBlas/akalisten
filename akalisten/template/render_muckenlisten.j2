@@ -98,14 +98,14 @@
                             </div>
                         </div>
 
-                        <div class="row g-4">
+                        <div class="row mx-0 gx-4 gy-2">
                             {% for col_class, col_name, col_icon, attr_name, color in (
                                     ("yes", "Dabei", "hand-thumbs-up", "sorted_yes", "primary"),
                                     ("no", "Nicht Dabei", "hand-thumbs-down", "sorted_sanitized_no", "success"),
                                     ("maybe", "Vielleicht Dabei", "question-circle", "sorted_maybe", "warning"),
                                     ("not-voted", "Keine Antwort", "search", "sorted_sanitized_not_voted", "secondary"),
                                 ) %}
-                                <div class="col-md-6 col-lg-3 mb-3 column {{ col_class }} border border-{{ color }} rounded shadow-sm pt-2">
+                                <div class="col-md-6 col-lg-3 column {{ col_class }} border border-{{ color }} rounded shadow-sm pt-2">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <h2 class="h5 mb-0 text-{{ color }}">
                                             <span class="icon-text icon-header">
