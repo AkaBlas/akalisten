@@ -3,25 +3,24 @@
     {% set empty_slots = [votes.sanitized_max_votes - (users|length), 0] | max %}
     {% set more_empty_slots = [votes.sanitized_max_votes_with_not_voted - [votes.sanitized_max_votes, users|length] | max, 0] | max %}
 
-    <div class="category{% if not users %} placeholder{% endif %}"
-         data-category-name="{{ votes.text }}">
-        <div class="category-name">{{ votes.text }}</div>
-        <ul>
+    <div class="mb-3" data-category-name="{{ votes.text }}">
+        <div class="fw-bold mb-1">{{ votes.text }}</div>
+        <div class="d-flex flex-column">
             {% for user in users %}
-                <li data-user-id="{{ user.id }}">{{ user.html_display_name }}</li>
+                <input type="text" class="form-control form-control-sm mb-1" value="{{ user.html_display_name }}" readonly disabled>
             {% endfor %}
 
             {% for _ in range(empty_slots) %}
-                <li class="placeholder">&nbsp;</li>
+                <input type="text" class="form-control form-control-sm mb-1" value="" readonly disabled>
             {% endfor %}
 
             {% for _ in range(more_empty_slots) %}
-                <li class="placeholder non-voted-placeholder">&nbsp;</li>
+                <input type="text" class="form-control form-control-sm mb-1 opacity-50" value="" readonly disabled>
             {% endfor %}
 
             {% if not users and not empty_slots and not more_empty_slots %}
-                <li class="placeholder">&nbsp;</li>
+                <input type="text" class="form-control form-control-sm mb-1" value="" readonly disabled>
             {% endif %}
-        </ul>
+        </div>
     </div>
 {% endmacro %}
