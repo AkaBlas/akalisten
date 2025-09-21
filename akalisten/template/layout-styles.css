@@ -69,7 +69,12 @@ h2:target .anchor-link {
 /*Bootstrap: ab md gibt es zwei Spalten nebeneinander, sonst nur eine */
 @media (max-width: 767.98px) {
     .fill-entry {
-        display: none;
-        margin: 0;
+        display: none !important;
+        margin: 0 !important;
     }
+}
+
+/* Entferne das Margin beim letzten Register-Block in jeder Spalte */
+.column .register-category:last-child {
+    margin-bottom: 0 !important;
 }
