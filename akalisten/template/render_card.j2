@@ -9,10 +9,14 @@
 <div class="{{ width }}">
     {% set has_body = body is defined and body %}
     {% set button_count = buttons|length %}
+    {% set action_class = "" %}
+    {% if columns > 0 %}
+        {% set action_class = "me-auto" %}
+    {% endif %}
     {% if not has_body and button_count == 1 and not embedding %}
         {% set btn = buttons[0] %}
         <a href="{{ btn.target }}" target="_blank" rel="noopener noreferrer"
-           class="{{ btn.css_class if btn.css_class is defined else 'btn btn-outline-primary' }} d-flex align-items-center w-100">
+           class="btn {{ btn.css_class if btn.css_class is defined else 'btn btn-outline-primary' }} d-flex align-items-center w-100 {{ action_class }}">
             <i class="bi bi-{{ btn.icon }} me-2"></i>
             {{ btn.text }}
         </a>
@@ -27,10 +31,10 @@
                         {{ body }}
                     </div>
                 {% endif %}
-                <div class="mt-auto d-flex flex-column gap-2 flex-wrap">
+                <div class="mt-auto d-flex flex-column gap-2 flex-wrap {{ action_class }}">
                     {% for btn in buttons %}
                         <a href="{{ btn.target }}" target="_blank" rel="noopener noreferrer"
-                           class="{{ btn.css_class if btn.css_class is defined else 'btn btn-outline-primary' }} d-flex align-items-center text-start">
+                           class="btn {{ btn.css_class if btn.css_class is defined else 'btn-outline-primary' }} d-flex align-items-center text-start">
                             <i class="bi bi-{{ btn.icon }} me-2"></i>
                             {{ btn.text }}
                         </a>

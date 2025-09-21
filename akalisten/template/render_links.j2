@@ -10,7 +10,7 @@
             "icon": link.icon,
             "text": link.login_url and "Öffnen ohne AkaCloud-Account" or "Öffnen",
             "target": link.basic_url,
-            "css_class": "btn btn-outline-primary"
+            "css_class": " btn-outline-primary"
         }) %}
     {% endif %}
     {% if link.login_url %}
@@ -18,7 +18,7 @@
             "icon": link.icon,
             "text": "Öffnen mit AkaCloud-Account",
             "target": link.login_url,
-            "css_class": "btn btn-outline-success"
+            "css_class": " btn-outline-success"
         }) %}
     {% endif %}
     {% set body = link.html_description if has_description else "" %}

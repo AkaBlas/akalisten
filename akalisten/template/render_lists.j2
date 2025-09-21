@@ -24,20 +24,22 @@
                 {{ list.html_description }}
             </p>
         {% endif %}
-        {% if list.available_offline %}
-            <div class="btn btn-outline-secondary disabled d-flex align-items-center mt-3">
-                <i class="bi bi-wifi-off me-2"></i>
-                Eintragen offline bei der Probe
-            </div>
-        {% endif %}
     {% endset %}
     {% set buttons = [] %}
+    {% if list.available_offline %}
+        {% set _ = buttons.append({
+            "icon": "wifi-off",
+            "text": "Eintragen offline bei der Probe",
+            "target": None,
+            "css_class": " btn-outline-secondary disabled"
+        }) %}
+    {% endif %}
     {% if list.login_url %}
         {% set _ = buttons.append({
             "icon": "cloud-check",
             "text": "Eintragen mit AkaCloud-Account",
             "target": list.login_url,
-            "css_class": "btn btn-outline-success"
+            "css_class": " btn-outline-success"
         }) %}
     {% endif %}
     {% if list.basic_url %}
@@ -45,7 +47,7 @@
             "icon": "pencil-fill",
             "text": "Eintragen ohne AkaCloud-Account",
             "target": list.basic_url,
-            "css_class": "btn btn-outline-primary"
+            "css_class": " btn-outline-primary"
         }) %}
     {% endif %}
     {% set card = {
