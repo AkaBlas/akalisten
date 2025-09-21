@@ -101,7 +101,12 @@
 
 <main class="flex-shrink-0 py-4">
     <div class="container">
-        <h2 id="muckenlisten" class="mb-3">Aktuelle Muckenlisten</h2>
+        <h2 id="muckenlisten" class="mb-3">
+            Aktuelle Muckenlisten
+            <a href="#muckenlisten"
+               class="anchor-link text-primary text-decoration-none"
+               aria-label="Zu Muckenlisten springen">#</a>
+        </h2>
         <hr class="mt-3 mb-4 text-body-secondary">
 {#        {% if muckenlisten %}#}
 {#            {{ render_muckenlisten(muckenlisten) }}#}
@@ -121,7 +126,12 @@
 {#        {% endif %}#}
     </div>
     <div class="container">
-        <h2 id="umfragen" class="mb-3 mt-5">Aktuelle Umfragen</h2>
+        <h2 id="umfragen" class="mb-3 mt-5">
+            Aktuelle Umfragen
+            <a href="#umfragen"
+               class="anchor-link text-primary text-decoration-none"
+               aria-label="Zu Umfragen springen">#</a>
+        </h2>
         <hr class="mt-3 mb-4 text-body-secondary">
         {% if polls %}
             {{ render_polls(polls) }}
@@ -141,7 +151,12 @@
         {% endif %}
     </div>
     <div class="container">
-        <h2 id="formulare" class="mb-3 mt-5">Aktuelle Formulare</h2>
+        <h2 id="formulare" class="mb-3 mt-5">
+            Aktuelle Formulare
+            <a href="#formulare"
+               class="anchor-link text-primary text-decoration-none"
+               aria-label="Zu Formulare springen">#</a>
+        </h2>
         <hr class="mt-3 mb-4 text-body-secondary">
         {% if lists %}
             {{ render_forms(forms) }}
@@ -161,7 +176,12 @@
         {% endif %}
     </div>
     <div class="container">
-        <h2 id="andere-listen" class="mb-3 mt-5">Aktuelle andere Listen</h2>
+        <h2 id="andere-listen" class="mb-3 mt-5">
+            Aktuelle andere Listen
+            <a href="#andere-listen"
+               class="anchor-link text-primary text-decoration-none"
+               aria-label="Zu andere Listen springen">#</a>
+        </h2>
         <hr class="mt-3 mb-4 text-body-secondary">
         {% if lists %}
             {{ render_lists(lists) }}
@@ -182,7 +202,12 @@
     </div>
     {% if links %}
         <div class="container mb-3">
-            <h2 id="linksammlung" class="mb-3 mt-5">Link-Sammlung</h2>
+            <h2 id="linksammlung" class="mb-3 mt-5">
+                Link-Sammlung
+                <a href="#linksammlung"
+                   class="anchor-link text-primary text-decoration-none"
+                   aria-label="Zu Link-Sammlung springen">#</a>
+            </h2>
             <hr class="mb-4 text-body-secondary">
             {{ render_links(links) }}
         </div>
