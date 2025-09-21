@@ -1,137 +1,132 @@
-{% macro render_muckenlisten(polls, poll_votes) %}
+{% macro render_muckenlisten(data) %}
     {% from 'render_info.j2' import render_info %}
     {% from 'render_category.j2' import render_category %}
-    <div class="mucken">
+    {% set polls, poll_votes = data %}
+    <div class="accordion" id="accordion-muckenlisten">
         {% for poll in polls.values() %}
-            <div class="accordion" data-state="closed">
-                <button class="accordion-header" aria-expanded="false"
-                        aria-controls="mucke-{{ poll.id }}">
-                    {{ poll.html_title }}
-                    <i data-lucide="chevron-down" class="lucide-icon lg accordion-icon"></i>
-                </button>
-                <div class="accordion-content mucke" id="mucke-{{ poll.id }}" hidden>
-                    {% if poll.url %}
-                        <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer"
-                           class="pseudo-button">
-                            <div class="icon-text">
-                                <i data-lucide="link" class="lucide-icon"></i>
-                                <span>Hier zur Mucke eintragen</span>
-                            </div>
-                        </a>
-                    {% endif %}
-                    {% if poll.mucken_info.has_any_info or poll.mucken_info.additional %}
-                        <div class="accordion" data-state="closed">
-                            <button class="accordion-header" aria-expanded="false"
-                                    aria-controls="mucke-{{ poll.id }}-infos">
-                                Mucken-Infos
-                                <i data-lucide="chevron-down"
-                                   class="lucide-icon lg accordion-icon"></i>
-                            </button>
-                            <div class="accordion-content mucken-infos"
-                                 id="mucke-{{ poll.id }}-infos" hidden>
-                                {% if poll.mucken_info.has_any_info %}
-                                    <ul class="multi-column-list">
-                                        {% if poll.mucken_info.date %}
-                                            {{ render_info('calendar-fold', poll.mucken_info.date.strftime('%d.%m.%Y')) }}
-                                        {% endif %}
-                                        {% if poll.mucken_info.location %}
-                                            {{ render_info('map-pin', poll.mucken_info.location) }}
-                                        {% endif %}
-                                        {% if poll.mucken_info.time_m2 %}
-                                            {{ render_info('truck', "Mensa 2: " + poll.mucken_info.time_m2.strftime('%H:%M') + " Uhr") }}
-                                        {% endif %}
-                                        {% if poll.mucken_info.time_meeting %}
-                                            {{ render_info('clock', "Direkt: " + poll.mucken_info.time_meeting.strftime('%H:%M') + " Uhr") }}
-                                        {% endif %}
-                                        {% if poll.mucken_info.time_start %}
-                                            {{ render_info('volume-2', "Start: " + poll.mucken_info.time_start.strftime('%H:%M') + " Uhr") }}
-                                        {% endif %}
-                                        {% if poll.mucken_info.time_end %}
-                                            {{ render_info('volume-x', "Ende: " + poll.mucken_info.time_end.strftime('%H:%M') + " Uhr") }}
-                                        {% endif %}
-                                    </ul>
-                                {% endif %}
-                                {% if poll.mucken_info.additional %}
-                                    <p class="icon-text">
-                                        <i data-lucide="info" class="lucide-icon"></i>
-                                        <b>Zusätzliche Informationen:</b>
-                                        {{ poll.mucken_info.html_additional }}
-                                    </p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <div class="filters">
-                        <div class="participant-filter">
-                            <label>Filter:</label>
-                            <button class="filter-btn all active" data-filter="all">Alle
-                            </button>
-                            <button class="filter-btn yes" data-filter="yes">Dabei</button>
-                            <button class="filter-btn no" data-filter="no">Nicht Dabei</button>
-                            <button class="filter-btn maybe" data-filter="maybe">Vielleicht
-                                Dabei
-                            </button>
-                            <div class="checkbox">
-                                <input type="checkbox" id="not-voted-checkbox"
-                                       name="not-voted-checkbox" value="unchecked">
-                                <label for="not-voted-checkbox">
-                                        <span class="icon-text">
-                                            <i data-checkbox="unchecked" data-lucide="square"
-                                               class="lucide-icon checkbox-icon"></i>
-                                            <i data-checkbox="checked"
-                                               data-lucide="square-check-big"
-                                               class="lucide-icon checkbox-icon"></i>
-                                            Keine Antwort
-                                        </span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="category-filter">
-                            <label for="category-select-{{ poll.id }}">Kategorie:</label>
-                            <select class="category-select" id="category-select-{{ poll.id }}">
-                                <option value="all">Alle</option>
-                                {% for option_id, votes in poll_votes[poll.id].options.items() %}
-                                    <option value="{{ votes.text }}">{{ votes.text }}</option>
-                                {% endfor %}
-                                <option hidden value="unknown" class="strikethrough">Unbekannt
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="participants">
-                        {% for col_class, col_name, col_icon, attr_name in (
-                                ("yes", "Dabei", "thumbs-up", "sorted_yes"),
-                                ("no", "Nicht Dabei", "thumbs-down", "sorted_sanitized_no"),
-                                ("maybe", "Vielleicht Dabei", "circle-help", "sorted_maybe"),
-                                ("not-voted", "Keine Antwort", "search", "sorted_sanitized_not_voted"),
-                            ) %}
-                            <div class="column {{ col_class }}">
-                                <h2>
-                                        <span class="icon-text icon-header">
-                                        <div>
-                                            <span>{{ col_name }}</span>
-                                            {% if col_class == "not-voted" %}
-                                                <div class="tooltip">
-                                                    <i data-lucide="info"
-                                                       class="lucide-icon sml"></i>
-                                                    <span class="tooltiptext">
-                                                        Diese Info stammt aus der Registerzuteilung in der AkaCloud ist wahrscheinlich nicht komplett korrekt.
-                                                        <br>
-                                                        Bitte versteh sie als groben Anhaltspunkt.
-                                                    </span>
-                                                </div>
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="heading-mucke-{{ poll.id }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#mucke-{{ poll.id }}" aria-expanded="false"
+                            aria-controls="mucke-{{ poll.id }}">
+                        {{ poll.html_title }}
+                    </button>
+                </h2>
+                <div id="mucke-{{ poll.id }}" class="accordion-collapse collapse"
+                     aria-labelledby="heading-mucke-{{ poll.id }}">
+                    <div class="accordion-body">
+                        {% if poll.url %}
+                            <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer"
+                               class="btn btn-outline-primary mb-2">
+                                <span class="icon-text">
+                                    <i class="bi bi-link-45deg"></i>
+                                    <span>Hier zur Mucke eintragen</span>
+                                </span>
+                            </a>
+                        {% endif %}
+                        {% if poll.mucken_info.has_any_info or poll.mucken_info.additional %}
+                            <div class="accordion mb-2" id="accordion-mucke-infos-{{ poll.id }}">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading-mucke-infos-{{ poll.id }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#mucke-{{ poll.id }}-infos" aria-expanded="false"
+                                                aria-controls="mucke-{{ poll.id }}-infos">
+                                            Mucken-Infos
+                                        </button>
+                                    </h2>
+                                    <div id="mucke-{{ poll.id }}-infos" class="accordion-collapse collapse"
+                                         aria-labelledby="heading-mucke-infos-{{ poll.id }}">
+                                        <div class="accordion-body">
+                                            {% if poll.mucken_info.has_any_info %}
+                                                <ul class="multi-column-list">
+                                                    {% if poll.mucken_info.date %}
+                                                        {{ render_info('calendar', poll.mucken_info.date.strftime('%d.%m.%Y')) }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.location %}
+                                                        {{ render_info('geo-alt', poll.mucken_info.location) }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.time_m2 %}
+                                                        {{ render_info('truck', "Mensa 2: " + poll.mucken_info.time_m2.strftime('%H:%M') + " Uhr") }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.time_meeting %}
+                                                        {{ render_info('clock', "Direkt: " + poll.mucken_info.time_meeting.strftime('%H:%M') + " Uhr") }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.time_start %}
+                                                        {{ render_info('play', "Start: " + poll.mucken_info.time_start.strftime('%H:%M') + " Uhr") }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.time_end %}
+                                                        {{ render_info('stop', "Ende: " + poll.mucken_info.time_end.strftime('%H:%M') + " Uhr") }}
+                                                    {% endif %}
+                                                </ul>
+                                            {% endif %}
+                                            {% if poll.mucken_info.additional %}
+                                                <p class="icon-text">
+                                                    <i class="bi bi-info-circle"></i>
+                                                    <b>Zusätzliche Informationen:</b>
+                                                    {{ poll.mucken_info.html_additional }}
+                                                </p>
                                             {% endif %}
                                         </div>
-                                            <i data-lucide="{{ col_icon }}" class="lucide-icon"></i>
-                                        </span>
-                                </h2>
-                                {% for votes in poll_votes[poll.id].options.values() %}
-                                    {{ render_category(votes, attr_name) }}
-                                {% endfor %}
+                                    </div>
+                                </div>
                             </div>
-                        {% endfor %}
+                        {% endif %}
+
+                        <div class="filters mb-3">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                <label class="me-2 mb-0">Filter:</label>
+                                <button type="button" class="btn btn-outline-secondary btn-sm active" data-filter="all">Alle</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-filter="yes">Dabei</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-filter="no">Nicht Dabei</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-filter="maybe">Vielleicht Dabei</button>
+                                <div class="form-check ms-3">
+                                    <input class="form-check-input" type="checkbox" id="not-voted-checkbox-{{ poll.id }}" name="not-voted-checkbox-{{ poll.id }}">
+                                    <label class="form-check-label" for="not-voted-checkbox-{{ poll.id }}">
+                                        <span class="icon-text">
+                                            <i class="bi bi-square"></i>
+                                            <i class="bi bi-check-square d-none"></i>
+                                            Keine Antwort
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <label for="category-select-{{ poll.id }}" class="me-2 mb-0">Kategorie:</label>
+                                <select class="form-select form-select-sm w-auto" id="category-select-{{ poll.id }}">
+                                    <option value="all">Alle</option>
+                                    {% for option_id, votes in poll_votes[poll.id].options.items() %}
+                                        <option value="{{ votes.text }}">{{ votes.text }}</option>
+                                    {% endfor %}
+                                    <option hidden value="unknown" class="strikethrough">Unbekannt</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="participants row">
+                            {% for col_class, col_name, col_icon, attr_name in (
+                                    ("yes", "Dabei", "hand-thumbs-up", "sorted_yes"),
+                                    ("no", "Nicht Dabei", "hand-thumbs-down", "sorted_sanitized_no"),
+                                    ("maybe", "Vielleicht Dabei", "question-circle", "sorted_maybe"),
+                                    ("not-voted", "Keine Antwort", "search", "sorted_sanitized_not_voted"),
+                                ) %}
+                                <div class="col-md-6 col-lg-3 mb-3 column {{ col_class }}">
+                                    <h2 class="h5">
+                                        <span class="icon-text icon-header">
+                                            <span>{{ col_name }}</span>
+                                            {% if col_class == "not-voted" %}
+                                                <span class="ms-1" data-bs-toggle="tooltip" title="Diese Info stammt aus der Registerzuteilung in der AkaCloud ist wahrscheinlich nicht komplett korrekt. Bitte versteh sie als groben Anhaltspunkt.">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </span>
+                                            {% endif %}
+                                            <i class="bi bi-{{ col_icon }} ms-2"></i>
+                                        </span>
+                                    </h2>
+                                    {% for votes in poll_votes[poll.id].options.values() %}
+                                        {{ render_category(votes, attr_name) }}
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
