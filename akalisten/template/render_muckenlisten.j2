@@ -106,17 +106,23 @@
                                     ("not-voted", "Keine Antwort", "search", "sorted_sanitized_not_voted"),
                                 ) %}
                                 <div class="col-md-6 col-lg-3 mb-3 column {{ col_class }}">
-                                    <h2 class="h5">
-                                        <span class="icon-text icon-header">
-                                            <span>{{ col_name }}</span>
-                                            {% if col_class == "not-voted" %}
-                                                <span class="ms-1" data-bs-toggle="tooltip" title="Diese Info stammt aus der Registerzuteilung in der AkaCloud ist wahrscheinlich nicht komplett korrekt. Bitte versteh sie als groben Anhaltspunkt.">
-                                                    <i class="bi bi-info-circle"></i>
-                                                </span>
-                                            {% endif %}
-                                            <i class="bi bi-{{ col_icon }} ms-2"></i>
-                                        </span>
-                                    </h2>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <h2 class="h5 mb-0">
+                                            <span class="icon-text icon-header">
+                                                <span>{{ col_name }}</span>
+                                                {% if col_class == "not-voted" %}
+                                                    <span class="ms-1"
+                                                          data-bs-toggle="tooltip"
+                                                          data-bs-placement="top"
+                                                          title="Diese Info stammt aus der Registerzuteilung in der AkaCloud ist wahrscheinlich nicht komplett korrekt. Bitte versteh sie als groben Anhaltspunkt.">
+                                                        <i class="bi bi-info-circle fs-6"></i>
+                                                    </span>
+                                                {% endif %}
+                                            </span>
+                                        </h2>
+                                        <i class="bi bi-{{ col_icon }} ms-2 fs-4"></i>
+                                    </div>
+                                    <hr class="mt-2 mb-3 text-body-secondary">
                                     {% for votes in poll_votes[poll.id].options.values() %}
                                         {{ render_category(votes, attr_name) }}
                                     {% endfor %}
