@@ -72,23 +72,31 @@
                             </div>
                         {% endif %}
 
-                        <div class="filters mb-3">
-                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                                <label class="me-2 mb-0">Filter:</label>
-                                <button type="button" class="btn btn-outline-primary active" data-filter="all">Alle</button>
-                                <button type="button" class="btn btn-outline-success" data-filter="yes">Dabei</button>
-                                <button type="button" class="btn btn-outline-danger" data-filter="no">Nicht Dabei</button>
-                                <button type="button" class="btn btn-outline-warning" data-filter="maybe">Vielleicht Dabei</button>
-                                <div class="form-check ms-3">
-                                    <input class="btn-check" type="checkbox" id="not-voted-checkbox-{{ poll.id }}" name="not-voted-checkbox-{{ poll.id }}">
-                                    <label class="btn btn-outline-secondary" for="not-voted-checkbox-{{ poll.id }}">
-                                            Keine Antwort
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <label for="category-select-{{ poll.id }}" class="me-2 mb-0">Kategorie:</label>
-                                <select class="form-select form-select-sm w-auto" id="category-select-{{ poll.id }}">
+                        <div class="my-3">
+                            <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
+                                <!-- Filter Radio Toggle Buttons -->
+                                <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-all-{{ poll.id }}" autocomplete="off" checked>
+                                <label class="btn btn-outline-primary" for="filter-all-{{ poll.id }}">Alle</label>
+
+                                <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-yes-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-success" for="filter-yes-{{ poll.id }}">Dabei</label>
+
+                                <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-no-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-danger" for="filter-no-{{ poll.id }}">Nicht Dabei</label>
+
+                                <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-maybe-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-warning" for="filter-maybe-{{ poll.id }}">Vielleicht Dabei</label>
+
+                                <!-- Toggle Button für Keine Antwort -->
+                                <input class="btn-check" type="checkbox" id="not-voted-checkbox-{{ poll.id }}" name="not-voted-checkbox-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-secondary d-flex align-items-center" for="not-voted-checkbox-{{ poll.id }}">
+                                    <span class="me-1" id="not-voted-icon-{{ poll.id }}">
+                                        <i class="bi bi-eye-slash"></i>
+                                    </span>
+                                    Keine Antwort
+                                </label>
+                                <!-- Kategorie Dropdown -->
+                                <select class="form-select form-select-sm w-auto ms-2" id="category-select-{{ poll.id }}">
                                     <option value="all">Alle</option>
                                     {% for option_id, votes in poll_votes[poll.id].options.items() %}
                                         <option value="{{ votes.text }}">{{ votes.text }}</option>
@@ -97,6 +105,20 @@
                                 </select>
                             </div>
                         </div>
+                        <script>
+                        // Icon-Wechsel für Toggle-Button
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var cb = document.getElementById('not-voted-checkbox-{{ poll.id }}');
+                            var icon = document.getElementById('not-voted-icon-{{ poll.id }}');
+                            if (cb && icon) {
+                                cb.addEventListener('change', function() {
+                                    icon.innerHTML = cb.checked
+                                        ? '<i class="bi bi-eye"></i>'
+                                        : '<i class="bi bi-eye-slash"></i>';
+                                });
+                            }
+                        });
+                        </script>
 
                         <div class="row mx-0 g-3">
                             {% for col_class, col_name, col_icon, attr_name, color in (
