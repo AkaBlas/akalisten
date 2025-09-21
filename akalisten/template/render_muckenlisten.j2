@@ -4,7 +4,7 @@
     {% set polls, poll_votes = data %}
     <div class="accordion" id="accordion-muckenlisten">
         {% for poll in polls.values() %}
-            <div class="accordion-item mb-3">
+            <div class="accordion-item">
                 <h2 class="accordion-header" id="heading-mucke-{{ poll.id }}">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#mucke-{{ poll.id }}" aria-expanded="false"
@@ -109,20 +109,6 @@
                                 </select>
                             </div>
                         </div>
-                        <script>
-                        // Icon-Wechsel für Toggle-Button
-                        document.addEventListener('DOMContentLoaded', function() {
-                            var cb = document.getElementById('not-voted-checkbox-{{ poll.id }}');
-                            var icon = document.getElementById('not-voted-icon-{{ poll.id }}');
-                            if (cb && icon) {
-                                cb.addEventListener('change', function() {
-                                    icon.innerHTML = cb.checked
-                                        ? '<i class="bi bi-eye"></i>'
-                                        : '<i class="bi bi-eye-slash"></i>';
-                                });
-                            }
-                        });
-                        </script>
 
                         <div class="row mx-0 g-3">
                             {% for col_class, col_name, col_icon, attr_name, color in (
