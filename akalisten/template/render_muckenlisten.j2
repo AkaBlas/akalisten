@@ -98,34 +98,36 @@
                             </div>
                         </div>
 
-                        <div class="row mx-0 gx-4 gy-2">
+                        <div class="row mx-0 g-3">
                             {% for col_class, col_name, col_icon, attr_name, color in (
                                     ("yes", "Dabei", "hand-thumbs-up", "sorted_yes", "primary"),
                                     ("no", "Nicht Dabei", "hand-thumbs-down", "sorted_sanitized_no", "success"),
                                     ("maybe", "Vielleicht Dabei", "question-circle", "sorted_maybe", "warning"),
                                     ("not-voted", "Keine Antwort", "search", "sorted_sanitized_not_voted", "secondary"),
                                 ) %}
-                                <div class="col-md-6 col-lg-3 column {{ col_class }} border border-{{ color }} rounded shadow-sm pt-2">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <h2 class="h5 mb-0 text-{{ color }}">
-                                            <span class="icon-text icon-header">
-                                                <span>{{ col_name }}</span>
-                                                {% if col_class == "not-voted" %}
-                                                    <span class="ms-1"
-                                                          data-bs-toggle="tooltip"
-                                                          data-bs-placement="top"
-                                                          title="Diese Info stammt aus der Registerzuteilung in der AkaCloud ist wahrscheinlich nicht komplett korrekt. Bitte versteh sie als groben Anhaltspunkt.">
-                                                        <i class="bi bi-info-circle fs-6 text-{{ color }}"></i>
-                                                    </span>
-                                                {% endif %}
-                                            </span>
-                                        </h2>
-                                        <i class="bi bi-{{ col_icon }} ms-2 fs-4 text-{{ color }}"></i>
+                                <div class="col-md-6 col-lg-3 column {{ col_class }}">
+                                    <div class="border border-{{ color }} rounded shadow-sm p-3 h-100">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <h2 class="h5 mb-0 text-{{ color }}">
+                                                <span class="icon-text icon-header">
+                                                    <span>{{ col_name }}</span>
+                                                    {% if col_class == "not-voted" %}
+                                                        <span class="ms-1"
+                                                              data-bs-toggle="tooltip"
+                                                              data-bs-placement="top"
+                                                              title="Diese Info stammt aus der Registerzuteilung in der AkaCloud ist wahrscheinlich nicht komplett korrekt. Bitte versteh sie als groben Anhaltspunkt.">
+                                                            <i class="bi bi-info-circle fs-6 text-{{ color }}"></i>
+                                                        </span>
+                                                    {% endif %}
+                                                </span>
+                                            </h2>
+                                            <i class="bi bi-{{ col_icon }} ms-2 fs-4 text-{{ color }}"></i>
+                                        </div>
+                                        <hr class="mt-2 mb-3 border-{{ color }}">
+                                        {% for votes in poll_votes[poll.id].options.values() %}
+                                            {{ render_category(votes, attr_name) }}
+                                        {% endfor %}
                                     </div>
-                                    <hr class="mt-2 mb-3 border-{{ color }}">
-                                    {% for votes in poll_votes[poll.id].options.values() %}
-                                        {{ render_category(votes, attr_name) }}
-                                    {% endfor %}
                                 </div>
                             {% endfor %}
                         </div>
