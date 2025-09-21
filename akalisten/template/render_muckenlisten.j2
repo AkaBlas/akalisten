@@ -80,23 +80,33 @@
                             <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
                                 <!-- Filter Radio Toggle Buttons -->
                                 <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-all-{{ poll.id }}" autocomplete="off" checked>
-                                <label class="btn btn-outline-primary" for="filter-all-{{ poll.id }}">Alle</label>
+                                <label class="btn btn-outline-primary d-flex align-items-center" for="filter-all-{{ poll.id }}">
+                                    <span class="me-1"><i class="bi bi-people"></i></span>
+                                    Alle
+                                </label>
 
                                 <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-yes-{{ poll.id }}" autocomplete="off">
-                                <label class="btn btn-outline-success" for="filter-yes-{{ poll.id }}">Dabei</label>
+                                <label class="btn btn-outline-success d-flex align-items-center" for="filter-yes-{{ poll.id }}">
+                                    <span class="me-1"><i class="bi bi-hand-thumbs-up"></i></span>
+                                    Dabei
+                                </label>
 
                                 <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-no-{{ poll.id }}" autocomplete="off">
-                                <label class="btn btn-outline-danger" for="filter-no-{{ poll.id }}">Nicht Dabei</label>
+                                <label class="btn btn-outline-danger d-flex align-items-center" for="filter-no-{{ poll.id }}">
+                                    <span class="me-1"><i class="bi bi-hand-thumbs-down"></i></span>
+                                    Nicht Dabei
+                                </label>
 
                                 <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-maybe-{{ poll.id }}" autocomplete="off">
-                                <label class="btn btn-outline-warning" for="filter-maybe-{{ poll.id }}">Vielleicht Dabei</label>
+                                <label class="btn btn-outline-warning d-flex align-items-center" for="filter-maybe-{{ poll.id }}">
+                                    <span class="me-1"><i class="bi bi-question-circle"></i></span>
+                                    Vielleicht Dabei
+                                </label>
 
                                 <!-- Toggle Button für Keine Antwort -->
                                 <input class="btn-check" type="checkbox" id="not-voted-checkbox-{{ poll.id }}" name="not-voted-checkbox-{{ poll.id }}" autocomplete="off">
                                 <label class="btn btn-outline-secondary d-flex align-items-center" for="not-voted-checkbox-{{ poll.id }}">
-                                    <span class="me-1" id="not-voted-icon-{{ poll.id }}">
-                                        <i class="bi bi-eye-slash"></i>
-                                    </span>
+                                    <span class="me-1"><i class="bi bi-search"></i></span>
                                     Keine Antwort
                                 </label>
                                 <!-- Kategorie Dropdown -->
