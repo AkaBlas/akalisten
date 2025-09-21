@@ -57,7 +57,7 @@ class FormInfo(BaseModel):
     def is_active_public_form(self) -> bool:
         if self.form.state != FormState.ACTIVE:
             return False
-        if (date := self.form.expires) and date < dtm.datetime.now():  # noqa: DTZ005
+        if (date := self.form.expires) and date < dtm.datetime.now(dtm.UTC):
             return False
         if (access := self.form.access) and access.permitAllUsers:
             return True
