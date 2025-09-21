@@ -40,9 +40,9 @@ body, .custom-navbar, footer {
     height: 1.5em;
 }
 
-.bi.sml,
-.bi.fs-6 {
-    font-size: 1rem !important;
+.bi.sml {
+    /*width: 0.75em;*/
+    /*height: 0.75em;*/
 }
 
 .icon-text {
