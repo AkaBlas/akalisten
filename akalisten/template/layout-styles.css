@@ -69,8 +69,11 @@ h2:target .anchor-link {
 /*Bootstrap: ab md gibt es zwei Spalten nebeneinander, sonst nur eine */
 @media (max-width: 767.98px) {
     .fill-entry {
-        display: none !important;
-        margin: 0 !important;
+        display: none;
+        margin: 0;
+    }
+    .register-category.fill-entry {
+        margin: 0;
     }
 }
 
