@@ -65,3 +65,10 @@ h2 .anchor-link:active {
 h2:target .anchor-link {
     opacity: 1;
 }
+
+/*Bootstrap: ab md gibt es zwei Spalten nebeneinander, sonst nur eine */
+@media (max-width: 767.98px) {
+    .column input.form-control[value=""] {
+        display: none;
+    }
+}

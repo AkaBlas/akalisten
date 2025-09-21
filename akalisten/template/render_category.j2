@@ -1,4 +1,4 @@
-{% macro render_category(votes, vote_type) %}
+{% macro render_category(votes, vote_type, show_empty_slots=False) %}
     {% set users = votes[vote_type]() %}
     {% set empty_slots = [votes.sanitized_max_votes - (users|length), 0] | max %}
     {% set more_empty_slots = [votes.sanitized_max_votes_with_not_voted - [votes.sanitized_max_votes, users|length] | max, 0] | max %}
