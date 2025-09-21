@@ -68,7 +68,8 @@ h2:target .anchor-link {
 
 /*Bootstrap: ab md gibt es zwei Spalten nebeneinander, sonst nur eine */
 @media (max-width: 767.98px) {
-    .column input.form-control[value=""] {
+    .fill-entry {
         display: none;
+        margin: 0;
     }
 }
