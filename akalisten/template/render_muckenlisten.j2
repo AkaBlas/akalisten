@@ -38,9 +38,9 @@
                                          aria-labelledby="heading-mucke-infos-{{ poll.id }}">
                                         <div class="accordion-body">
                                             {% if poll.mucken_info.has_any_info %}
-                                                <ul class="multi-column-list">
+                                                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2 mb-3">
                                                     {% if poll.mucken_info.date %}
-                                                        {{ render_info('calendar', poll.mucken_info.date.strftime('%d.%m.%Y')) }}
+                                                        {{ render_info('calendar-event', poll.mucken_info.date.strftime('%d.%m.%Y')) }}
                                                     {% endif %}
                                                     {% if poll.mucken_info.location %}
                                                         {{ render_info('geo-alt', poll.mucken_info.location) }}
@@ -57,14 +57,18 @@
                                                     {% if poll.mucken_info.time_end %}
                                                         {{ render_info('stop', "Ende: " + poll.mucken_info.time_end.strftime('%H:%M') + " Uhr") }}
                                                     {% endif %}
-                                                </ul>
+                                                </div>
                                             {% endif %}
                                             {% if poll.mucken_info.additional %}
-                                                <p class="icon-text">
-                                                    <i class="bi bi-info-circle"></i>
-                                                    <b>Zusätzliche Informationen:</b>
-                                                    {{ poll.mucken_info.html_additional }}
-                                                </p>
+                                                <div class="card mb-2">
+                                                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                                                        <span><b>Zusätzliche Informationen</b></span>
+                                                        <i class="bi bi-info-circle fs-5 text-info"></i>
+                                                    </div>
+                                                    <div class="card-body py-2">
+                                                        {{ poll.mucken_info.html_additional }}
+                                                    </div>
+                                                </div>
                                             {% endif %}
                                         </div>
                                     </div>
