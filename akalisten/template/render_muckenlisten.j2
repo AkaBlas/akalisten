@@ -78,34 +78,32 @@
 
                         <div class="mb-3">
                             <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
-                                <!-- Filter Radio Toggle Buttons -->
-                                <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-all-{{ poll.id }}" autocomplete="off" checked>
+                                <input type="radio" class="btn-check filter-all" name="filter-radio-{{ poll.id }}" id="filter-all-{{ poll.id }}" autocomplete="off" checked>
                                 <label class="btn btn-outline-primary d-flex align-items-center" for="filter-all-{{ poll.id }}">
                                     <span class="me-1"><i class="bi bi-people"></i></span>
                                     Alle
                                 </label>
 
-                                <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-yes-{{ poll.id }}" autocomplete="off">
+                                <input type="checkbox" class="btn-check filter-yes" id="filter-yes-{{ poll.id }}" autocomplete="off">
                                 <label class="btn btn-outline-success d-flex align-items-center" for="filter-yes-{{ poll.id }}">
                                     <span class="me-1"><i class="bi bi-hand-thumbs-up"></i></span>
                                     Dabei
                                 </label>
 
-                                <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-no-{{ poll.id }}" autocomplete="off">
+                                <input type="checkbox" class="btn-check filter-no" id="filter-no-{{ poll.id }}" autocomplete="off">
                                 <label class="btn btn-outline-danger d-flex align-items-center" for="filter-no-{{ poll.id }}">
                                     <span class="me-1"><i class="bi bi-hand-thumbs-down"></i></span>
                                     Nicht Dabei
                                 </label>
 
-                                <input type="radio" class="btn-check" name="filter-radio-{{ poll.id }}" id="filter-maybe-{{ poll.id }}" autocomplete="off">
+                                <input type="checkbox" class="btn-check filter-maybe" id="filter-maybe-{{ poll.id }}" autocomplete="off">
                                 <label class="btn btn-outline-warning d-flex align-items-center" for="filter-maybe-{{ poll.id }}">
                                     <span class="me-1"><i class="bi bi-question-circle"></i></span>
                                     Vielleicht Dabei
                                 </label>
 
-                                <!-- Toggle Button für Keine Antwort -->
-                                <input class="btn-check" type="checkbox" id="not-voted-checkbox-{{ poll.id }}" name="not-voted-checkbox-{{ poll.id }}" autocomplete="off">
-                                <label class="btn btn-outline-secondary d-flex align-items-center" for="not-voted-checkbox-{{ poll.id }}">
+                                <input type="checkbox" class="btn-check filter-pending" id="filter-pending-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-secondary d-flex align-items-center" for="filter-pending-{{ poll.id }}">
                                     <span class="me-1"><i class="bi bi-search"></i></span>
                                     Keine Antwort
                                 </label>
@@ -125,7 +123,7 @@
                                     ("yes", "Dabei", "hand-thumbs-up", "sorted_yes", "primary"),
                                     ("no", "Nicht Dabei", "hand-thumbs-down", "sorted_sanitized_no", "success"),
                                     ("maybe", "Vielleicht Dabei", "question-circle", "sorted_maybe", "warning"),
-                                    ("not-voted", "Keine Antwort", "search", "sorted_sanitized_not_voted", "secondary"),
+                                    ("pending", "Keine Antwort", "search", "sorted_sanitized_not_voted", "secondary"),
                                 ) %}
                                 <div class="col-md-6 col-lg-3 column {{ col_class }}">
                                     <div class="border border-{{ color }} rounded shadow-sm p-3 h-100">
@@ -133,7 +131,7 @@
                                             <h2 class="h5 mb-0 text-{{ color }}">
                                                 <span class="icon-text icon-header">
                                                     <span>{{ col_name }}</span>
-                                                    {% if col_class == "not-voted" %}
+                                                    {% if col_class == "pending" %}
                                                         <span class="ms-1"
                                                               data-bs-toggle="tooltip"
                                                               data-bs-placement="top"
