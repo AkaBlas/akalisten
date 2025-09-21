@@ -11,9 +11,9 @@
         } %}
         {% set columns = 3 %}
     {% else %}
-        {% if desc_len > 600 %}
+        {% if desc_len > 1000 %}
             {% set columns = 3 %}
-        {% elif desc_len > 300 %}
+        {% elif desc_len > 500 %}
             {% set columns = 2 %}
         {% else %}
             {% set columns = 1 %}
