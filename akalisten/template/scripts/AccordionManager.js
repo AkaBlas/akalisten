@@ -28,12 +28,11 @@ class AccordionManager {
             const accordionId = targetEl.id;
             // Status beim Laden wiederherstellen
             const isOpen = this.storageManager.getAccordionStatus(accordionId);
-            if (isOpen) {
-                targetEl.classList.add('show');
-                targetEl.setAttribute('aria-expanded', 'true');
-            } else {
-                targetEl.classList.remove('show');
-                targetEl.setAttribute('aria-expanded', 'false');
+            const header = document.querySelector(`[data-bs-target="#${accordionId}"]`);
+            targetEl.classList.toggle('show', isOpen);
+            targetEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                if (header) {
+                header.classList.toggle('collapsed', !isOpen);
             }
             // Bootstrap Collapse Events für Statusänderung
             targetEl.addEventListener('shown.bs.collapse', (event) => {
