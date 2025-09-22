@@ -1,20 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     const filterTypes = ['yes', 'no', 'maybe', 'pending'];
 
-    // Alle Muckenlisten-IDs sammeln
+    // IDs aller Listen ermitteln
     const pollIds = Array.from(document.querySelectorAll('[id^="filter-all-"]'))
         .map(el => el.id.replace('filter-all-', ''));
 
-    // Buttons synchronisieren (global)
-    function syncButtons(type, checked) {
+    // Hilfsfunktion: Checkboxen synchronisieren
+    function setCheckboxState(type, checked) {
         pollIds.forEach(pollId => {
             const el = document.getElementById(`filter-${type}-${pollId}`);
             if (el) el.checked = checked;
         });
     }
 
-    // Button-Status global abfragen (nur die Buttons der ersten Liste werden als Referenz genommen)
-    function getButtonStates() {
+    // Hilfsfunktion: Status der Filter-Checkboxen abfragen
+    function getFilterStates() {
         const states = {};
         states.all = document.getElementById(`filter-all-${pollIds[0]}`)?.checked;
         filterTypes.forEach(type => {
@@ -23,170 +23,135 @@ document.addEventListener('DOMContentLoaded', () => {
         return states;
     }
 
-    // Kategorie-Checkboxen global abfragen
-    function getCategoryState() {
+    // Hilfsfunktion: Ausgewählte Kategorien abfragen
+    function getSelectedCategories() {
         const menu = document.getElementById(`category-dropdown-menu-${pollIds[0]}`);
         if (!menu) return [];
         return Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
     }
 
-    // Kategorie-Checkboxen synchronisieren
-    function syncCategoryCheckboxes(values) {
+    // Hilfsfunktion: Kategorie-Checkboxen synchronisieren
+    function setCategoryCheckboxes(selectedValues) {
         pollIds.forEach(pollId => {
             const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
             if (menu) {
-                Array.from(menu.querySelectorAll('.category-checkbox')).forEach(cb => {
-                    cb.checked = values.includes(cb.value);
+                menu.querySelectorAll('.category-checkbox').forEach(cb => {
+                    cb.checked = selectedValues.includes(cb.value);
                 });
             }
         });
     }
 
     // Initialisiert Kategorie-Checkboxen: alle aktiv, falls keine Vorauswahl
-    function initCategoryCheckboxes() {
+    function initializeCategoryCheckboxes() {
         pollIds.forEach(pollId => {
             const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
             if (menu) {
                 const checkboxes = Array.from(menu.querySelectorAll('.category-checkbox'));
-                const anyChecked = checkboxes.some(cb => cb.checked);
-                if (!anyChecked) {
+                if (!checkboxes.some(cb => cb.checked)) {
                     checkboxes.forEach(cb => cb.checked = true);
                 }
             }
         });
     }
 
-    // Shortcut: Klick toggelt, Doppelklick/Long-Press wählt nur diese Kategorie
-    function setupCategoryLabelShortcuts() {
+    // Kategorie-Auswahl aktualisieren und synchronisieren
+    function updateCategorySelection(menu, selectedValues) {
+        if (selectedValues.length === 0) {
+            const allValues = Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value);
+            setCategoryCheckboxes(allValues);
+        } else {
+            setCategoryCheckboxes(selectedValues);
+        }
+        updateAllCategories();
+    }
+
+    // Shortcut- und Touch-Handler für Kategorie-Labels und Checkboxen
+    function setupCategoryShortcuts() {
         pollIds.forEach(pollId => {
             const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
-            if (menu) {
-                menu.querySelectorAll('.category-label-shortcut').forEach(label => {
-                    let longPressTimer;
-                    let isTouch = false;
-                    let touchMoved = false;
+            if (!menu) return;
 
-                    // Klick toggelt Auswahl (macht den Text wirklich klickbar)
-                    label.addEventListener('click', (e) => {
-                        if (isTouch) return; // Touch handled separately
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        // Toggle checkbox
-                        const cb = menu.querySelector(`#${label.getAttribute('for')}`);
-                        if (cb) {
-                            cb.checked = !cb.checked;
-                            const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
-                            if (selected.length === 0) {
-                                menu.querySelectorAll('.category-checkbox').forEach(box => box.checked = true);
-                                syncCategoryCheckboxes(Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value));
-                                updateAllCategories();
-                            } else {
-                                syncCategoryCheckboxes(selected);
-                                updateAllCategories();
-                            }
-                        }
-                        return false;
-                    });
+            // Handler für Label
+            menu.querySelectorAll('.category-label-shortcut').forEach(label => {
+                let longPressTimer, isTouch = false, touchMoved = false;
+                const getCheckbox = () => menu.querySelector(`#${label.getAttribute('for')}`);
 
-                    // Touch: Unterscheide zwischen Tap und Long-Press
-                    label.addEventListener('touchstart', (e) => {
-                        isTouch = true;
-                        touchMoved = false;
-                        longPressTimer = setTimeout(() => {
-                            const cb = menu.querySelector(`#${label.getAttribute('for')}`);
-                            if (cb) {
-                                syncCategoryCheckboxes([cb.value]);
-                                updateAllCategories();
-                            }
-                        }, 500); // 500ms für Long-Press
-                    });
-                    label.addEventListener('touchmove', () => {
-                        touchMoved = true;
-                    });
-                    label.addEventListener('touchend', (e) => {
-                        clearTimeout(longPressTimer);
-                        setTimeout(() => { isTouch = false; }, 100);
-                        if (!touchMoved) {
-                            // Tap: Toggle wie Klick
-                            e.preventDefault();
-                            e.stopPropagation();
-                            e.stopImmediatePropagation();
-                            const cb = menu.querySelector(`#${label.getAttribute('for')}`);
-                            if (cb) {
-                                cb.checked = !cb.checked;
-                                const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
-                                if (selected.length === 0) {
-                                    menu.querySelectorAll('.category-checkbox').forEach(box => box.checked = true);
-                                    syncCategoryCheckboxes(Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value));
-                                    updateAllCategories();
-                                } else {
-                                    syncCategoryCheckboxes(selected);
-                                    updateAllCategories();
-                                }
-                            }
-                        }
-                    });
+                function handleToggle(cb) {
+                    cb.checked = !cb.checked;
+                    const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+                    updateCategorySelection(menu, selected);
+                }
 
-                    // Doppelklick wählt nur diese Kategorie
-                    label.addEventListener('dblclick', (e) => {
-                        if (isTouch) return;
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        const cb = menu.querySelector(`#${label.getAttribute('for')}`);
-                        if (cb) {
-                            syncCategoryCheckboxes([cb.value]);
-                            updateAllCategories();
-                        }
-                        return false;
-                    });
+                function handleSelectOnly(cb) {
+                    setCategoryCheckboxes([cb.value]);
+                    updateAllCategories();
+                }
+
+                label.addEventListener('click', e => {
+                    if (isTouch) return;
+                    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+                    const cb = getCheckbox();
+                    if (cb) handleToggle(cb);
+                    return false;
                 });
 
-                // Für Checkbox selbst
-                menu.querySelectorAll('.category-checkbox').forEach(cb => {
-                    let longPressTimer;
-                    let isTouch = false;
+                label.addEventListener('dblclick', e => {
+                    if (isTouch) return;
+                    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+                    const cb = getCheckbox();
+                    if (cb) handleSelectOnly(cb);
+                    return false;
+                });
 
-                    // Klick toggelt Auswahl (Standardverhalten)
-                    cb.addEventListener('change', () => {
-                        const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
-                        // Wenn keine Kategorie ausgewählt, alle auswählen
-                        if (selected.length === 0) {
-                            menu.querySelectorAll('.category-checkbox').forEach(box => box.checked = true);
-                            syncCategoryCheckboxes(Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value));
-                            updateAllCategories();
-                        } else {
-                            syncCategoryCheckboxes(selected);
-                            updateAllCategories();
-                        }
-                    });
+                label.addEventListener('touchstart', () => {
+                    isTouch = true; touchMoved = false;
+                    longPressTimer = setTimeout(() => {
+                        const cb = getCheckbox();
+                        if (cb) handleSelectOnly(cb);
+                    }, 500);
+                });
+                label.addEventListener('touchmove', () => { touchMoved = true; });
+                label.addEventListener('touchend', e => {
+                    clearTimeout(longPressTimer);
+                    setTimeout(() => { isTouch = false; }, 100);
+                    if (!touchMoved) {
+                        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+                        const cb = getCheckbox();
+                        if (cb) handleToggle(cb);
+                    }
+                });
+            });
 
-                    // Doppelklick wählt nur diese Kategorie
-                    cb.addEventListener('dblclick', (e) => {
-                        if (isTouch) return;
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation(); // Verhindert das Schließen des Dropdowns
-                        syncCategoryCheckboxes([cb.value]);
+            // Handler für Checkbox
+            menu.querySelectorAll('.category-checkbox').forEach(cb => {
+                let longPressTimer, isTouch = false;
+
+                cb.addEventListener('change', () => {
+                    const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+                    updateCategorySelection(menu, selected);
+                });
+
+                cb.addEventListener('dblclick', e => {
+                    if (isTouch) return;
+                    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+                    setCategoryCheckboxes([cb.value]);
+                    updateAllCategories();
+                    return false;
+                });
+
+                cb.addEventListener('touchstart', () => {
+                    isTouch = true;
+                    longPressTimer = setTimeout(() => {
+                        setCategoryCheckboxes([cb.value]);
                         updateAllCategories();
-                        return false;
-                    });
-
-                    // Touch/Long-Press für Mobilgeräte
-                    cb.addEventListener('touchstart', (e) => {
-                        isTouch = true;
-                        longPressTimer = setTimeout(() => {
-                            syncCategoryCheckboxes([cb.value]);
-                            updateAllCategories();
-                        }, 500);
-                    });
-                    cb.addEventListener('touchend', (e) => {
-                        clearTimeout(longPressTimer);
-                        setTimeout(() => { isTouch = false; }, 100);
-                    });
+                    }, 500);
                 });
-            }
+                cb.addEventListener('touchend', () => {
+                    clearTimeout(longPressTimer);
+                    setTimeout(() => { isTouch = false; }, 100);
+                });
+            });
         });
     }
 
@@ -202,11 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Kategorien für alle Listen aktualisieren
     function updateAllCategories() {
-        const selectedCategories = getCategoryState();
+        const selectedCategories = getSelectedCategories();
         pollIds.forEach(pollId => {
-            const categories = document.querySelectorAll(`#mucke-${pollId} .register-category`);
             const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
             const allCategoryValues = Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value);
+            const categories = document.querySelectorAll(`#mucke-${pollId} .register-category`);
             if (selectedCategories.length === 0 || selectedCategories.length === allCategoryValues.length) {
                 categories.forEach(cat => cat.classList.remove("d-none"));
             } else {
@@ -220,9 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Spalten für alle Listen aktualisieren (inkl. Kategorien)
     function updateAllColumns() {
-        const states = getButtonStates();
+        const states = getFilterStates();
         pollIds.forEach(pollId => {
-            // Wenn "Alle" aktiv, alle Spalten zeigen
             if (states.all) {
                 filterTypes.forEach(type => {
                     document.querySelectorAll(`#mucke-${pollId} .column.${type}`).forEach(col =>
@@ -230,105 +194,81 @@ document.addEventListener('DOMContentLoaded', () => {
                     );
                 });
             } else {
-                // Nur die aktivierten Checkbox-Spalten zeigen, andere ausblenden
                 filterTypes.forEach(type => {
                     document.querySelectorAll(`#mucke-${pollId} .column.${type}`).forEach(col =>
                         col.classList.toggle('d-none', !states[type])
                     );
                 });
             }
-
-            // Prüfe, wie viele Spalten sichtbar sind
             const visibleColumns = filterTypes.filter(type =>
                 !document.querySelector(`#mucke-${pollId} .column.${type}`)?.classList.contains('d-none')
             );
-            const fillEntries = document.querySelectorAll(`#mucke-${pollId} .fill-entry`);
-            fillEntries.forEach(el => el.classList.toggle('hidden', visibleColumns.length === 1));
+            document.querySelectorAll(`#mucke-${pollId} .fill-entry`).forEach(el =>
+                el.classList.toggle('hidden', visibleColumns.length === 1)
+            );
         });
         updateAllCategories();
     }
 
     // Buttons und Checkboxen synchronisieren und Spalten aktualisieren
-    function handleButtonChange(type, checked) {
+    function handleFilterChange(type, checked) {
         if (type === 'all') {
-            syncButtons('all', checked);
-            filterTypes.forEach(t => syncButtons(t, false));
+            setCheckboxState('all', checked);
+            filterTypes.forEach(t => setCheckboxState(t, false));
         } else {
-            syncButtons(type, checked);
-            syncButtons('all', false);
-            // Wenn alle Checkboxen aktiv sind, automatisch auf "Alle" umschalten
+            setCheckboxState(type, checked);
+            setCheckboxState('all', false);
             const allChecked = filterTypes.every(t =>
                 document.getElementById(`filter-${t}-${pollIds[0]}`)?.checked
             );
             if (allChecked) {
-                syncButtons('all', true);
-                filterTypes.forEach(t => syncButtons(t, false));
+                setCheckboxState('all', true);
+                filterTypes.forEach(t => setCheckboxState(t, false));
             }
-            // Wenn keine Checkbox aktiv ist, "Alle" wieder aktivieren
-            const anyChecked = filterTypes.some(t =>
+            if (!filterTypes.some(t =>
                 document.getElementById(`filter-${t}-${pollIds[0]}`)?.checked
-            );
-            if (!anyChecked) {
-                syncButtons('all', true);
+            )) {
+                setCheckboxState('all', true);
             }
         }
         updateAllColumns();
     }
 
-    // Event-Handler für "Alle"
+    // Event-Handler für Filter-Buttons
     pollIds.forEach(pollId => {
         const radio = document.getElementById(`filter-all-${pollId}`);
         if (radio) {
-            radio.addEventListener('change', () => {
-                handleButtonChange('all', radio.checked);
-            });
+            radio.addEventListener('change', () => handleFilterChange('all', radio.checked));
         }
-    });
-
-    // Event-Handler für Checkboxen
-    filterTypes.forEach(type => {
-        pollIds.forEach(pollId => {
+        filterTypes.forEach(type => {
             const cb = document.getElementById(`filter-${type}-${pollId}`);
             if (cb) {
-                cb.addEventListener('change', () => {
-                    handleButtonChange(type, cb.checked);
-                });
+                cb.addEventListener('change', () => handleFilterChange(type, cb.checked));
             }
         });
-    });
-
-    // Event-Handler für Kategorie-Checkboxen im Dropdown
-    pollIds.forEach(pollId => {
         const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
         if (menu) {
-            menu.addEventListener('change', (e) => {
+            menu.addEventListener('change', e => {
                 if (e.target.classList.contains('category-checkbox')) {
                     const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
-                    syncCategoryCheckboxes(selected);
+                    setCategoryCheckboxes(selected);
                     updateAllCategories();
                 }
             });
-        }
-    });
-
-    // Event-Handler für "Alle auswählen"-Button im Dropdown
-    pollIds.forEach(pollId => {
-        const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
-        if (menu) {
             const selectAllBtn = menu.querySelector('.category-select-all-btn');
             if (selectAllBtn) {
                 selectAllBtn.addEventListener('click', () => {
                     const allValues = Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value);
-                    syncCategoryCheckboxes(allValues);
+                    setCategoryCheckboxes(allValues);
                     updateAllCategories();
                 });
             }
         }
     });
 
-    // Initiales Setzen
-    initCategoryCheckboxes();
-    setupCategoryLabelShortcuts();
+    // Initialisierung
+    initializeCategoryCheckboxes();
+    setupCategoryShortcuts();
     setupCategoryInfoTooltip();
     updateAllColumns();
 });
