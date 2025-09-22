@@ -23,7 +23,37 @@ document.addEventListener('DOMContentLoaded', () => {
         return states;
     }
 
-    // Spalten für alle Listen aktualisieren
+    // Kategorie-Filter global abfragen
+    function getCategoryState() {
+        const select = document.getElementById(`category-select-${pollIds[0]}`);
+        return select ? select.value : "all";
+    }
+
+    // Kategorie-Filter synchronisieren
+    function syncCategorySelect(value) {
+        pollIds.forEach(pollId => {
+            const select = document.getElementById(`category-select-${pollId}`);
+            if (select) select.value = value;
+        });
+    }
+
+    // Kategorien für alle Listen aktualisieren
+    function updateAllCategories() {
+        const selectedCategory = getCategoryState();
+        pollIds.forEach(pollId => {
+            const categories = document.querySelectorAll(`#mucke-${pollId} .register-category`);
+            categories.forEach(cat => {
+                if (selectedCategory === "all") {
+                    cat.classList.remove("d-none");
+                } else {
+                    const catName = cat.getAttribute("data-category-name");
+                    cat.classList.toggle("d-none", catName !== selectedCategory);
+                }
+            });
+        });
+    }
+
+    // Spalten für alle Listen aktualisieren (inkl. Kategorien)
     function updateAllColumns() {
         const states = getButtonStates();
         pollIds.forEach(pollId => {
@@ -50,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const fillEntries = document.querySelectorAll(`#mucke-${pollId} .fill-entry`);
             fillEntries.forEach(el => el.classList.toggle('hidden', visibleColumns.length === 1));
         });
+        updateAllCategories();
     }
 
     // Buttons und Checkboxen synchronisieren und Spalten aktualisieren
@@ -99,6 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
+    });
+
+    // Event-Handler für Kategorie-Dropdown
+    pollIds.forEach(pollId => {
+        const select = document.getElementById(`category-select-${pollId}`);
+        if (select) {
+            select.addEventListener('change', () => {
+                syncCategorySelect(select.value);
+                updateAllCategories();
+            });
+        }
     });
 
     // Initiales Setzen
