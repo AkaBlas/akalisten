@@ -90,3 +90,7 @@ h2:target .anchor-link {
 .column .register-category:last-child {
     margin-bottom: 0 !important;
 }
+
+.pointer {
+    cursor: pointer;
+}
