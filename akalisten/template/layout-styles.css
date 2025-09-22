@@ -94,3 +94,25 @@ h2:target .anchor-link {
 .pointer {
     cursor: pointer;
 }
+
+/* Kategorie-Dropdown: Scrollbare Liste, Button bleibt oben */
+.category-dropdown-menu {
+    min-width: 16rem;
+    max-width: 22rem;
+    padding-bottom: 0.5rem !important;
+    z-index: 99999;
+    /* optional: max-height für das gesamte Menü */
+    /* max-height: 24rem; */
+}
+
+.category-dropdown-scroll {
+    max-height: 20rem;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+.category-select-all-btn {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
