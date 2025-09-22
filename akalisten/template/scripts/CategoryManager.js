@@ -120,6 +120,7 @@ class CategoryManager {
             menu.querySelectorAll('.category-label-shortcut').forEach(label => {
                 let longPressTimer, isTouch = false, touchMoved = false;
                 const getCheckbox = () => menu.querySelector(`#${label.getAttribute('for')}`);
+
                 // Toggle: Checkbox umschalten und synchronisieren
                 function handleToggle(cb) {
                     cb.checked = !cb.checked;
@@ -128,39 +129,49 @@ class CategoryManager {
                     // 'this' ist hier nicht CategoryManager, daher closure verwenden
                     label.categoryManager.setCategoryCheckboxes(selected);
                 }
+
                 // SelectOnly: Nur diese Kategorie auswählen und synchronisieren
                 function handleSelectOnly(cb) {
                     label.categoryManager.setCategoryCheckboxes([cb.value]);
                 }
+
                 // CategoryManager für closures verfügbar machen
                 label.categoryManager = this;
                 label.addEventListener('click', e => {
                     if (isTouch) return;
-                    e.preventDefault(); e.stopPropagation();
+                    e.preventDefault();
+                    e.stopPropagation();
                     const cb = getCheckbox();
                     if (cb) handleToggle(cb);
                     return false;
                 });
                 label.addEventListener('dblclick', e => {
                     if (isTouch) return;
-                    e.preventDefault(); e.stopPropagation();
+                    e.preventDefault();
+                    e.stopPropagation();
                     const cb = getCheckbox();
                     if (cb) handleSelectOnly(cb);
                     return false;
                 });
                 label.addEventListener('touchstart', () => {
-                    isTouch = true; touchMoved = false;
+                    isTouch = true;
+                    touchMoved = false;
                     longPressTimer = setTimeout(() => {
                         const cb = getCheckbox();
                         if (cb) handleSelectOnly(cb);
                     }, 500);
                 });
-                label.addEventListener('touchmove', () => { touchMoved = true; });
+                label.addEventListener('touchmove', () => {
+                    touchMoved = true;
+                });
                 label.addEventListener('touchend', e => {
                     clearTimeout(longPressTimer);
-                    setTimeout(() => { isTouch = false; }, 100);
+                    setTimeout(() => {
+                        isTouch = false;
+                    }, 100);
                     if (!touchMoved) {
-                        e.preventDefault(); e.stopPropagation();
+                        e.preventDefault();
+                        e.stopPropagation();
                         const cb = getCheckbox();
                         if (cb) handleToggle(cb);
                     }
@@ -174,7 +185,8 @@ class CategoryManager {
                 });
                 cb.addEventListener('dblclick', e => {
                     if (isTouch) return;
-                    e.preventDefault(); e.stopPropagation();
+                    e.preventDefault();
+                    e.stopPropagation();
                     this.setCategoryCheckboxes([cb.value]);
                     return false;
                 });
@@ -186,7 +198,9 @@ class CategoryManager {
                 });
                 cb.addEventListener('touchend', () => {
                     clearTimeout(longPressTimer);
-                    setTimeout(() => { isTouch = false; }, 100);
+                    setTimeout(() => {
+                        isTouch = false;
+                    }, 100);
                 });
             });
         });

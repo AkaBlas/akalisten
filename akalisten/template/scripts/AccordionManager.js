@@ -37,11 +37,15 @@ class AccordionManager {
             }
             // Bootstrap Collapse Events für Statusänderung
             targetEl.addEventListener('shown.bs.collapse', (event) => {
-                if (event.target.id !== accordionId) {return}
+                if (event.target.id !== accordionId) {
+                    return
+                }
                 this.storageManager.setAccordionStatus(accordionId, true);
             });
             targetEl.addEventListener('hidden.bs.collapse', (event) => {
-                if (event.target.id !== accordionId) {return}
+                if (event.target.id !== accordionId) {
+                    return
+                }
                 this.storageManager.setAccordionStatus(accordionId, false);
             });
         });

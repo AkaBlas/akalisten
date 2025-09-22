@@ -64,7 +64,9 @@ class MuckenlistenManager {
      * @param {Object} states - Objekt mit Filterzuständen.
      */
     updateColumnsVisibility(states) {
-        this.muckenlisten.forEach(list => {list.updateColumnsVisibility(states)});
+        this.muckenlisten.forEach(list => {
+            list.updateColumnsVisibility(states)
+        });
     }
 
     /**

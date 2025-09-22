@@ -3,11 +3,13 @@
     {% set empty_slots = [votes.sanitized_max_votes - (users|length), 0] | max %}
     {% set more_empty_slots = [votes.sanitized_max_votes_with_not_voted - [votes.sanitized_max_votes, users|length] | max, 0] | max %}
 
-    <div class="mb-3 register-category {{ "fill-entry" if not users}}" data-category-name="{{ votes.text }}">
-        <div class="fw-bold mb-1 {{ "fill-entry" if not users}}">{{ votes.text }}</div>
+    <div class="mb-3 register-category {{ "fill-entry" if not users }}"
+         data-category-name="{{ votes.text }}">
+        <div class="fw-bold mb-1 {{ "fill-entry" if not users }}">{{ votes.text }}</div>
         <div class="d-flex flex-column">
             {% for user in users %}
-                <div class="alert alert-secondary alert-sm alert-entry mb-1" data-user-id="{{ user.id }}">
+                <div class="alert alert-secondary alert-sm alert-entry mb-1"
+                     data-user-id="{{ user.id }}">
                     {{ user.html_display_name }}
                 </div>
             {% endfor %}

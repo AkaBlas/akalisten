@@ -6,8 +6,10 @@
         {% for poll in polls.values() %}
             <div class="accordion-item" id="muckenliste-{{ poll.id }}">
                 <h2 class="accordion-header" id="heading-accordion-muckenliste-{{ poll.id }}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#accordion-muckenliste-{{ poll.id }}" aria-expanded="false"
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#accordion-muckenliste-{{ poll.id }}"
+                            aria-expanded="false"
                             aria-controls="accordion-muckenliste-{{ poll.id }}">
                         {{ poll.html_title }}
                     </button>
@@ -25,16 +27,21 @@
                             </a>
                         {% endif %}
                         {% if poll.mucken_info.has_any_info or poll.mucken_info.additional %}
-                            <div class="accordion my-3" id="accordion-muckeninfo-{{ poll.id }}-container">
+                            <div class="accordion my-3"
+                                 id="accordion-muckeninfo-{{ poll.id }}-container">
                                 <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading-accordion-muckeninfo-{{ poll.id }}">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#accordion-muckeninfo-{{ poll.id }}" aria-expanded="false"
+                                    <h2 class="accordion-header"
+                                        id="heading-accordion-muckeninfo-{{ poll.id }}">
+                                        <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#accordion-muckeninfo-{{ poll.id }}"
+                                                aria-expanded="false"
                                                 aria-controls="accordion-muckeninfo-{{ poll.id }}">
                                             Mucken-Infos
                                         </button>
                                     </h2>
-                                    <div id="accordion-muckeninfo-{{ poll.id }}" class="accordion-collapse collapse"
+                                    <div id="accordion-muckeninfo-{{ poll.id }}"
+                                         class="accordion-collapse collapse"
                                          aria-labelledby="heading-accordion-muckeninfo-{{ poll.id }}">
                                         <div class="accordion-body">
                                             {% if poll.mucken_info.has_any_info %}
@@ -78,54 +85,76 @@
 
                         <div class="mb-3">
                             <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
-                                <input type="radio" class="btn-check filter-all" name="filter-radio-{{ poll.id }}" id="filter-all-{{ poll.id }}" autocomplete="off" checked>
-                                <label class="btn btn-outline-primary d-flex align-items-center" for="filter-all-{{ poll.id }}">
+                                <input type="radio" class="btn-check filter-all"
+                                       name="filter-radio-{{ poll.id }}"
+                                       id="filter-all-{{ poll.id }}" autocomplete="off" checked>
+                                <label class="btn btn-outline-primary d-flex align-items-center"
+                                       for="filter-all-{{ poll.id }}">
                                     <span class="me-1"><i class="bi bi-people"></i></span>
                                     Alle
                                 </label>
 
-                                <input type="checkbox" class="btn-check filter-yes" id="filter-yes-{{ poll.id }}" autocomplete="off">
-                                <label class="btn btn-outline-success d-flex align-items-center" for="filter-yes-{{ poll.id }}">
+                                <input type="checkbox" class="btn-check filter-yes"
+                                       id="filter-yes-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-success d-flex align-items-center"
+                                       for="filter-yes-{{ poll.id }}">
                                     <span class="me-1"><i class="bi bi-hand-thumbs-up"></i></span>
                                     Dabei
                                 </label>
 
-                                <input type="checkbox" class="btn-check filter-no" id="filter-no-{{ poll.id }}" autocomplete="off">
-                                <label class="btn btn-outline-danger d-flex align-items-center" for="filter-no-{{ poll.id }}">
+                                <input type="checkbox" class="btn-check filter-no"
+                                       id="filter-no-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-danger d-flex align-items-center"
+                                       for="filter-no-{{ poll.id }}">
                                     <span class="me-1"><i class="bi bi-hand-thumbs-down"></i></span>
                                     Nicht Dabei
                                 </label>
 
-                                <input type="checkbox" class="btn-check filter-maybe" id="filter-maybe-{{ poll.id }}" autocomplete="off">
-                                <label class="btn btn-outline-warning d-flex align-items-center" for="filter-maybe-{{ poll.id }}">
+                                <input type="checkbox" class="btn-check filter-maybe"
+                                       id="filter-maybe-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-warning d-flex align-items-center"
+                                       for="filter-maybe-{{ poll.id }}">
                                     <span class="me-1"><i class="bi bi-question-circle"></i></span>
                                     Vielleicht Dabei
                                 </label>
 
-                                <input type="checkbox" class="btn-check filter-pending" id="filter-pending-{{ poll.id }}" autocomplete="off">
-                                <label class="btn btn-outline-secondary d-flex align-items-center" for="filter-pending-{{ poll.id }}">
+                                <input type="checkbox" class="btn-check filter-pending"
+                                       id="filter-pending-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-secondary d-flex align-items-center"
+                                       for="filter-pending-{{ poll.id }}">
                                     <span class="me-1"><i class="bi bi-search"></i></span>
                                     Keine Antwort
                                 </label>
                                 <!-- Kategorie Dropdown mit Checkboxen -->
                                 <div class="d-flex align-items-center gap-1">
                                     <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="categoryDropdown-{{ poll.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="btn btn-outline-secondary dropdown-toggle"
+                                                type="button" id="categoryDropdown-{{ poll.id }}"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
                                             Kategorien wählen
                                         </button>
-                                        <ul class="dropdown-menu p-2 category-dropdown-menu" aria-labelledby="categoryDropdown-{{ poll.id }}" id="category-dropdown-menu-{{ poll.id }}">
-                                                <button type="button" class="btn btn-sm btn-outline-primary w-100 text-center mb-2 category-select-all-btn d-flex justify-content-center align-items-center" data-poll-id="{{ poll.id }}">
+                                        <ul class="dropdown-menu p-2 category-dropdown-menu"
+                                            aria-labelledby="categoryDropdown-{{ poll.id }}"
+                                            id="category-dropdown-menu-{{ poll.id }}">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-primary w-100 text-center mb-2 category-select-all-btn d-flex justify-content-center align-items-center"
+                                                    data-poll-id="{{ poll.id }}">
                                                     <span class="icon-text">
                                                         <i class="bi bi-check2-all me-1"></i>
                                                         <span>Alle auswählen</span>
                                                     </span>
-                                                </button>
+                                            </button>
                                             <div class="category-dropdown-scroll">
                                                 {% for option_id, votes in poll_votes[poll.id].options.items() %}
                                                     <li>
                                                         <div class="form-check">
-                                                            <input class="form-check-input category-checkbox pointer" type="checkbox" value="{{ votes.text }}" id="category-checkbox-{{ poll.id }}-{{ loop.index }}">
-                                                            <label class="form-check-label category-label-shortcut pointer" for="category-checkbox-{{ poll.id }}-{{ loop.index }}" data-category-value="{{ votes.text }}">
+                                                            <input class="form-check-input category-checkbox pointer"
+                                                                   type="checkbox"
+                                                                   value="{{ votes.text }}"
+                                                                   id="category-checkbox-{{ poll.id }}-{{ loop.index }}">
+                                                            <label class="form-check-label category-label-shortcut pointer"
+                                                                   for="category-checkbox-{{ poll.id }}-{{ loop.index }}"
+                                                                   data-category-value="{{ votes.text }}">
                                                                 {{ votes.text }}
                                                             </label>
                                                         </div>
@@ -145,7 +174,8 @@
                             </div>
                         </div>
 
-                        <div class="row mx-0 g-3 justify-content-center" id="muckenliste-columns-{{ poll.id }}">
+                        <div class="row mx-0 g-3 justify-content-center"
+                             id="muckenliste-columns-{{ poll.id }}">
                             {% for col_class, col_name, col_icon, attr_name, color in (
                                     ("yes", "Dabei", "hand-thumbs-up", "sorted_yes", "success"),
                                     ("no", "Nicht Dabei", "hand-thumbs-down", "sorted_sanitized_no", "danger"),

@@ -47,6 +47,7 @@ class StorageManager {
         const key = this.prefix + 'filter_selection';
         this._setObject(key, filterObj);
     }
+
     getFilterSelection() {
         const key = this.prefix + 'filter_selection';
         return this._getObject(key);
@@ -63,11 +64,13 @@ class StorageManager {
         selection[listId] = categoryId;
         this._setObject(key, selection);
     }
+
     getCategorySelection(listId) {
         const key = this.prefix + 'category_selection';
         let selection = this._getObject(key);
         return selection[listId] || null;
     }
+
     getAllCategorySelections() {
         const key = this.prefix + 'category_selection';
         return this._getObject(key);
@@ -84,11 +87,13 @@ class StorageManager {
         highlights[listId] = highlightObj;
         this._setObject(key, highlights);
     }
+
     getUserHighlighting(listId) {
         const key = this.prefix + 'user_highlighting';
         let highlights = this._getObject(key);
         return highlights[listId] || null;
     }
+
     getAllUserHighlightings() {
         const key = this.prefix + 'user_highlighting';
         return this._getObject(key);
@@ -118,6 +123,7 @@ class StorageManager {
             return {};
         }
     }
+
     /**
      * Hilfsfunktion: Speichert ein Objekt im localStorage.
      * @param {string} key

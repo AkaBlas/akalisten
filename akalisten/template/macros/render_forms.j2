@@ -2,63 +2,63 @@
 {% macro render_forms(forms) %}
 {% set cards = [] %}
 {% for form in forms %}
-    {% set desc_len = form.html_description|length if form.html_description is defined and form.html_description else 0 %}
-    {% set embedding = None %}
-    {% if form.embed_url %}
-        {% set embedding = {
+{% set desc_len = form.html_description|length if form.html_description is defined and form.html_description else 0 %}
+{% set embedding = None %}
+{% if form.embed_url %}
+    {% set embedding = {
             "title": "Ohne AkaCloud-Account direkt ausfüllen",
             "embed_url": form.embed_url
         } %}
+    {% set columns = 3 %}
+{% else %}
+    {% if desc_len > 1000 %}
         {% set columns = 3 %}
+    {% elif desc_len > 500 %}
+        {% set columns = 2 %}
     {% else %}
-        {% if desc_len > 1000 %}
-            {% set columns = 3 %}
-        {% elif desc_len > 500 %}
-            {% set columns = 2 %}
-        {% else %}
-            {% set columns = 1 %}
-        {% endif %}
+        {% set columns = 1 %}
     {% endif %}
-    {% set body %}
-        {% if form.expire_date %}
-            <p class="mb-2">
+{% endif %}
+{% set body %}
+{% if form.expire_date %}
+    <p class="mb-2">
                 <span class="d-flex align-items-center">
                     <i class="bi bi-calendar-week me-2"></i>
                     <b>Formular offen bis:</b>&nbsp;{{ form.expire_date.strftime('%d.%m.%Y %H:%M') }} Uhr
                 </span>
-            </p>
-        {% endif %}
-        {% if form.html_description %}
-            <p class="card-text mb-0">
-                {{ form.html_description }}
-            </p>
-        {% endif %}
-    {% endset %}
-    {% set buttons = [] %}
-    {% if form.url %}
-        {% set _ = buttons.append({
+    </p>
+{% endif %}
+{% if form.html_description %}
+    <p class="card-text mb-0">
+        {{ form.html_description }}
+    </p>
+{% endif %}
+{% endset %}
+{% set buttons = [] %}
+{% if form.url %}
+    {% set _ = buttons.append({
             "icon": "cloud-check",
             "text": "Ausfüllen mit AkaCloud-Account",
             "target": form.url,
             "css_class": " btn-outline-success"
         }) %}
-    {% endif %}
-    {% if form.public_url %}
-        {% set _ = buttons.append({
+{% endif %}
+{% if form.public_url %}
+    {% set _ = buttons.append({
             "icon": "pencil-fill",
             "text": "Ausfüllen ohne AkaCloud-Account",
             "target": form.public_url,
             "css_class": " btn-outline-primary"
         }) %}
-    {% endif %}
-    {% set card = {
+{% endif %}
+{% set card = {
         "title": form.html_title,
         "body": body,
         "buttons": buttons,
         "columns": columns,
         "embedding": embedding
     } %}
-    {% set _ = cards.append(card) %}
+{% set _ = cards.append(card) %}
 {% endfor %}
 {{ render_card_grid(cards, label="forms") }}
 {% endmacro %}
