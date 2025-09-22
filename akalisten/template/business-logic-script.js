@@ -340,9 +340,108 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Highlight-Logik für User-Elemente in Muckenlisten
+    function setupUserHighlighting() {
+        let highlightedUser = null;
+        let highlightedPollId = null;
+
+        pollIds.forEach(pollId => {
+            const container = document.getElementById(`mucke-${pollId}`);
+            if (!container) return;
+
+            // Alle User-Elemente mit data-user-id in dieser Muckenliste
+            const userElements = Array.from(container.querySelectorAll('.alert[data-user-id]'));
+            // Alle Slot-Elemente (leere Einträge ohne data-user-id)
+            const slotElements = Array.from(container.querySelectorAll('.alert:not([data-user-id])'));
+
+            // Zähle Vorkommen der User-IDs nur innerhalb dieser Muckenliste
+            const userIdCounts = {};
+            userElements.forEach(el => {
+                const userId = el.getAttribute('data-user-id');
+                userIdCounts[userId] = (userIdCounts[userId] || 0) + 1;
+            });
+
+            // Nur User-IDs mit mehr als einem Vorkommen in dieser Liste sind highlightbar
+            const highlightableUserIds = Object.keys(userIdCounts).filter(uid => userIdCounts[uid] > 1);
+
+            // Setze Pointer-Cursor nur für highlightbare User in dieser Liste
+            userElements.forEach(el => {
+                const userId = el.getAttribute('data-user-id');
+                if (highlightableUserIds.includes(userId)) {
+                    el.classList.add('pointer');
+                } else {
+                    el.classList.remove('pointer');
+                }
+            });
+
+            // Hilfsfunktion: Highlight für alle passenden User in einer Liste
+            function highlightUser(userId, pollId) {
+                pollIds.forEach(pid => {
+                    const els = document.querySelectorAll(`#mucke-${pid} .alert[data-user-id]`);
+                    els.forEach(e => e.classList.remove('alert-info'));
+                });
+                const els = document.querySelectorAll(`#mucke-${pollId} .alert[data-user-id="${userId}"]`);
+                els.forEach(e => e.classList.add('alert-info'));
+            }
+
+            function clearHighlight() {
+                pollIds.forEach(pid => {
+                    const els = document.querySelectorAll(`#mucke-${pid} .alert[data-user-id]`);
+                    els.forEach(e => e.classList.remove('alert-info'));
+                });
+                highlightedUser = null;
+                highlightedPollId = null;
+            }
+
+            userElements.forEach(el => {
+                const userId = el.getAttribute('data-user-id');
+                if (highlightableUserIds.includes(userId)) {
+                    el.addEventListener('mouseenter', () => {
+                        if (highlightedUser) return;
+                        highlightUser(userId, pollId);
+                    });
+                    el.addEventListener('mouseleave', () => {
+                        if (highlightedUser) return;
+                        clearHighlight();
+                    });
+                    el.addEventListener('click', e => {
+                        e.stopPropagation();
+                        if (highlightedUser === userId && highlightedPollId === pollId) {
+                            clearHighlight();
+                        } else {
+                            highlightedUser = userId;
+                            highlightedPollId = pollId;
+                            highlightUser(userId, pollId);
+                        }
+                    });
+                } else {
+                    // Klick auf nicht-highlightbaren User entfernt das Highlight
+                    el.addEventListener('click', () => {
+                        clearHighlight();
+                    });
+                }
+            });
+
+            // Klick auf leere Slots entfernt das Highlight
+            slotElements.forEach(el => {
+                el.addEventListener('click', () => {
+                    clearHighlight();
+                });
+            });
+        });
+
+        // Klick außerhalb entfernt das Highlight
+        document.body.addEventListener('click', e => {
+            if (!e.target.closest('.alert[data-user-id]') && !e.target.closest('.alert:not([data-user-id])')) {
+                clearHighlight();
+            }
+        });
+    }
+
     // Initialisierung
     initializeCategoryCheckboxes();
     setupCategoryShortcuts();
     setupCategoryInfoTooltip();
     updateAllColumns();
+    setupUserHighlighting();
 });
