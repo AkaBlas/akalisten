@@ -87,12 +87,34 @@ class Muckenliste {
                     col.classList.remove('d-none')
                 );
             });
+            this.container.querySelectorAll(`[data-fill-for-yes]`).forEach(el => {
+                    el.classList.remove('d-none')
+            });
+
         } else {
             Object.keys(states).forEach(type => {
                 this.container.querySelectorAll(`.column.${type}`).forEach(col =>
                     col.classList.toggle('d-none', !states[type])
                 );
             });
+            // we hide fill-elements if no columns are visible that would they would fill for
+            this.container.querySelectorAll(`[data-fill-for-yes]`).forEach(el => {
+                    // get values for data-fill-for-yes, data-fill-for-no, data-fill-for-maybe, data-fill-for-pending
+                    const fillFor = {
+                        yes: el.getAttribute('data-fill-for-yes') === 'true',
+                        no: el.getAttribute('data-fill-for-no') === 'true',
+                        maybe: el.getAttribute('data-fill-for-maybe') === 'true',
+                        pending: el.getAttribute('data-fill-for-pending') === 'true',
+                    }
+                    const matchingStates = Object.keys(states).filter(key => fillFor[key] && states[key]);
+                    const hide = matchingStates.length <= 0;
+                    if (hide) {
+                        el.classList.add('d-none');
+                    } else {
+                        el.classList.remove('d-none');
+                    }
+                }
+            );
         }
         // Number of visible columns: 4 if "all" is selected, otherwise count the true states
         const visibleColumns = states.all

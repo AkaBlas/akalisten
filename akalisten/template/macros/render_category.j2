@@ -1,7 +1,11 @@
-{% macro render_category(votes, vote_type, show_empty_slots=False) %}
+{% macro render_category(votes, vote_type, vote_type_name) %}
     {% set users = votes[vote_type]() %}
-    {% set empty_slots = [votes.sanitized_max_votes - (users|length), 0] | max %}
-    {% set more_empty_slots = [votes.sanitized_max_votes_with_not_voted - [votes.sanitized_max_votes, users|length] | max, 0] | max %}
+    {% set yes_votes = votes.yes | length %}
+    {% set no_votes = votes.sanitized_no | length %}
+    {% set maybe_votes = votes.maybe | length %}
+    {% set pending_votes = votes.sanitized_not_voted | length %}
+    {% set max_slots = [yes_votes, no_votes, maybe_votes, pending_votes] | max %}
+    {% set users_length = users|length %}
 
     <div class="mb-3 register-category {{ "fill-entry" if not users }}"
          data-category-name="{{ votes.text }}">
@@ -14,16 +18,30 @@
                 </div>
             {% endfor %}
 
-            {% for _ in range(empty_slots) %}
-                <div class="fill-entry alert alert-secondary alert-sm alert-entry mb-1 opacity-50"></div>
-            {% endfor %}
+            {% if users_length < max_slots %}
+                {% for x in range(users_length, max_slots) %}
+                    <div class="alert alert-secondary alert-sm alert-entry mb-1 opacity-50 fill-entry"
+                            {% for count, type in (
+                                (yes_votes, 'yes'),
+                                (no_votes, 'no'),
+                                (maybe_votes, 'maybe'),
+                                (pending_votes, 'pending')
 
-            {% for _ in range(more_empty_slots) %}
-                <div class="fill-entry alert alert-secondary alert-sm alert-entry mb-1 opacity-50"></div>
-            {% endfor %}
+                         ) %}
+                                {# We always need to keep one element visible if the category is visible at all. #}
+                                {# That's "why x == 0 or " #}
+                                {% if x == 0 or count > x %}
+                         data-fill-for-{{ type }}="true"
+                                {% else %}
+                         data-fill-for-{{ type }}="false"
+                                {% endif %}
+                            {% endfor %}
+                    ></div>
+                {% endfor %}
+            {% endif %}
 
-            {% if not users and not empty_slots and not more_empty_slots %}
-                <div class="fill-entry alert alert-secondary alert-sm alert-entry mb-1 opacity-50"></div>
+            {% if max_slots == 0 %}
+                <div class="alert alert-secondary alert-sm alert-entry mb-1 opacity-50 fill-entry"></div>
             {% endif %}
         </div>
     </div>

@@ -202,7 +202,7 @@
                                         </div>
                                         <hr class="mt-2 mb-3 border-{{ color }}">
                                         {% for votes in poll_votes[poll.id].options.values() %}
-                                            {{ render_category(votes, attr_name) }}
+                                            {{ render_category(votes, attr_name, col_class) }}
                                         {% endfor %}
                                     </div>
                                 </div>
