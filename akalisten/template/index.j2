@@ -1,9 +1,9 @@
-{% from 'render_forms.j2' import render_forms %}
-{% from 'render_links.j2' import render_links %}
-{% from 'render_lists.j2' import render_lists %}
-{% from 'render_muckenlisten.j2' import render_muckenlisten %}
-{% from 'render_polls.j2' import render_polls %}
-{% from 'render_section.j2' import render_section %}
+{% from './macros/render_forms.j2' import render_forms %}
+{% from './macros/render_links.j2' import render_links %}
+{% from './macros/render_lists.j2' import render_lists %}
+{% from './macros/render_muckenlisten.j2' import render_muckenlisten %}
+{% from './macros/render_polls.j2' import render_polls %}
+{% from './macros/render_section.j2' import render_section %}
 <!DOCTYPE html>
 <html lang="de" class="h-100" data-bs-theme="auto">
 <head>
@@ -18,13 +18,13 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script>
-        {% include 'Muckenliste.js' %}
-        {% include 'MuckenlistenManager.js' %}
-        {% include 'FilterManager.js' %}
-        {% include 'CategoryManager.js' %}
-        {% include 'UserHighlightManager.js' %}
-        {% include 'main.js' %}
-        {% include 'layout-script.js' %}
+        {% include './scripts/Muckenliste.js' %}
+        {% include './scripts/MuckenlistenManager.js' %}
+        {% include './scripts/FilterManager.js' %}
+        {% include './scripts/CategoryManager.js' %}
+        {% include './scripts/UserHighlightManager.js' %}
+        {% include './scripts/main.js' %}
+        {% include './scripts/layout-script.js' %}
     </script>
     <!-- Custom styles -->
     <style>
