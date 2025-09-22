@@ -7,7 +7,7 @@
         <div class="fw-bold mb-1 {{ "fill-entry" if not users}}">{{ votes.text }}</div>
         <div class="d-flex flex-column">
             {% for user in users %}
-                <input type="text" class="form-control form-control-sm mb-1" value="{{ user.html_display_name }}" readonly disabled>
+                <input type="text" class="form-control form-control-sm mb-1" data-user-id="{{ user.id }} value="{{ user.html_display_name }}" readonly disabled>
             {% endfor %}
 
             {% for _ in range(empty_slots) %}
