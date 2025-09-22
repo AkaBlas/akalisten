@@ -61,20 +61,22 @@ document.addEventListener('DOMContentLoaded', () => {
         pollIds.forEach(pollId => {
             const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
             if (menu) {
-                // Für Label
                 menu.querySelectorAll('.category-label-shortcut').forEach(label => {
                     let longPressTimer;
                     let isTouch = false;
+                    let touchMoved = false;
 
                     // Klick toggelt Auswahl (macht den Text wirklich klickbar)
                     label.addEventListener('click', (e) => {
                         if (isTouch) return; // Touch handled separately
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
                         // Toggle checkbox
                         const cb = menu.querySelector(`#${label.getAttribute('for')}`);
                         if (cb) {
                             cb.checked = !cb.checked;
                             const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
-                            // Wenn keine Kategorie ausgewählt, alle auswählen
                             if (selected.length === 0) {
                                 menu.querySelectorAll('.category-checkbox').forEach(box => box.checked = true);
                                 syncCategoryCheckboxes(Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value));
@@ -84,29 +86,60 @@ document.addEventListener('DOMContentLoaded', () => {
                                 updateAllCategories();
                             }
                         }
+                        return false;
+                    });
+
+                    // Touch: Unterscheide zwischen Tap und Long-Press
+                    label.addEventListener('touchstart', (e) => {
+                        isTouch = true;
+                        touchMoved = false;
+                        longPressTimer = setTimeout(() => {
+                            const cb = menu.querySelector(`#${label.getAttribute('for')}`);
+                            if (cb) {
+                                syncCategoryCheckboxes([cb.value]);
+                                updateAllCategories();
+                            }
+                        }, 500); // 500ms für Long-Press
+                    });
+                    label.addEventListener('touchmove', () => {
+                        touchMoved = true;
+                    });
+                    label.addEventListener('touchend', (e) => {
+                        clearTimeout(longPressTimer);
+                        setTimeout(() => { isTouch = false; }, 100);
+                        if (!touchMoved) {
+                            // Tap: Toggle wie Klick
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            const cb = menu.querySelector(`#${label.getAttribute('for')}`);
+                            if (cb) {
+                                cb.checked = !cb.checked;
+                                const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+                                if (selected.length === 0) {
+                                    menu.querySelectorAll('.category-checkbox').forEach(box => box.checked = true);
+                                    syncCategoryCheckboxes(Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value));
+                                    updateAllCategories();
+                                } else {
+                                    syncCategoryCheckboxes(selected);
+                                    updateAllCategories();
+                                }
+                            }
+                        }
                     });
 
                     // Doppelklick wählt nur diese Kategorie
                     label.addEventListener('dblclick', (e) => {
                         if (isTouch) return;
                         e.preventDefault();
-                        const value = label.getAttribute('data-category-value');
-                        syncCategoryCheckboxes([value]);
-                        updateAllCategories();
-                    });
-
-                    // Touch/Long-Press für Mobilgeräte
-                    label.addEventListener('touchstart', (e) => {
-                        isTouch = true;
-                        longPressTimer = setTimeout(() => {
-                            const value = label.getAttribute('data-category-value');
-                            syncCategoryCheckboxes([value]);
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        const cb = menu.querySelector(`#${label.getAttribute('for')}`);
+                        if (cb) {
+                            syncCategoryCheckboxes([cb.value]);
                             updateAllCategories();
-                        }, 500); // 500ms für Long-Press
-                    });
-                    label.addEventListener('touchend', (e) => {
-                        clearTimeout(longPressTimer);
-                        setTimeout(() => { isTouch = false; }, 100);
+                        }
+                        return false;
                     });
                 });
 
@@ -133,8 +166,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     cb.addEventListener('dblclick', (e) => {
                         if (isTouch) return;
                         e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation(); // Verhindert das Schließen des Dropdowns
                         syncCategoryCheckboxes([cb.value]);
                         updateAllCategories();
+                        return false;
                     });
 
                     // Touch/Long-Press für Mobilgeräte
