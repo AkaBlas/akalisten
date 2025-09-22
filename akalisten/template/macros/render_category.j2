@@ -15,7 +15,7 @@
             {% endfor %}
 
             {% for _ in range(empty_slots) %}
-                <div class="fill-entry alert alert-secondary alert-sm alert-entry mb-1"></div>
+                <div class="fill-entry alert alert-secondary alert-sm alert-entry mb-1 opacity-50"></div>
             {% endfor %}
 
             {% for _ in range(more_empty_slots) %}
@@ -23,7 +23,7 @@
             {% endfor %}
 
             {% if not users and not empty_slots and not more_empty_slots %}
-                <div class="fill-entry alert alert-secondary alert-sm alert-entry mb-1"></div>
+                <div class="fill-entry alert alert-secondary alert-sm alert-entry mb-1 opacity-50"></div>
             {% endif %}
         </div>
     </div>
