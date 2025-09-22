@@ -10,7 +10,7 @@
             {% for user in users %}
                 <div class="alert alert-secondary alert-sm alert-entry mb-1"
                      data-user-id="{{ user.id }}">
-                    {{ user.html_display_name }}
+                    <span>{{ user.html_display_name }}</span>
                 </div>
             {% endfor %}
 
