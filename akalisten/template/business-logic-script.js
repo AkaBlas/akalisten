@@ -30,13 +30,50 @@ document.addEventListener('DOMContentLoaded', () => {
         return Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
     }
 
-    // Hilfsfunktion: Kategorie-Checkboxen synchronisieren
-    function setCategoryCheckboxes(selectedValues) {
+    // Hilfsfunktion: Alle Kategorien aus allen Listen sammeln
+    function getAllAvailableCategories() {
+        const allCategories = new Set();
         pollIds.forEach(pollId => {
             const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
             if (menu) {
                 menu.querySelectorAll('.category-checkbox').forEach(cb => {
-                    cb.checked = selectedValues.includes(cb.value);
+                    allCategories.add(cb.value);
+                });
+            }
+        });
+        return Array.from(allCategories);
+    }
+
+    // Hilfsfunktion: Gemeinsame Kategorien zwischen allen Listen
+    function getCommonCategories() {
+        let common = null;
+        pollIds.forEach(pollId => {
+            const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
+            if (menu) {
+                const values = Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value);
+                if (common === null) {
+                    common = new Set(values);
+                } else {
+                    common = new Set(values.filter(v => common.has(v)));
+                }
+            }
+        });
+        return common ? Array.from(common) : [];
+    }
+
+    // Hilfsfunktion: Kategorie-Checkboxen synchronisieren (nur gemeinsame Kategorien)
+    function setCategoryCheckboxes(selectedValues) {
+        const commonCategories = getCommonCategories();
+        pollIds.forEach(pollId => {
+            const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
+            if (menu) {
+                menu.querySelectorAll('.category-checkbox').forEach(cb => {
+                    if (commonCategories.includes(cb.value)) {
+                        cb.checked = selectedValues.includes(cb.value);
+                    } else {
+                        // Nur lokale Kategorien: nur in dieser Liste setzen
+                        cb.checked = selectedValues.length === 0 ? true : selectedValues.includes(cb.value);
+                    }
                 });
             }
         });
@@ -58,10 +95,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Kategorie-Auswahl aktualisieren und synchronisieren
     function updateCategorySelection(menu, selectedValues) {
         if (selectedValues.length === 0) {
-            const allValues = Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value);
-            setCategoryCheckboxes(allValues);
+            // "Alle anzeigen": alle Kategorien aus allen Listen
+            const allValues = getAllAvailableCategories();
+            pollIds.forEach(pollId => {
+                const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
+                if (menu) {
+                    menu.querySelectorAll('.category-checkbox').forEach(cb => cb.checked = true);
+                }
+            });
         } else {
-            setCategoryCheckboxes(selectedValues);
+            // Synchronisiere nur gemeinsame Kategorien
+            const commonCategories = getCommonCategories();
+            const syncValues = selectedValues.filter(v => commonCategories.includes(v));
+            setCategoryCheckboxes(syncValues);
+
+            // Lokale Kategorien: nur in der jeweiligen Liste setzen
+            pollIds.forEach(pollId => {
+                const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
+                if (menu) {
+                    menu.querySelectorAll('.category-checkbox').forEach(cb => {
+                        if (!commonCategories.includes(cb.value)) {
+                            cb.checked = selectedValues.includes(cb.value);
+                        }
+                    });
+                }
+            });
         }
         updateAllCategories();
     }
@@ -167,12 +225,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Kategorien für alle Listen aktualisieren
     function updateAllCategories() {
-        const selectedCategories = getSelectedCategories();
+        // Hole alle ausgewählten Kategorien aus allen Listen
+        const selectedByPoll = {};
+        pollIds.forEach(pollId => {
+            const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
+            if (menu) {
+                selectedByPoll[pollId] = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+            }
+        });
+
         pollIds.forEach(pollId => {
             const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
             const allCategoryValues = Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value);
             const categories = document.querySelectorAll(`#mucke-${pollId} .register-category`);
-            if (selectedCategories.length === 0 || selectedCategories.length === allCategoryValues.length) {
+            const selectedCategories = selectedByPoll[pollId];
+
+            // "Alle anzeigen": alle Kategorien aus allen Listen
+            const allSelected = pollIds.every(pid => {
+                const sel = selectedByPoll[pid];
+                return sel.length === 0 || sel.length === Array.from(document.getElementById(`category-dropdown-menu-${pid}`).querySelectorAll('.category-checkbox')).length;
+            });
+
+            if (allSelected) {
                 categories.forEach(cat => cat.classList.remove("d-none"));
             } else {
                 categories.forEach(cat => {
