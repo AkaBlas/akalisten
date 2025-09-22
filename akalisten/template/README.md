@@ -19,6 +19,8 @@ Alle JS-Dateien liegen im Ordner `scripts/` und sind modular aufgebaut:
 - **FilterManager.js**: Steuert die Filter-Checkboxen für die Spaltenanzeige in den Muckenlisten. Synchronisiert die Auswahl und aktualisiert die Sichtbarkeit der Spalten.
 - **UserHighlightManager.js**: Verwaltet die Hervorhebung von Nutzern in den Muckenlisten. Ermöglicht es, Nutzer und deren Kategorien hervorzuheben und die Auswahl zurückzusetzen.
 - **layout-script.js**: Steuert das Theme (hell/dunkel/auto), das Verhalten der Navbar (Scrollrichtung, Höhe) und initialisiert Tooltips.
+- **StorageManager.js**: Zentraler Manager für die Persistenz aller Statusdaten (Accordions, Filter, Kategorien, User-Highlighting) im localStorage. Bietet Methoden zum Speichern und Wiederherstellen der jeweiligen Status.
+- **AccordionManager.js**: Verwaltet die Wiederherstellung und Speicherung des Status (offen/geschlossen) aller Accordions auf der Seite. Nutzt StorageManager zur zentralen Persistenz und setzt Event Listener für die Synchronisation.
 
 ## Struktur
 

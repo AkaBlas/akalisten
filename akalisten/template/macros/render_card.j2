@@ -1,4 +1,4 @@
-{% macro render_card(title, body, buttons, columns=1, embedding=None) %}
+{% macro render_card(title, body, buttons, columns=1, embedding=None, label="") %}
 {% if columns == 3 %}
     {% set width = "col-12 col-md-12 col-lg-12" %}
 {% elif columns == 2 %}
@@ -29,7 +29,7 @@
                     </div>
                 {% endif %}
                 {% if embedding %}
-                    {% set acc_id = "embedAccordion" ~ loop.index if loop is defined else "embedAccordion" %}
+                    {% set acc_id = "accordion-" ~ label ~ "-card-" ~ loop.index if loop is defined else "accordion-" ~ label ~ "-card" %}
                     <div class="accordion {{ "mb-3" if buttons }}" id="{{ acc_id }}">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="{{ acc_id }}-heading">

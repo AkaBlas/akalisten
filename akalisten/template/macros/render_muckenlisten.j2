@@ -4,16 +4,16 @@
     {% set polls, poll_votes = data %}
     <div class="accordion" id="accordion-muckenlisten">
         {% for poll in polls.values() %}
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="heading-mucke-{{ poll.id }}">
+            <div class="accordion-item" id="muckenliste-{{ poll.id }}">
+                <h2 class="accordion-header" id="heading-accordion-muckenliste-{{ poll.id }}">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#mucke-{{ poll.id }}" aria-expanded="false"
-                            aria-controls="mucke-{{ poll.id }}">
+                            data-bs-target="#accordion-muckenliste-{{ poll.id }}" aria-expanded="false"
+                            aria-controls="accordion-muckenliste-{{ poll.id }}">
                         {{ poll.html_title }}
                     </button>
                 </h2>
-                <div id="mucke-{{ poll.id }}" class="accordion-collapse collapse"
-                     aria-labelledby="heading-mucke-{{ poll.id }}">
+                <div id="accordion-muckenliste-{{ poll.id }}" class="accordion-collapse collapse"
+                     aria-labelledby="heading-accordion-muckenliste-{{ poll.id }}">
                     <div class="accordion-body">
                         {% if poll.url %}
                             <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer"
@@ -25,17 +25,17 @@
                             </a>
                         {% endif %}
                         {% if poll.mucken_info.has_any_info or poll.mucken_info.additional %}
-                            <div class="accordion my-3" id="accordion-mucke-infos-{{ poll.id }}">
+                            <div class="accordion my-3" id="accordion-muckeninfo-{{ poll.id }}-container">
                                 <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading-mucke-infos-{{ poll.id }}">
+                                    <h2 class="accordion-header" id="heading-accordion-muckeninfo-{{ poll.id }}">
                                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#mucke-{{ poll.id }}-infos" aria-expanded="false"
-                                                aria-controls="mucke-{{ poll.id }}-infos">
+                                                data-bs-target="#accordion-muckeninfo-{{ poll.id }}" aria-expanded="false"
+                                                aria-controls="accordion-muckeninfo-{{ poll.id }}">
                                             Mucken-Infos
                                         </button>
                                     </h2>
-                                    <div id="mucke-{{ poll.id }}-infos" class="accordion-collapse collapse"
-                                         aria-labelledby="heading-mucke-infos-{{ poll.id }}">
+                                    <div id="accordion-muckeninfo-{{ poll.id }}" class="accordion-collapse collapse"
+                                         aria-labelledby="heading-accordion-muckeninfo-{{ poll.id }}">
                                         <div class="accordion-body">
                                             {% if poll.mucken_info.has_any_info %}
                                                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2 mb-3">
@@ -145,10 +145,10 @@
                             </div>
                         </div>
 
-                        <div class="row mx-0 g-3 justify-content-center">
+                        <div class="row mx-0 g-3 justify-content-center" id="muckenliste-columns-{{ poll.id }}">
                             {% for col_class, col_name, col_icon, attr_name, color in (
-                                    ("yes", "Dabei", "hand-thumbs-up", "sorted_yes", "primary"),
-                                    ("no", "Nicht Dabei", "hand-thumbs-down", "sorted_sanitized_no", "success"),
+                                    ("yes", "Dabei", "hand-thumbs-up", "sorted_yes", "success"),
+                                    ("no", "Nicht Dabei", "hand-thumbs-down", "sorted_sanitized_no", "danger"),
                                     ("maybe", "Vielleicht Dabei", "question-circle", "sorted_maybe", "warning"),
                                     ("pending", "Keine Antwort", "search", "sorted_sanitized_not_voted", "secondary"),
                                 ) %}

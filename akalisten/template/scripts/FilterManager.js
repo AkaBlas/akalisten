@@ -5,21 +5,10 @@
  * @param {string[]} filterTypes - Die Typen der Filter (z.B. yes, no, maybe, pending).
  */
 class FilterManager {
-    constructor(muckenlistenManager, filterTypes) {
+    constructor(muckenlistenManager, storageManager) {
         this.muckenlistenManager = muckenlistenManager;
-        this.filterTypes = filterTypes;
-    }
-
-    /**
-     * Setzt den Zustand einer Checkbox für einen Filtertyp.
-     * @param {string} type - Filtertyp.
-     * @param {boolean} checked - Ob die Checkbox aktiviert ist.
-     */
-    setCheckboxState(type, checked) {
-        this.muckenlistenManager.getPollIds().forEach(pollId => {
-            const el = document.getElementById(`filter-${type}-${pollId}`);
-            if (el) el.checked = checked;
-        });
+        this.filterTypes = ['yes', 'no', 'maybe', 'pending'];
+        this.storageManager = storageManager;
     }
 
     /**
@@ -27,6 +16,12 @@ class FilterManager {
      * @returns {Object} - Objekt mit Filterzuständen.
      */
     getFilterStates() {
+        // Versuche zuerst aus Storage zu laden
+        const stored = this.storageManager.getFilterSelection();
+        if (stored && Object.keys(stored).length > 0) {
+            return stored;
+        }
+        // Fallback: aus DOM lesen
         const states = {};
         const pollIds = this.muckenlistenManager.getPollIds();
         states.all = document.getElementById(`filter-all-${pollIds[0]}`)?.checked;
@@ -37,32 +32,31 @@ class FilterManager {
     }
 
     /**
+     * Setzt den Zustand einer Checkbox für einen Filtertyp und speichert die Auswahl.
+     * @param {string} type - Filtertyp.
+     * @param {boolean} checked - Ob die Checkbox aktiviert ist.
+     */
+    setButtonsState(type, checked) {
+        this.muckenlistenManager.getPollIds().forEach(pollId => {
+            const el = document.getElementById(`filter-${type}-${pollId}`);
+            if (el) el.checked = checked;
+        });
+        // Nach Änderung speichern
+        const states = {};
+        const pollIds = this.muckenlistenManager.getPollIds();
+        states.all = document.getElementById(`filter-all-${pollIds[0]}`)?.checked;
+        this.filterTypes.forEach(t => {
+            states[t] = document.getElementById(`filter-${t}-${pollIds[0]}`)?.checked;
+        });
+        this.storageManager.setFilterSelection(states);
+    }
+
+    /**
      * Aktualisiert die Sichtbarkeit der Spalten basierend auf den Filterzuständen.
      */
-    updateAllColumns() {
+    updateColumnVisibility() {
         const states = this.getFilterStates();
-        this.muckenlistenManager.getPollIds().forEach(pollId => {
-            if (states.all) {
-                this.filterTypes.forEach(type => {
-                    document.querySelectorAll(`#mucke-${pollId} .column.${type}`).forEach(col =>
-                        col.classList.remove('d-none')
-                    );
-                });
-            } else {
-                this.filterTypes.forEach(type => {
-                    document.querySelectorAll(`#mucke-${pollId} .column.${type}`).forEach(col =>
-                        col.classList.toggle('d-none', !states[type])
-                    );
-                });
-            }
-            const visibleColumns = this.filterTypes.filter(type =>
-                !document.querySelector(`#mucke-${pollId} .column.${type}`)?.classList.contains('d-none')
-            );
-            document.querySelectorAll(`#mucke-${pollId} .fill-entry`).forEach(el =>
-                el.classList.toggle('hidden', visibleColumns.length === 1)
-            );
-        });
-        // Komplexe Logik: Sichtbarkeit der Spalten und Füll-Einträge abhängig von Filterauswahl
+        this.muckenlistenManager.updateColumnsVisibility(states);
     }
 
     /**
@@ -72,43 +66,50 @@ class FilterManager {
      */
     handleFilterChange(type, checked) {
         if (type === 'all') {
-            this.setCheckboxState('all', checked);
-            this.filterTypes.forEach(t => this.setCheckboxState(t, false));
+            this.setButtonsState('all', checked);
+            this.filterTypes.forEach(t => this.setButtonsState(t, false));
         } else {
-            this.setCheckboxState(type, checked);
-            this.setCheckboxState('all', false);
+            this.setButtonsState(type, checked);
+            this.setButtonsState('all', false);
             const allChecked = this.filterTypes.every(t =>
                 document.getElementById(`filter-${t}-${this.muckenlistenManager.getPollIds()[0]}`)?.checked
             );
             if (allChecked) {
-                this.setCheckboxState('all', true);
-                this.filterTypes.forEach(t => this.setCheckboxState(t, false));
+                this.setButtonsState('all', true);
+                this.filterTypes.forEach(t => this.setButtonsState(t, false));
             }
             if (!this.filterTypes.some(t =>
                 document.getElementById(`filter-${t}-${this.muckenlistenManager.getPollIds()[0]}`)?.checked
             )) {
-                this.setCheckboxState('all', true);
+                this.setButtonsState('all', true);
             }
         }
-        this.updateAllColumns();
-        // Komplexe Logik: Synchronisation zwischen 'Alle' und Einzel-Checkboxen
+        this.updateColumnVisibility();
     }
 
     /**
      * Richtet Event Listener für alle Filter-Checkboxen ein.
-     * Event Listener:
-     * - change: Filter-Checkboxen, aktualisiert die Spaltenanzeige für den Nutzer
+     * Stellt beim Laden die gespeicherte Auswahl wieder her.
      */
     setupFilterEvents() {
-        this.muckenlistenManager.getPollIds().forEach(pollId => {
-            const radio = document.getElementById(`filter-all-${pollId}`);
-            if (radio) {
-                radio.addEventListener('change', () => this.handleFilterChange('all', radio.checked));
-            }
+        const pollIds = this.muckenlistenManager.getPollIds();
+        // Auswahl aus Storage wiederherstellen
+        const stored = this.storageManager.getFilterSelection();
+        if (stored && Object.keys(stored).length > 0) {
+            if (stored.all !== undefined) this.setButtonsState('all', stored.all);
             this.filterTypes.forEach(type => {
-                const cb = document.getElementById(`filter-${type}-${pollId}`);
-                if (cb) {
-                    cb.addEventListener('change', () => this.handleFilterChange(type, cb.checked));
+                if (stored[type] !== undefined) this.setButtonsState(type, stored[type]);
+            });
+            this.updateColumnVisibility();
+        }
+        // Event Listener setzen
+        pollIds.forEach(pollId => {
+            ['all', ...this.filterTypes].forEach(type => {
+                const el = document.getElementById(`filter-${type}-${pollId}`);
+                if (el) {
+                    el.addEventListener('change', e => {
+                        this.handleFilterChange(type, el.checked);
+                    });
                 }
             });
         });

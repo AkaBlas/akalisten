@@ -5,25 +5,24 @@
  * - DOMContentLoaded: Startet die Initialisierung der Muckenlisten, Filter, Kategorien und User-Highlighting.
  */
 document.addEventListener('DOMContentLoaded', () => {
-    const filterTypes = ['yes', 'no', 'maybe', 'pending'];
-    const muckenlistenManager = new MuckenlistenManager();
+    const storageManager = new StorageManager();
+    const muckenlistenManager = new MuckenlistenManager(storageManager);
     muckenlistenManager.init();
-    const filterManager = new FilterManager(muckenlistenManager, filterTypes);
-    const categoryManager = new CategoryManager(muckenlistenManager);
-    const userHighlightManager = new UserHighlightManager(muckenlistenManager, categoryManager);
+    const filterManager = new FilterManager(muckenlistenManager, storageManager);
+    const categoryManager = new CategoryManager(muckenlistenManager, storageManager);
+    const userHighlightManager = new UserHighlightManager(muckenlistenManager, categoryManager, storageManager);
+    const accordionManager = new AccordionManager(storageManager);
+    accordionManager.init();
 
     // Initialisierung der Kategorie-Checkboxen
     categoryManager.initializeCategoryCheckboxes();
     categoryManager.setupCategoryShortcuts();
     categoryManager.setupCategoryInfoTooltip();
-    categoryManager.updateAllCategories();
+    categoryManager.updateCategoryVisibility();
 
     // Event-Handler jetzt in den Managern
     filterManager.setupFilterEvents();
     categoryManager.setupCategoryEvents();
-
-    // Initiales Update der Spaltenanzeige
-    filterManager.updateAllColumns();
 
     // Initialisierung der User-Highlight-Logik
     userHighlightManager.setupUserHighlighting();

@@ -58,4 +58,42 @@ class MuckenlistenManager {
     getMenus() {
         return this.muckenlisten.map(list => list.menu).filter(Boolean);
     }
+
+    /**
+     * Aktualisiert die Sichtbarkeit der Spalten aller Muckenlisten basierend auf den Filterzuständen.
+     * @param {Object} states - Objekt mit Filterzuständen.
+     */
+    updateColumnsVisibility(states) {
+        this.muckenlisten.forEach(list => {list.updateColumnsVisibility(states)});
+    }
+
+    /**
+     * Aktualisiert die Anzeige aller Kategorien aller Muckenlisten basierend auf der aktuellen Auswahl.
+     */
+    updateCategoryVisibility() {
+        this.muckenlisten.forEach(list => list.updateCategoryVisibility());
+    }
+
+
+    /**
+     * Hebt einen Nutzer in einer bestimmten Muckenliste hervor.
+     * @param {string} userId
+     * @param {string} pollId
+     */
+    highlightUser(userId, pollId) {
+        this.muckenlisten.forEach(list => {
+            if (list.pollId === pollId) {
+                list.highlightUser(userId);
+            } else {
+                list.clearUserHighlight();
+            }
+        });
+    }
+
+    /**
+     * Hebt die Nutzer Hervorhebung auf
+     */
+    clearUserHighlight() {
+        this.muckenlisten.forEach(list => list.clearUserHighlight());
+    }
 }

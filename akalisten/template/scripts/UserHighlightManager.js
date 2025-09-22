@@ -5,9 +5,10 @@
  * @param {CategoryManager} categoryManager
  */
 class UserHighlightManager {
-    constructor(muckenlistenManager, categoryManager) {
+    constructor(muckenlistenManager, categoryManager, storageManager) {
         this.muckenlistenManager = muckenlistenManager;
         this.categoryManager = categoryManager;
+        this.storageManager = storageManager;
         this.highlightedUser = null;
         this.highlightedPollId = null;
         this.previousCategorySelection = null;
@@ -18,18 +19,19 @@ class UserHighlightManager {
      * @param {boolean} restoreCategories - Ob die Kategorienauswahl wiederhergestellt werden soll.
      */
     clearHighlight(restoreCategories = false) {
+        this.muckenlistenManager.clearUserHighlight();
         this.muckenlistenManager.getPollIds().forEach(pid => {
-            const els = document.querySelectorAll(`#mucke-${pid} .alert[data-user-id]`);
-            els.forEach(e => e.classList.remove('alert-info'));
+            // Entferne Hervorhebung im Storage
+            this.storageManager.removeUserHighlighting(pid);
         });
         this.highlightedUser = null;
         this.highlightedPollId = null;
         if (restoreCategories && this.previousCategorySelection) {
             this.categoryManager.setCategoryCheckboxes(this.previousCategorySelection);
-            this.categoryManager.updateAllCategories();
+            this.categoryManager.updateCategoryVisibility();
             this.previousCategorySelection = null;
         } else {
-            this.categoryManager.updateAllCategories();
+            this.categoryManager.updateCategoryVisibility();
             this.previousCategorySelection = null;
         }
     }
@@ -39,25 +41,11 @@ class UserHighlightManager {
      * @param {string} userId
      */
     showOnlyUserCategoriesGlobal(userId) {
-        this.muckenlistenManager.getPollIds().forEach(pollId => {
-            const categoriesWithUser = [];
-            const categories = document.querySelectorAll(`#mucke-${pollId} .register-category`);
-            categories.forEach(cat => {
-                const userInCat = cat.querySelector(`.alert[data-user-id="${userId}"]`);
-                if (userInCat) {
-                    categoriesWithUser.push(cat.getAttribute('data-category-name'));
-                }
-            });
-            categories.forEach(cat => {
-                const catName = cat.getAttribute('data-category-name');
-                cat.classList.toggle('d-none', !categoriesWithUser.includes(catName));
-            });
-            const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
-            if (menu) {
-                menu.querySelectorAll('.category-checkbox').forEach(cb => {
-                    cb.checked = categoriesWithUser.includes(cb.value);
-                });
-            }
+        this.muckenlistenManager.muckenlisten.forEach(list => {
+            const categoriesWithUser = list.getCategoriesWithUser(userId);
+            list.updateCategoryVisibility(categoriesWithUser);
+            list.setCategoryCheckboxes(categoriesWithUser);
+            this.storageManager.setCategorySelection(list.pollId, categoriesWithUser);
         });
     }
 
@@ -65,14 +53,16 @@ class UserHighlightManager {
      * Hebt einen Nutzer in einer bestimmten Muckenliste hervor.
      * @param {string} userId
      * @param {string} pollId
+     * @param {boolean} permanent - Ob die Hervorhebung dauerhaft ist
      */
-    highlightUser(userId, pollId) {
-        this.muckenlistenManager.getPollIds().forEach(pid => {
-            const els = document.querySelectorAll(`#mucke-${pid} .alert[data-user-id]`);
-            els.forEach(e => e.classList.remove('alert-info'));
-        });
-        const els = document.querySelectorAll(`#mucke-${pollId} .alert[data-user-id="${userId}"]`);
-        els.forEach(e => e.classList.add('alert-info'));
+    highlightUser(userId, pollId, permanent) {
+        this.muckenlistenManager.highlightUser(userId, pollId);
+        if (permanent) {
+            this.highlightedUser = userId;
+            this.highlightedPollId = pollId;
+            // Speichere Hervorhebung im StorageManager
+            this.storageManager.setUserHighlighting(pollId, userId);
+        }
     }
 
     /**
@@ -86,8 +76,15 @@ class UserHighlightManager {
      */
     setupUserHighlighting() {
         const pollIds = this.muckenlistenManager.getPollIds();
+        // Restore Highlighting aus StorageManager
         pollIds.forEach(pollId => {
-            const container = document.getElementById(`mucke-${pollId}`);
+            const highlightedUser = this.storageManager.getUserHighlighting(pollId);
+            if (highlightedUser) {
+                this.highlightUser(highlightedUser, pollId, true);
+            }
+        });
+        pollIds.forEach(pollId => {
+            const container = document.getElementById(`muckenliste-${pollId}`);
             if (!container) return;
             const userElements = Array.from(container.querySelectorAll('.alert[data-user-id]'));
             const slotElements = Array.from(container.querySelectorAll('.alert:not([data-user-id])'));
@@ -110,7 +107,7 @@ class UserHighlightManager {
                 if (highlightableUserIds.includes(userId)) {
                     el.addEventListener('mouseenter', () => {
                         if (this.highlightedUser) return;
-                        this.highlightUser(userId, pollId);
+                        this.highlightUser(userId, pollId, false);
                     });
                     el.addEventListener('mouseleave', () => {
                         if (this.highlightedUser) return;
@@ -124,7 +121,7 @@ class UserHighlightManager {
                             this.previousCategorySelection = this.categoryManager.muckenlistenManager.muckenlisten[0].getSelectedCategories();
                             this.highlightedUser = userId;
                             this.highlightedPollId = pollId;
-                            this.highlightUser(userId, pollId);
+                            this.highlightUser(userId, pollId, true);
                             this.showOnlyUserCategoriesGlobal(userId);
                         }
                     });
@@ -145,10 +142,9 @@ class UserHighlightManager {
                 this.clearHighlight();
             }
         });
-        pollIds.forEach(pollId => {
-            const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
+        this.muckenlistenManager.getMenus().forEach(menu => {
             if (menu) {
-                menu.addEventListener('change', e => {
+                menu.addEventListener('change', () => {
                     if (this.highlightedUser) {
                         this.clearHighlight();
                     }

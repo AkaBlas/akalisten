@@ -4,23 +4,39 @@
  * @param {MuckenlistenManager} muckenlistenManager - Manager für die Muckenlisten.
  */
 class CategoryManager {
-    constructor(muckenlistenManager) {
+    constructor(muckenlistenManager, storageManager) {
         this.muckenlistenManager = muckenlistenManager;
+        this.storageManager = storageManager;
     }
 
     /**
      * Initialisiert die Kategorie-Checkboxen, sodass alle standardmäßig ausgewählt sind, wenn keine Auswahl besteht.
+     * Lädt die Auswahl aus dem StorageManager und stellt sie wieder her.
      */
     initializeCategoryCheckboxes() {
         this.muckenlistenManager.muckenlisten.forEach(list => {
             const menu = list.menu;
             if (menu) {
+                const savedSelection = this.storageManager.getCategorySelection(list.pollId);
                 const checkboxes = Array.from(menu.querySelectorAll('.category-checkbox'));
-                if (!checkboxes.some(cb => cb.checked)) {
+                if (savedSelection && savedSelection.length > 0) {
+                    checkboxes.forEach(cb => cb.checked = savedSelection.includes(cb.value));
+                } else if (!checkboxes.some(cb => cb.checked)) {
                     checkboxes.forEach(cb => cb.checked = true);
                 }
             }
         });
+    }
+
+    /**
+     * Speichert die aktuelle Auswahl der Kategorien im StorageManager und aktualisiert die Sichtbarkeit.
+     */
+    storeAndUpdateVisibility() {
+        this.muckenlistenManager.muckenlisten.forEach(list => {
+            const selected = list.getSelectedCategories();
+            this.storageManager.setCategorySelection(list.pollId, selected);
+        });
+        this.updateCategoryVisibility();
     }
 
     /**
@@ -41,13 +57,15 @@ class CategoryManager {
                 });
             }
         });
+        // this.updateCategoryVisibility();
+        this.storeAndUpdateVisibility();
     }
 
     /**
      * Synchronisiert die Auswahl der Kategorien über alle Listen hinweg.
      * @param {string[]} selectedValues - Die ausgewählten Kategorien.
      */
-    updateCategorySelection(selectedValues) {
+    syncCategorySelection(selectedValues) {
         if (selectedValues.length === 0) {
             // Alle anzeigen
             this.muckenlistenManager.muckenlisten.forEach(list => {
@@ -73,35 +91,20 @@ class CategoryManager {
                 }
             });
         }
-        this.updateAllCategories();
+        this.storeAndUpdateVisibility();
+        // // Nach der Synchronisierung speichern
+        // this.muckenlistenManager.muckenlisten.forEach(list => {
+        //     const selected = list.getSelectedCategories();
+        //     this.storageManager.setCategorySelection(list.pollId, selected);
+        // });
+        // this.updateCategoryVisibility();
     }
 
     /**
      * Aktualisiert die Anzeige aller Kategorien basierend auf der aktuellen Auswahl.
      */
-    updateAllCategories() {
-        const selectedByPoll = {};
-        this.muckenlistenManager.muckenlisten.forEach(list => {
-            selectedByPoll[list.pollId] = list.getSelectedCategories();
-        });
-        this.muckenlistenManager.muckenlisten.forEach(list => {
-            const menu = list.menu;
-            const allCategoryValues = list.getAllCategories();
-            const categories = document.querySelectorAll(`#mucke-${list.pollId} .register-category`);
-            const selectedCategories = selectedByPoll[list.pollId];
-            const allSelected = this.muckenlistenManager.muckenlisten.every(l => {
-                const sel = selectedByPoll[l.pollId];
-                return sel.length === 0 || sel.length === l.getAllCategories().length;
-            });
-            if (allSelected) {
-                categories.forEach(cat => cat.classList.remove("d-none"));
-            } else {
-                categories.forEach(cat => {
-                    const catName = cat.getAttribute("data-category-name");
-                    cat.classList.toggle("d-none", !selectedCategories.includes(catName));
-                });
-            }
-        });
+    updateCategoryVisibility() {
+        this.muckenlistenManager.updateCategoryVisibility();
     }
 
     /**
@@ -124,12 +127,10 @@ class CategoryManager {
                     // Synchronisiere Auswahl
                     // 'this' ist hier nicht CategoryManager, daher closure verwenden
                     label.categoryManager.setCategoryCheckboxes(selected);
-                    label.categoryManager.updateAllCategories();
                 }
                 // SelectOnly: Nur diese Kategorie auswählen und synchronisieren
                 function handleSelectOnly(cb) {
                     label.categoryManager.setCategoryCheckboxes([cb.value]);
-                    label.categoryManager.updateAllCategories();
                 }
                 // CategoryManager für closures verfügbar machen
                 label.categoryManager = this;
@@ -169,20 +170,18 @@ class CategoryManager {
                 let longPressTimer, isTouch = false;
                 cb.addEventListener('change', () => {
                     const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
-                    this.updateCategorySelection(selected);
+                    this.syncCategorySelection(selected);
                 });
                 cb.addEventListener('dblclick', e => {
                     if (isTouch) return;
                     e.preventDefault(); e.stopPropagation();
                     this.setCategoryCheckboxes([cb.value]);
-                    this.updateAllCategories();
                     return false;
                 });
                 cb.addEventListener('touchstart', () => {
                     isTouch = true;
                     longPressTimer = setTimeout(() => {
                         this.setCategoryCheckboxes([cb.value]);
-                        this.updateAllCategories();
                     }, 500);
                 });
                 cb.addEventListener('touchend', () => {
@@ -207,7 +206,6 @@ class CategoryManager {
                     if (e.target.classList.contains('category-checkbox')) {
                         const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
                         this.setCategoryCheckboxes(selected);
-                        this.updateAllCategories();
                     }
                 });
                 const selectAllBtn = menu.querySelector('.category-select-all-btn');
@@ -215,7 +213,6 @@ class CategoryManager {
                     selectAllBtn.addEventListener('click', () => {
                         const allValues = Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value);
                         this.setCategoryCheckboxes(allValues);
-                        this.updateAllCategories();
                     });
                 }
             }
