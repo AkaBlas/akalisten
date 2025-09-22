@@ -42,6 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     );
                 });
             }
+
+            // Prüfe, wie viele Spalten sichtbar sind
+            const visibleColumns = filterTypes.filter(type =>
+                !document.querySelector(`#mucke-${pollId} .column.${type}`)?.classList.contains('d-none')
+            );
+            const fillEntries = document.querySelectorAll(`#mucke-${pollId} .fill-entry`);
+            fillEntries.forEach(el => el.classList.toggle('hidden', visibleColumns.length === 1));
         });
     }
 
