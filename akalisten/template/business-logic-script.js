@@ -56,19 +56,110 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Shortcut: Klick auf Label wählt nur diese Kategorie aus
+    // Shortcut: Klick toggelt, Doppelklick/Long-Press wählt nur diese Kategorie
     function setupCategoryLabelShortcuts() {
         pollIds.forEach(pollId => {
             const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
             if (menu) {
+                // Für Label
                 menu.querySelectorAll('.category-label-shortcut').forEach(label => {
+                    let longPressTimer;
+                    let isTouch = false;
+
+                    // Klick toggelt Auswahl (macht den Text wirklich klickbar)
                     label.addEventListener('click', (e) => {
+                        if (isTouch) return; // Touch handled separately
+                        // Toggle checkbox
+                        const cb = menu.querySelector(`#${label.getAttribute('for')}`);
+                        if (cb) {
+                            cb.checked = !cb.checked;
+                            const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+                            // Wenn keine Kategorie ausgewählt, alle auswählen
+                            if (selected.length === 0) {
+                                menu.querySelectorAll('.category-checkbox').forEach(box => box.checked = true);
+                                syncCategoryCheckboxes(Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value));
+                                updateAllCategories();
+                            } else {
+                                syncCategoryCheckboxes(selected);
+                                updateAllCategories();
+                            }
+                        }
+                    });
+
+                    // Doppelklick wählt nur diese Kategorie
+                    label.addEventListener('dblclick', (e) => {
+                        if (isTouch) return;
                         e.preventDefault();
                         const value = label.getAttribute('data-category-value');
                         syncCategoryCheckboxes([value]);
                         updateAllCategories();
                     });
+
+                    // Touch/Long-Press für Mobilgeräte
+                    label.addEventListener('touchstart', (e) => {
+                        isTouch = true;
+                        longPressTimer = setTimeout(() => {
+                            const value = label.getAttribute('data-category-value');
+                            syncCategoryCheckboxes([value]);
+                            updateAllCategories();
+                        }, 500); // 500ms für Long-Press
+                    });
+                    label.addEventListener('touchend', (e) => {
+                        clearTimeout(longPressTimer);
+                        setTimeout(() => { isTouch = false; }, 100);
+                    });
                 });
+
+                // Für Checkbox selbst
+                menu.querySelectorAll('.category-checkbox').forEach(cb => {
+                    let longPressTimer;
+                    let isTouch = false;
+
+                    // Klick toggelt Auswahl (Standardverhalten)
+                    cb.addEventListener('change', () => {
+                        const selected = Array.from(menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+                        // Wenn keine Kategorie ausgewählt, alle auswählen
+                        if (selected.length === 0) {
+                            menu.querySelectorAll('.category-checkbox').forEach(box => box.checked = true);
+                            syncCategoryCheckboxes(Array.from(menu.querySelectorAll('.category-checkbox')).map(cb => cb.value));
+                            updateAllCategories();
+                        } else {
+                            syncCategoryCheckboxes(selected);
+                            updateAllCategories();
+                        }
+                    });
+
+                    // Doppelklick wählt nur diese Kategorie
+                    cb.addEventListener('dblclick', (e) => {
+                        if (isTouch) return;
+                        e.preventDefault();
+                        syncCategoryCheckboxes([cb.value]);
+                        updateAllCategories();
+                    });
+
+                    // Touch/Long-Press für Mobilgeräte
+                    cb.addEventListener('touchstart', (e) => {
+                        isTouch = true;
+                        longPressTimer = setTimeout(() => {
+                            syncCategoryCheckboxes([cb.value]);
+                            updateAllCategories();
+                        }, 500);
+                    });
+                    cb.addEventListener('touchend', (e) => {
+                        clearTimeout(longPressTimer);
+                        setTimeout(() => { isTouch = false; }, 100);
+                    });
+                });
+            }
+        });
+    }
+
+    // Tooltip für Info-Icon initialisieren
+    function setupCategoryInfoTooltip() {
+        pollIds.forEach(pollId => {
+            const infoIcon = document.querySelector(`#categoryDropdown-${pollId}`).parentElement.nextElementSibling?.querySelector('.bi-info-circle');
+            if (infoIcon && window.bootstrap) {
+                new bootstrap.Tooltip(infoIcon);
             }
         });
     }
@@ -202,5 +293,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initiales Setzen
     initCategoryCheckboxes();
     setupCategoryLabelShortcuts();
+    setupCategoryInfoTooltip();
     updateAllColumns();
 });

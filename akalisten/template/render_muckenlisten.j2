@@ -108,30 +108,39 @@
                                     Keine Antwort
                                 </label>
                                 <!-- Kategorie Dropdown mit Checkboxen -->
-                                <div class="dropdown">
-                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="categoryDropdown-{{ poll.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Kategorien wählen
-                                    </button>
-                                    <ul class="dropdown-menu p-2" aria-labelledby="categoryDropdown-{{ poll.id }}" id="category-dropdown-menu-{{ poll.id }}">
-                                        <li>
-                                            <button type="button" class="btn btn-sm btn-primary w-100 text-center mb-2 category-select-all-btn d-flex justify-content-center align-items-center" data-poll-id="{{ poll.id }}">
-                                                <span class="icon-text">
-                                                    <i class="bi bi-check2-all me-1"></i>
-                                                    <span>Alle auswählen</span>
-                                                </span>
-                                            </button>
-                                        </li>
-                                        {% for option_id, votes in poll_votes[poll.id].options.items() %}
+                                <div class="d-flex align-items-center gap-1">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="categoryDropdown-{{ poll.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Kategorien wählen
+                                        </button>
+                                        <ul class="dropdown-menu p-2" aria-labelledby="categoryDropdown-{{ poll.id }}" id="category-dropdown-menu-{{ poll.id }}">
                                             <li>
-                                                <div class="form-check">
-                                                    <input class="form-check-input category-checkbox pointer" type="checkbox" value="{{ votes.text }}" id="category-checkbox-{{ poll.id }}-{{ loop.index }}">
-                                                    <label class="form-check-label category-label-shortcut pointer" for="category-checkbox-{{ poll.id }}-{{ loop.index }}" data-category-value="{{ votes.text }}">
-                                                        {{ votes.text }}
-                                                    </label>
-                                                </div>
+                                                <button type="button" class="btn btn-sm btn-primary w-100 text-center mb-2 category-select-all-btn d-flex justify-content-center align-items-center" data-poll-id="{{ poll.id }}">
+                                                    <span class="icon-text">
+                                                        <i class="bi bi-check2-all me-1"></i>
+                                                        <span>Alle auswählen</span>
+                                                    </span>
+                                                </button>
                                             </li>
-                                        {% endfor %}
-                                    </ul>
+                                            {% for option_id, votes in poll_votes[poll.id].options.items() %}
+                                                <li>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input category-checkbox pointer" type="checkbox" value="{{ votes.text }}" id="category-checkbox-{{ poll.id }}-{{ loop.index }}">
+                                                        <label class="form-check-label category-label-shortcut pointer" for="category-checkbox-{{ poll.id }}-{{ loop.index }}" data-category-value="{{ votes.text }}">
+                                                            {{ votes.text }}
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <span class="ms-1 d-inline-flex align-items-center">
+                                        <i class="bi bi-info-circle pointer"
+                                           tabindex="0"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           title="Kategorien können durch Klick ausgewählt oder abgewählt werden. Doppelklick (am Handy: langes Drücken) auf eine Kategorie wählt nur diese aus."></i>
+                                    </span>
                                 </div>
                             </div>
                         </div>
