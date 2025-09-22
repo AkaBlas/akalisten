@@ -116,3 +116,8 @@ h2:target .anchor-link {
     top: 0;
     z-index: 2;
 }
+
+.alert-entry {
+    padding: .375rem .75rem;
+    height: 2.25rem;
+}
