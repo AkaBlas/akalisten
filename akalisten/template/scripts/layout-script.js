@@ -1,18 +1,38 @@
+/**
+ * Mapping von Theme-Namen zu Bootstrap-Icon-Klassen.
+ */
 const iconClassMap = {
     light: 'bi-sun-fill',
     dark: 'bi-moon-stars-fill',
     auto: 'bi-circle-half'
 };
 
+/**
+ * Holt das gespeicherte Theme aus localStorage.
+ * @returns {string|null}
+ */
 const getStoredTheme = () => localStorage.getItem('theme');
+
+/**
+ * Speichert das Theme in localStorage.
+ * @param {string} theme
+ */
 const setStoredTheme = theme => localStorage.setItem('theme', theme);
 
+/**
+ * Ermittelt das bevorzugte Theme des Nutzers.
+ * @returns {string}
+ */
 const getPreferredTheme = () => {
     const storedTheme = getStoredTheme();
     if (storedTheme) return storedTheme;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 
+/**
+ * Setzt das Theme für die Seite.
+ * @param {string} theme
+ */
 const setTheme = theme => {
     const html = document.documentElement;
     const effectiveTheme = theme === 'auto'
@@ -22,6 +42,11 @@ const setTheme = theme => {
     html.classList.toggle('dark', effectiveTheme === 'dark');
 };
 
+/**
+ * Zeigt das aktuell aktive Theme im Theme-Switcher an.
+ * @param {string} theme
+ * @param {boolean} [focus=false]
+ */
 const showActiveTheme = (theme, focus = false) => {
     const themeSwitcher = document.querySelector('#bd-theme');
     if (!themeSwitcher) return;
@@ -49,6 +74,12 @@ const showActiveTheme = (theme, focus = false) => {
     if (focus) themeSwitcher.focus();
 };
 
+/**
+ * Initialisiert den Theme-Picker und die zugehörigen Event Listener.
+ * Event Listener:
+ * - click auf Theme-Buttons: Theme wird umgestellt und gespeichert
+ * - change auf Media Query: Theme wird automatisch angepasst
+ */
 const setupThemePicker = () => {
     setTheme(getPreferredTheme());
 
@@ -75,6 +106,13 @@ const setupThemePicker = () => {
 
 setupThemePicker();
 
+/**
+ * Initialisiert das Verhalten der Navbar (Höhe, Scroll-Verhalten, Tooltips).
+ * Event Listener:
+ * - scroll: Navbar zeigt Scrollrichtung an
+ * - resize/load: Navbar-Höhe wird aktualisiert
+ * - Tooltip-Initialisierung für alle Elemente mit data-bs-toggle="tooltip"
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const navbar = document.querySelector('.navbar');
     if (!navbar) return;

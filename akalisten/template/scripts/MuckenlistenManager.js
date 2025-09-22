@@ -1,19 +1,34 @@
+/**
+ * MuckenlistenManager verwaltet alle Muckenlisten und deren Kategorien.
+ * @class
+ */
 class MuckenlistenManager {
     constructor() {
         this.muckenlisten = [];
         this.pollIds = [];
     }
 
+    /**
+     * Initialisiert die Muckenlisten anhand der vorhandenen Poll-IDs.
+     */
     init() {
         this.pollIds = Array.from(document.querySelectorAll('[id^="filter-all-"]'))
             .map(el => el.id.replace('filter-all-', ''));
         this.muckenlisten = this.pollIds.map(id => new Muckenliste(id));
     }
 
+    /**
+     * Gibt alle Poll-IDs zurück.
+     * @returns {string[]}
+     */
     getPollIds() {
         return this.pollIds;
     }
 
+    /**
+     * Gibt alle verfügbaren Kategorien über alle Listen hinweg zurück.
+     * @returns {string[]}
+     */
     getAllAvailableCategories() {
         const allCategories = new Set();
         this.muckenlisten.forEach(list => {
@@ -22,6 +37,10 @@ class MuckenlistenManager {
         return Array.from(allCategories);
     }
 
+    /**
+     * Gibt die gemeinsamen Kategorien aller Listen zurück.
+     * @returns {string[]}
+     */
     getCommonCategories() {
         if (this.muckenlisten.length === 0) return [];
         let common = new Set(this.muckenlisten[0].getAllCategories());
@@ -32,6 +51,10 @@ class MuckenlistenManager {
         return Array.from(common);
     }
 
+    /**
+     * Gibt alle Menü-Elemente der Listen zurück.
+     * @returns {HTMLElement[]}
+     */
     getMenus() {
         return this.muckenlisten.map(list => list.menu).filter(Boolean);
     }

@@ -1,3 +1,9 @@
+/**
+ * Initialisiert die Hauptlogik der Seite nach DOM-Load.
+ * Setzt alle Manager auf, richtet Event Listener ein und synchronisiert die Anzeige.
+ * Event Listener:
+ * - DOMContentLoaded: Startet die Initialisierung der Muckenlisten, Filter, Kategorien und User-Highlighting.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const filterTypes = ['yes', 'no', 'maybe', 'pending'];
     const muckenlistenManager = new MuckenlistenManager();

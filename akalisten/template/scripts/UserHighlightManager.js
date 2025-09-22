@@ -1,3 +1,9 @@
+/**
+ * UserHighlightManager verwaltet die Hervorhebung von Nutzern in den Muckenlisten.
+ * @class
+ * @param {MuckenlistenManager} muckenlistenManager
+ * @param {CategoryManager} categoryManager
+ */
 class UserHighlightManager {
     constructor(muckenlistenManager, categoryManager) {
         this.muckenlistenManager = muckenlistenManager;
@@ -7,6 +13,10 @@ class UserHighlightManager {
         this.previousCategorySelection = null;
     }
 
+    /**
+     * Hebt die Hervorhebung auf und stellt ggf. die vorherige Kategorieauswahl wieder her.
+     * @param {boolean} restoreCategories - Ob die Kategorienauswahl wiederhergestellt werden soll.
+     */
     clearHighlight(restoreCategories = false) {
         this.muckenlistenManager.getPollIds().forEach(pid => {
             const els = document.querySelectorAll(`#mucke-${pid} .alert[data-user-id]`);
@@ -24,6 +34,10 @@ class UserHighlightManager {
         }
     }
 
+    /**
+     * Zeigt nur die Kategorien an, in denen der Nutzer vorkommt (global).
+     * @param {string} userId
+     */
     showOnlyUserCategoriesGlobal(userId) {
         this.muckenlistenManager.getPollIds().forEach(pollId => {
             const categoriesWithUser = [];
@@ -47,6 +61,11 @@ class UserHighlightManager {
         });
     }
 
+    /**
+     * Hebt einen Nutzer in einer bestimmten Muckenliste hervor.
+     * @param {string} userId
+     * @param {string} pollId
+     */
     highlightUser(userId, pollId) {
         this.muckenlistenManager.getPollIds().forEach(pid => {
             const els = document.querySelectorAll(`#mucke-${pid} .alert[data-user-id]`);
@@ -56,6 +75,15 @@ class UserHighlightManager {
         els.forEach(e => e.classList.add('alert-info'));
     }
 
+    /**
+     * Richtet die Event Listener für die Hervorhebung von Nutzern ein.
+     * Event Listener:
+     * - mouseenter/mouseleave: Zeigt/entfernt die Hervorhebung
+     * - click: Zeigt nur die Kategorien des Nutzers oder hebt die Hervorhebung auf
+     * - change auf Kategorie-Menü: Hebt die Hervorhebung auf
+     * - click auf Slot-Elemente: Hebt die Hervorhebung auf
+     * - click auf Body: Hebt die Hervorhebung auf, wenn außerhalb geklickt wird
+     */
     setupUserHighlighting() {
         const pollIds = this.muckenlistenManager.getPollIds();
         pollIds.forEach(pollId => {

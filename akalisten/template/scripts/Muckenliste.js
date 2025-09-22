@@ -1,24 +1,41 @@
-// Klasse für eine einzelne Muckenliste
+/**
+ * Repräsentiert eine einzelne Muckenliste und deren Kategorien.
+ * @class
+ * @param {string} pollId - Die ID der Umfrage/Muckenliste.
+ */
 class Muckenliste {
+    /**
+     * Erstellt eine neue Muckenliste.
+     * @param {string} pollId
+     */
     constructor(pollId) {
         this.pollId = pollId;
         this.menu = document.getElementById(`category-dropdown-menu-${pollId}`);
         this.container = document.getElementById(`mucke-${pollId}`);
     }
 
-    // Methode um die aktuell ausgewählten Kategorien zu bekommen
+    /**
+     * Gibt die aktuell ausgewählten Kategorien zurück.
+     * @returns {string[]}
+     */
     getSelectedCategories() {
         if (!this.menu) return [];
         return Array.from(this.menu.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
     }
 
-    // Methode um alle verfügbaren Kategorien zu bekommen
+    /**
+     * Gibt alle verfügbaren Kategorien zurück.
+     * @returns {string[]}
+     */
     getAllCategories() {
         if (!this.menu) return [];
         return Array.from(this.menu.querySelectorAll('.category-checkbox')).map(cb => cb.value);
     }
 
-    // Methode um die Checkboxen der Kategorien zu setzen
+    /**
+     * Setzt die Checkboxen der Kategorien entsprechend der Auswahl.
+     * @param {string[]} selectedValues
+     */
     setCategoryCheckboxes(selectedValues) {
         if (!this.menu) return;
         this.menu.querySelectorAll('.category-checkbox').forEach(cb => {
@@ -26,7 +43,11 @@ class Muckenliste {
         });
     }
 
-    // Methode um die gemeinsamen Kategorien mit anderen Menüs zu berechnen
+    /**
+     * Berechnet die gemeinsamen Kategorien mit anderen Menüs.
+     * @param {HTMLElement[]} otherMenus
+     * @returns {string[]}
+     */
     getCommonCategories(otherMenus) {
         const myCategories = new Set(this.getAllCategories());
         let common = new Set(myCategories);

@@ -1,8 +1,16 @@
+/**
+ * CategoryManager verwaltet die Kategorie-Checkboxen und deren Synchronisation zwischen mehreren Muckenlisten.
+ * @class
+ * @param {MuckenlistenManager} muckenlistenManager - Manager für die Muckenlisten.
+ */
 class CategoryManager {
     constructor(muckenlistenManager) {
         this.muckenlistenManager = muckenlistenManager;
     }
 
+    /**
+     * Initialisiert die Kategorie-Checkboxen, sodass alle standardmäßig ausgewählt sind, wenn keine Auswahl besteht.
+     */
     initializeCategoryCheckboxes() {
         this.muckenlistenManager.muckenlisten.forEach(list => {
             const menu = list.menu;
@@ -15,6 +23,10 @@ class CategoryManager {
         });
     }
 
+    /**
+     * Setzt die Checkboxen für Kategorien entsprechend der Auswahl.
+     * @param {string[]} selectedValues - Die ausgewählten Kategorien.
+     */
     setCategoryCheckboxes(selectedValues) {
         const commonCategories = this.muckenlistenManager.getCommonCategories();
         this.muckenlistenManager.muckenlisten.forEach(list => {
@@ -31,6 +43,10 @@ class CategoryManager {
         });
     }
 
+    /**
+     * Synchronisiert die Auswahl der Kategorien über alle Listen hinweg.
+     * @param {string[]} selectedValues - Die ausgewählten Kategorien.
+     */
     updateCategorySelection(selectedValues) {
         if (selectedValues.length === 0) {
             // Alle anzeigen
@@ -60,6 +76,9 @@ class CategoryManager {
         this.updateAllCategories();
     }
 
+    /**
+     * Aktualisiert die Anzeige aller Kategorien basierend auf der aktuellen Auswahl.
+     */
     updateAllCategories() {
         const selectedByPoll = {};
         this.muckenlistenManager.muckenlisten.forEach(list => {
@@ -85,6 +104,12 @@ class CategoryManager {
         });
     }
 
+    /**
+     * Richtet Shortcuts für die Kategorie-Labels ein (Klick, Doppelklick, Touch).
+     * Event Listener:
+     * - click: toggelt die Checkbox (Nutzer kann schnell Kategorien an-/abwählen)
+     * - dblclick/touch longpress: wählt nur diese Kategorie aus (Nutzer sieht nur diese Kategorie)
+     */
     setupCategoryShortcuts() {
         this.muckenlistenManager.muckenlisten.forEach(list => {
             const menu = list.menu;
@@ -160,6 +185,12 @@ class CategoryManager {
         });
     }
 
+    /**
+     * Richtet Event Listener für Kategorie-Checkboxen und Buttons ein.
+     * Event Listener:
+     * - change: synchronisiert die Auswahl
+     * - click auf 'Alle auswählen': wählt alle Kategorien aus
+     */
     setupCategoryEvents() {
         this.muckenlistenManager.getPollIds().forEach(pollId => {
             const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
@@ -183,6 +214,9 @@ class CategoryManager {
         });
     }
 
+    /**
+     * Initialisiert Tooltip für das Info-Icon neben der Kategorieauswahl.
+     */
     setupCategoryInfoTooltip() {
         this.muckenlistenManager.getPollIds().forEach(pollId => {
             const infoIcon = document.querySelector(`#categoryDropdown-${pollId}`).parentElement.nextElementSibling?.querySelector('.bi-info-circle');
