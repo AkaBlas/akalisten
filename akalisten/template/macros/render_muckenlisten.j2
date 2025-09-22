@@ -45,7 +45,7 @@
                                          aria-labelledby="heading-accordion-muckeninfo-{{ poll.id }}">
                                         <div class="accordion-body">
                                             {% if poll.mucken_info.has_any_info %}
-                                                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2 mb-3">
+                                                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
                                                     {% if poll.mucken_info.date %}
                                                         {{ render_info('calendar-event', poll.mucken_info.date.strftime('%d.%m.%Y')) }}
                                                     {% endif %}
@@ -67,7 +67,7 @@
                                                 </div>
                                             {% endif %}
                                             {% if poll.mucken_info.additional %}
-                                                <div class="card mb-2">
+                                                <div class="card mt-2">
                                                     <div class="card-header d-flex justify-content-between align-items-center py-2">
                                                         <span><b>Zusätzliche Informationen</b></span>
                                                         <i class="bi bi-info-circle fs-5 text-info"></i>
