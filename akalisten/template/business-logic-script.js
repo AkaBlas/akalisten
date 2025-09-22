@@ -343,16 +343,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Globale Highlight-Status
     let highlightedUser = null;
     let highlightedPollId = null;
+    let previousCategorySelection = null; // NEU: Merkt sich die Kategorie-Auswahl vor Highlight
 
     // Globale Funktion zum Entfernen des Highlights
-    function clearHighlight() {
+    function clearHighlight(restoreCategories = false) {
         pollIds.forEach(pid => {
             const els = document.querySelectorAll(`#mucke-${pid} .alert[data-user-id]`);
             els.forEach(e => e.classList.remove('alert-info'));
         });
         highlightedUser = null;
         highlightedPollId = null;
-        updateAllCategories();
+        // Kategorien wiederherstellen, falls gewünscht
+        if (restoreCategories && previousCategorySelection) {
+            setCategoryCheckboxes(previousCategorySelection);
+            updateAllCategories();
+            previousCategorySelection = null;
+        } else {
+            updateAllCategories();
+            previousCategorySelection = null;
+        }
     }
 
     // Globale Funktion zum Anzeigen nur der User-Kategorien in ALLEN Listen
@@ -431,8 +440,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     el.addEventListener('click', e => {
                         e.stopPropagation();
                         if (highlightedUser === userId && highlightedPollId === pollId) {
-                            clearHighlight();
+                            // Highlight entfernen und Kategorien wiederherstellen
+                            clearHighlight(true);
                         } else {
+                            // Vor Highlight: Kategorie-Auswahl merken
+                            previousCategorySelection = getSelectedCategories();
                             highlightedUser = userId;
                             highlightedPollId = pollId;
                             highlightUser(userId, pollId);
