@@ -340,18 +340,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Globale Highlight-Status
+    let highlightedUser = null;
+    let highlightedPollId = null;
+
+    // Globale Funktion zum Entfernen des Highlights
+    function clearHighlight() {
+        pollIds.forEach(pid => {
+            const els = document.querySelectorAll(`#mucke-${pid} .alert[data-user-id]`);
+            els.forEach(e => e.classList.remove('alert-info'));
+        });
+        highlightedUser = null;
+        highlightedPollId = null;
+        updateAllCategories();
+    }
+
+    // Globale Funktion zum Anzeigen nur der User-Kategorien in ALLEN Listen
+    function showOnlyUserCategoriesGlobal(userId) {
+        pollIds.forEach(pollId => {
+            const categoriesWithUser = [];
+            const categories = document.querySelectorAll(`#mucke-${pollId} .register-category`);
+            categories.forEach(cat => {
+                const userInCat = cat.querySelector(`.alert[data-user-id="${userId}"]`);
+                if (userInCat) {
+                    categoriesWithUser.push(cat.getAttribute('data-category-name'));
+                }
+            });
+
+            categories.forEach(cat => {
+                const catName = cat.getAttribute('data-category-name');
+                cat.classList.toggle('d-none', !categoriesWithUser.includes(catName));
+            });
+
+            const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
+            if (menu) {
+                menu.querySelectorAll('.category-checkbox').forEach(cb => {
+                    cb.checked = categoriesWithUser.includes(cb.value);
+                });
+            }
+        });
+    }
+
     // Highlight-Logik für User-Elemente in Muckenlisten
     function setupUserHighlighting() {
-        let highlightedUser = null;
-        let highlightedPollId = null;
-
         pollIds.forEach(pollId => {
             const container = document.getElementById(`mucke-${pollId}`);
             if (!container) return;
 
-            // Alle User-Elemente mit data-user-id in dieser Muckenliste
             const userElements = Array.from(container.querySelectorAll('.alert[data-user-id]'));
-            // Alle Slot-Elemente (leere Einträge ohne data-user-id)
             const slotElements = Array.from(container.querySelectorAll('.alert:not([data-user-id])'));
 
             // Zähle Vorkommen der User-IDs nur innerhalb dieser Muckenliste
@@ -361,10 +397,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 userIdCounts[userId] = (userIdCounts[userId] || 0) + 1;
             });
 
-            // Nur User-IDs mit mehr als einem Vorkommen in dieser Liste sind highlightbar
             const highlightableUserIds = Object.keys(userIdCounts).filter(uid => userIdCounts[uid] > 1);
 
-            // Setze Pointer-Cursor nur für highlightbare User in dieser Liste
             userElements.forEach(el => {
                 const userId = el.getAttribute('data-user-id');
                 if (highlightableUserIds.includes(userId)) {
@@ -374,7 +408,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Hilfsfunktion: Highlight für alle passenden User in einer Liste
             function highlightUser(userId, pollId) {
                 pollIds.forEach(pid => {
                     const els = document.querySelectorAll(`#mucke-${pid} .alert[data-user-id]`);
@@ -382,15 +415,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const els = document.querySelectorAll(`#mucke-${pollId} .alert[data-user-id="${userId}"]`);
                 els.forEach(e => e.classList.add('alert-info'));
-            }
-
-            function clearHighlight() {
-                pollIds.forEach(pid => {
-                    const els = document.querySelectorAll(`#mucke-${pid} .alert[data-user-id]`);
-                    els.forEach(e => e.classList.remove('alert-info'));
-                });
-                highlightedUser = null;
-                highlightedPollId = null;
             }
 
             userElements.forEach(el => {
@@ -412,17 +436,16 @@ document.addEventListener('DOMContentLoaded', () => {
                             highlightedUser = userId;
                             highlightedPollId = pollId;
                             highlightUser(userId, pollId);
+                            showOnlyUserCategoriesGlobal(userId); // Synchronisiere Kategorien global
                         }
                     });
                 } else {
-                    // Klick auf nicht-highlightbaren User entfernt das Highlight
                     el.addEventListener('click', () => {
                         clearHighlight();
                     });
                 }
             });
 
-            // Klick auf leere Slots entfernt das Highlight
             slotElements.forEach(el => {
                 el.addEventListener('click', () => {
                     clearHighlight();
@@ -434,6 +457,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.addEventListener('click', e => {
             if (!e.target.closest('.alert[data-user-id]') && !e.target.closest('.alert:not([data-user-id])')) {
                 clearHighlight();
+            }
+        });
+
+        // EINZELNER Listener für Kategorie-Menü: Highlight entfernen bei manueller Änderung
+        pollIds.forEach(pollId => {
+            const menu = document.getElementById(`category-dropdown-menu-${pollId}`);
+            if (menu) {
+                menu.addEventListener('change', e => {
+                    if (highlightedUser) {
+                        clearHighlight();
+                    }
+                });
             }
         });
     }
