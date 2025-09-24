@@ -1,4 +1,5 @@
 {% from 'render_card_grid.j2' import render_card_grid %}
+{% from 'render_truncate_text.j2' import render_truncate_text %}
 {% macro render_lists(lists) %}
 {% set cards = [] %}
 {% for list in lists %}
@@ -20,9 +21,13 @@
     </p>
 {% endif %}
 {% if list.html_description %}
-    <p class="card-text mb-0">
-        {{ list.html_description }}
-    </p>
+    {% if columns >= 2 %}
+        {{ render_truncate_text(list.html_description, 'list-' ~ loop.index) }}
+    {% else %}
+        <p class="card-text mb-0">
+            {{ list.html_description }}
+        </p>
+    {% endif %}
 {% endif %}
 {% endset %}
 {% set buttons = [] %}

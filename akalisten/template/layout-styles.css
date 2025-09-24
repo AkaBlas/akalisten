@@ -120,3 +120,40 @@ h2:target .anchor-link {
   -moz-user-select: none;    /* Firefox */
   -ms-user-select: none;     /* IE/Edge */
 }
+
+/* Truncate long text with "Mehr zeigen"/"Weniger zeigen" Button */
+.truncate-box input {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.truncate-box .truncate-text {
+  display: -webkit-box;
+  -webkit-line-clamp: var(--truncate-lines, 3);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.truncate-box input:checked + .truncate-text {
+  -webkit-line-clamp: unset;
+}
+.truncate-box .show-less {
+  display: none;
+}
+.truncate-box input:checked ~ label .show-more {
+  display: none;
+}
+.truncate-box input:checked ~ label .show-less {
+  display: inline;
+}
+/* Ab lg (>=992px): immer alles zeigen, Button ausblenden */
+@media (min-width: 992px) {
+  .truncate-box .truncate-text {
+    -webkit-line-clamp: unset !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+  .truncate-box label {
+    display: none !important;
+  }
+}
