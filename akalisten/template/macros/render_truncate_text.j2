@@ -1,0 +1,12 @@
+{% macro render_truncate_text(text, id, line_clamp=3) %}
+<div class="truncate-box truncate-box-{{ id }}">
+  <input type="checkbox" id="truncate-toggle-{{ id }}">
+  <div class="truncate-text card-text mb-0" style="--truncate-lines: {{ line_clamp }};">
+    {{ text|safe }}
+  </div>
+  <label for="truncate-toggle-{{ id }}" class="btn btn-sm btn-outline-info mt-2">
+    <span class="show-more">Mehr zeigen</span>
+    <span class="show-less">Weniger zeigen</span>
+  </label>
+</div>
+{% endmacro %}

@@ -1,0 +1,60 @@
+{% from 'render_card_grid.j2' import render_card_grid %}
+{% from 'render_truncate_text.j2' import render_truncate_text %}
+{% macro render_polls(polls) %}
+{% set cards = [] %}
+{% for poll in polls %}
+    {% set desc_len = poll.html_description|length if poll.html_description is defined and poll.html_description else 0 %}
+    {% set embedding = None %}
+    {% if desc_len > 1000 %}
+        {% set columns = 3 %}
+    {% elif desc_len > 500 %}
+        {% set columns = 2 %}
+    {% else %}
+        {% set columns = 1 %}
+    {% endif %}
+    {% set body %}
+        {% if poll.expire_date %}
+            <p class="mb-2">
+                <span class="d-flex align-items-center">
+                    <i class="bi bi-calendar-week me-2"></i>
+                    <b>Umfrage endet am:</b>&nbsp;{{ poll.expire_date.strftime('%d.%m.%Y %H:%M') }} Uhr
+                </span>
+            </p>
+        {% endif %}
+        {% if poll.html_description %}
+            {% if columns >= 2 %}
+                {{ render_truncate_text(poll.html_description, 'poll-' ~ loop.index) }}
+            {% else %}
+                <p class="card-text mb-0">
+                    {{ poll.html_description }}
+                </p>
+            {% endif %}
+        {% endif %}
+    {% endset %}
+    {% set buttons = [] %}
+    {% if poll.url %}
+        {% set _ = buttons.append({
+            "icon": "cloud-check",
+            "text": "Teilnehmen mit AkaCloud-Account",
+            "target": poll.url,
+            "css_class": " btn-outline-success"
+        }) %}
+    {% endif %}
+    {% if poll.public_url %}
+        {% set _ = buttons.append({
+            "icon": "pencil-fill",
+            "text": "Teilnehmen ohne AkaCloud-Account",
+            "target": poll.public_url,
+            "css_class": " btn-outline-primary"
+        }) %}
+    {% endif %}
+    {% set card = {
+        "title": poll.html_title,
+        "body": body,
+        "buttons": buttons,
+        "columns": columns,
+    } %}
+    {% set _ = cards.append(card) %}
+{% endfor %}
+{{ render_card_grid(cards, label="polls") }}
+{% endmacro %}

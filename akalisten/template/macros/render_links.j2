@@ -1,0 +1,42 @@
+{% from 'render_card_grid.j2' import render_card_grid %}
+{% from 'render_truncate_text.j2' import render_truncate_text %}
+{% macro render_links(links) %}
+    {% set cards = [] %}
+    {% for link in links %}
+        {% set has_description = link.html_description is defined and link.html_description %}
+        {% set desc_len = link.html_description|length if has_description else 0 %}
+        {% set buttons = [] %}
+        {% if link.basic_url %}
+            {% set _ = buttons.append({
+            "icon": link.icon,
+            "text": link.login_url and "Öffnen ohne AkaCloud-Account" or "Öffnen",
+            "target": link.basic_url,
+            "css_class": " btn-outline-primary"
+        }) %}
+        {% endif %}
+        {% if link.login_url %}
+            {% set _ = buttons.append({
+            "icon": link.icon,
+            "text": "Öffnen mit AkaCloud-Account",
+            "target": link.login_url,
+            "css_class": " btn-outline-success"
+        }) %}
+        {% endif %}
+        {% if has_description %}
+            {% if desc_len > 500 %}
+                {% set body = render_truncate_text(link.html_description, 'link-' ~ loop.index) %}
+            {% else %}
+                {% set body = link.html_description %}
+            {% endif %}
+        {% else %}
+            {% set body = "" %}
+        {% endif %}
+        {% set card = {
+        "title": link.html_title,
+        "body": body,
+        "buttons": buttons,
+    } %}
+        {% set _ = cards.append(card) %}
+    {% endfor %}
+    {{ render_card_grid(cards, label="links") }}
+{% endmacro %}

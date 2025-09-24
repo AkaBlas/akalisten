@@ -1,0 +1,48 @@
+{% macro render_category(votes, vote_type, vote_type_name) %}
+    {% set users = votes[vote_type]() %}
+    {% set yes_votes = votes.yes | length %}
+    {% set no_votes = votes.sanitized_no | length %}
+    {% set maybe_votes = votes.maybe | length %}
+    {% set pending_votes = votes.sanitized_not_voted | length %}
+    {% set max_slots = [yes_votes, no_votes, maybe_votes, pending_votes] | max %}
+    {% set users_length = users|length %}
+
+    <div class="mb-3 register-category {{ "fill-entry" if not users }}"
+         data-category-name="{{ votes.text }}">
+        <div class="fw-bold mb-2 ms-1 {{ "fill-entry" if not users }}">{{ votes.text }}</div>
+        <div class="d-flex flex-column">
+            {% for user in users %}
+                <div class="alert alert-secondary alert-sm alert-entry mb-1"
+                     data-user-id="{{ user.id }}">
+                    <span>{{ user.html_display_name }}</span>
+                </div>
+            {% endfor %}
+
+            {% if users_length < max_slots %}
+                {% for x in range(users_length, max_slots) %}
+                    <div class="alert alert-secondary alert-sm alert-entry mb-1 opacity-50 fill-entry"
+                            {% for count, type in (
+                                (yes_votes, 'yes'),
+                                (no_votes, 'no'),
+                                (maybe_votes, 'maybe'),
+                                (pending_votes, 'pending')
+
+                         ) %}
+                                {# We always need to keep one element visible if the category is visible at all. #}
+                                {# That's "why x == 0 or " #}
+                                {% if x == 0 or count > x %}
+                         data-fill-for-{{ type }}="true"
+                                {% else %}
+                         data-fill-for-{{ type }}="false"
+                                {% endif %}
+                            {% endfor %}
+                    ></div>
+                {% endfor %}
+            {% endif %}
+
+            {% if max_slots == 0 %}
+                <div class="alert alert-secondary alert-sm alert-entry mb-1 opacity-50 fill-entry"></div>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}

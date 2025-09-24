@@ -1,130 +1,233 @@
-{% from 'render_forms.j2' import render_forms %}
-{% from 'render_links.j2' import render_links %}
-{% from 'render_lists.j2' import render_lists %}
-{% from 'render_muckenlisten.j2' import render_muckenlisten %}
-{% from 'render_polls.j2' import render_polls %}
+{% from './macros/render_forms.j2' import render_forms %}
+{% from './macros/render_links.j2' import render_links %}
+{% from './macros/render_lists.j2' import render_lists %}
+{% from './macros/render_muckenlisten.j2' import render_muckenlisten %}
+{% from './macros/render_polls.j2' import render_polls %}
+{% from './macros/render_section.j2' import render_section %}
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="h-100" data-bs-theme=auto>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AkaListen</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script>
+        {% include './scripts/StorageManager.js' %}
+        {% include './scripts/AccordionManager.js' %}
+        {% include './scripts/Muckenliste.js' %}
+        {% include './scripts/MuckenlistenManager.js' %}
+        {% include './scripts/FilterManager.js' %}
+        {% include './scripts/CategoryManager.js' %}
+        {% include './scripts/UserHighlightManager.js' %}
+        {% include './scripts/main.js' %}
+        {% if not wordpress %}
+            {# Layout Script is only about Header & Dark Mode. We Skip this on Wordpress for Simplicity #}
+            {% include './scripts/layout-script.js' %}
+        {% endif %}
+    </script>
+    <!-- Custom styles -->
     <style>
-        {% include 'style.css.j2' %}
+        {#
+            For WP, we can't use vanilla Bootstrap because that's modifying global selectors.
+            That's why we need to use modified CSS and wrap everything in the "bootstrap-scope" class.
+        #}
+        {% if wordpress %}
+            {% include './styles/bootstrap5.3.2.wp.min.css' %}
+            {% include './styles/layout-styles.wp.css' %}
+        {% else %}
+            {% include './styles/bootstrap5.3.2.min.css' %}
+            {% include './styles/layout-styles.css' %}
+        {% endif %}
     </style>
 </head>
-{% if wordpress %}
-    <div id="wp-embedding">
-{% else %}
-    <body>
-{% endif %}
-<div class="wrapper">
-    <div class="content">
-        <header>
-            <h1>
-                <div class="vcenter-flex">
-                    AkaListen
-                    <div class="color-scheme-toggle-container">
-                        <button class="color-scheme-toggle">
-                            <div class="color-scheme-icon-when-auto-light">
-                                <i data-lucide="sun-moon" class="lucide-icon"></i>
-                            </div>
-                            <div class="color-scheme-icon-when-auto-dark">
-                                <i data-lucide="sun-moon" class="lucide-icon"></i>
-                            </div>
-                            <div class="color-scheme-icon-when-dark">
-                                <i data-lucide="moon-star" class="lucide-icon"></i>
-                            </div>
-                            <div class="color-scheme-icon-when-light">
-                                <i data-lucide="sun" class="lucide-icon"></i>
-                            </div>
+{{ "<div class='bootstrap-scope'>" if wordpress }}
+{{ "<div class='bootstrap-scope' data-bs-theme=auto>" if wordpress }}
+<{{ "div class='d-flex flex-column h-100' id='wp-embedding'" if wordpress else 'body class="d-flex flex-column h-100"' }}>
+
+{# Header is skipped in wordpress as there's little benefit and getting the layout right is difficult #}
+{% if not wordpress %}
+    <header>
+        <!-- Fixed navbar -->
+        <nav id="nav-bar"
+             class="navbar navbar-expand-md fixed-top custom-navbar bg-body-tertiary">
+            <div class="container-fluid mx-3">
+                <a class="navbar-brand" href="#">AkaListen</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarCollapse" aria-controls="navbarCollapse"
+                        aria-expanded="false" aria-label="Navigation umschalten">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <hr class="d-md-none my-2 text-body-tertiary">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#muckenlisten">Muckenlisten</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#umfragen">Umfragen</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#formulare">Formulare</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#andere-listen">Andere Listen</a>
+                        </li>
+                        {% if links %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="#linksammlung">Link-Sammlung</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <!-- Theme Switcher Dropdown -->
+                    <hr class="d-md-none my-2 text-body-tertiary">
+                    <div class="dropdown ms-md-auto">
+                        <button class="btn btn-link nav-link px-lg-2 py-2 dropdown-toggle d-flex align-items-center"
+                                id="bd-theme"
+                                type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false"
+                                aria-label="Farbschema (hell/dunkel/auto)">
+                            <i class="bi bi-circle-half theme-icon-active"></i>
+                            <span id="bd-theme-text" class="ms-2"></span>
                         </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li>
+                                <button type="button"
+                                        class="dropdown-item d-flex align-items-center"
+                                        data-bs-theme-value="light">
+                                    <i class="bi bi-sun-fill me-2"></i>
+                                    Hell
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button"
+                                        class="dropdown-item d-flex align-items-center"
+                                        data-bs-theme-value="dark">
+                                    <i class="bi bi-moon-stars-fill me-2"></i>
+                                    Dunkel
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button"
+                                        class="dropdown-item d-flex align-items-center active"
+                                        data-bs-theme-value="auto">
+                                    <i class="bi bi-circle-half me-2"></i>
+                                    Automatisch
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </h1>
-        </header>
-        <h2>Aktuelle Muckenlisten</h2>
-        {% if mucken_listen.polls %}
-            {{ render_muckenlisten(mucken_listen.polls, mucken_listen.poll_votes) }}
-        {% else %}
-            <p>
-                <span class="icon-text">
-                    Keine Muckenlisten gefunden.
-                    <i data-lucide="heart-crack" class="lucide-icon"></i>
-                </span>
-            </p>
-        {% endif %}
-        <h2>Aktuelle Umfragen</h2>
-        {% if polls %}
-            {{ render_polls(polls) }}
-        {% else %}
-            <p>
-                <span class="icon-text">
-                    Keine Umfragen gefunden.
-                    <i data-lucide="text-select" class="lucide-icon"></i>
-                </span>
-            </p>
-        {% endif %}
-        <h2>Aktuelle Formulare</h2>
-        {% if forms %}
-            {{ render_forms(forms) }}
-        {% else %}
-            <p>
-                <span class="icon-text">
-                    Keine Formulare gefunden.
-                    <i data-lucide="heart-crack" class="lucide-icon"></i>
-                </span>
-            </p>
-        {% endif %}
-        <h2>Aktuelle andere Listen</h2>
-        {% if lists %}
-            {{ render_lists(lists) }}
-        {% else %}
-            <p>
-                <span class="icon-text">
-                    Keine Listen gefunden.
-                    <i data-lucide="text-select" class="lucide-icon"></i>
-                </span>
-            </p>
-        {% endif %}
-        {% if links %}
-            <h2>Link-Sammlung</h2>
-            {{ render_links(links) }}
-        {% endif %}
-    </div>
-    <footer>
-        <div>
-            <small>
-                <a href="https://github.com/AkaBlas/akalisten/issues" target="_blank"
-                   rel="noopener noreferrer" class="pseudo-button">
-                    <div class="icon-text">
-                        <i data-lucide="github" class="lucide-icon"></i>
-                        <span>Verbesserungsvorschläge</span>
-                    </div>
-                </a>
-                <p>
-                     <span class="icon-text">
-                         <i data-lucide="database-backup" class="lucide-icon"></i>Zuletzt aktualisiert: {{ now.strftime("%d.%m.%Y %H:%M:%S") }}
-                     </span>
-                    <br>
-                    <span class="icon-text">
-                         <i data-lucide="fingerprint" class="lucide-icon"></i>Diese Seite nutzt <a
-                            href="https://de.wikipedia.org/wiki/Web_Storage#localStorage">Labskauspetties</a>. Das sind quasi DSGVO-konforme Cookies. Lecker!
-                    </span>
-                    <br>
-                    <span class="icon-text">
-                         Mit<i data-lucide="heart-handshake" class="lucide-icon"></i>gebaut von Hirsch und Henry
-                     </span>
-                </p>
-            </small>
-        </div>
-    </footer>
-</div>
-{% include 'icons_script.j2' %}
-{% include 'script.j2' %}
-{% if wordpress %}
-    </div>
-{% else %}
-    </body>
+            </div>
+        </nav>
+    </header>
 {% endif %}
+
+<main class="flex-shrink-0 py-4 mb-3">
+    {{ render_section(
+        'muckenlisten',
+        'Aktuelle Muckenlisten',
+        (mucken_listen.polls, mucken_listen.poll_votes) if mucken_listen.polls.values() else None,
+        render_muckenlisten,
+        'Keine Muckenlisten gefunden.',
+        'Fehlende Muckenliste melden',
+        'heartbreak-fill',
+        True
+    ) }}
+
+    {{ render_section(
+        'umfragen',
+        'Aktuelle Umfragen',
+        polls,
+        render_polls,
+        'Keine Umfragen gefunden.',
+        'Fehlende Umfrage melden'
+    ) }}
+
+    {{ render_section(
+        'formulare',
+        'Aktuelle Formulare',
+        forms,
+        render_forms,
+        'Keine Formulare gefunden.',
+        'Fehlende Formular melden'
+    ) }}
+
+    {{ render_section(
+        'andere-listen',
+        'Aktuelle andere Listen',
+        lists,
+        render_lists,
+        'Keine Listen gefunden.',
+        'Fehlende Liste melden'
+    ) }}
+
+    {% if links %}
+        {{ render_section(
+            'linksammlung',
+            'Link-Sammlung',
+            links,
+            render_links,
+            '',
+            ''
+        ) }}
+    {% endif %}
+</main>
+
+<footer class="footer mt-auto py-3 bg-body-tertiary text-body-secondary">
+    <div class="container">
+        <div class="row row-cols-1 row-cols-lg-2 g-4">
+            <div class="col">
+                <div class="d-flex flex-column flex-lg-row gap-3">
+                    <div class="w-75">
+                        <span class="d-flex align-items-start">
+                            <i class="bi bi-database-gear me-2 fs-6"></i>
+                            <span>Zuletzt aktualisiert:<br>{{ now.strftime("%d.%m.%Y %H:%M:%S") }}</span>
+                        </span>
+                    </div>
+                    <div class="flex-shrink-1">
+                        <span class="d-flex align-items-start">
+                            <i class="bi bi-fingerprint me-2 fs-6"></i>
+                            <span>
+                                Diese Seite nutzt
+                                <a href="https://de.wikipedia.org/wiki/Web_Storage#localStorage">Labskauspetties</a>.
+                                Das sind quasi DSGVO-konforme Cookies. Lecker!
+                            </span>
+                        </span>
+                    </div>
+                    <div class="w-75">
+                        <span class="d-flex align-items-start">
+                            <i class="bi bi-code-slash me-2 fs-6"></i>
+                            <span class="icon-text">
+                                 Gebaut mit <i class="bi bi-suit-heart-fill fs-6"></i> von Hirsch und Henry
+                             </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column gap-2 align-items-start align-items-lg-end">
+                    <a href="mailto:webmaster@akablas.de"
+                       class="btn btn-secondary btn-sm">
+                        <span class="text-nowrap">
+                            <i class="bi bi-envelope-at me-1"></i>Verbesserungsvorschläge
+                        </span>
+                    </a>
+                    <a href="https://github.com/AkaBlas/akalisten"
+                       class="btn btn-secondary btn-sm" target="_blank" rel="noopener">
+                        <span class="text-nowrap">
+                            <i class="bi bi-github me-1"></i>Quellcode
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+</{{ "div" if wordpress else "body" }}>
+{{ '</div></div>' if wordpress }}
 </html>

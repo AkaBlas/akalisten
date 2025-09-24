@@ -20,7 +20,7 @@ class User(BaseModel):
     @property
     def display_name(self) -> str:
         # remove any text in parentheses, e.g. "John Doe (JD)" - sometimes used for nicknames
-        name = re.sub(r" *\([^\)]+\) *", "", self.name).strip()
+        name = re.sub(r" +\([^\)]+\) *", "", self.name).strip()
         if " " not in name:
             return name
         names = name.split(" ")

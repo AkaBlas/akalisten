@@ -1,0 +1,216 @@
+{% macro render_muckenlisten(data) %}
+    {% from 'render_info.j2' import render_info %}
+    {% from 'render_category.j2' import render_category %}
+    {% set polls, poll_votes = data %}
+    <div class="accordion" id="accordion-muckenlisten">
+        {% for poll in polls.values() %}
+            <div class="accordion-item" id="muckenliste-{{ poll.id }}">
+                <h2 class="accordion-header" id="heading-accordion-muckenliste-{{ poll.id }}">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#accordion-muckenliste-{{ poll.id }}"
+                            aria-expanded="false"
+                            aria-controls="accordion-muckenliste-{{ poll.id }}">
+                        {{ poll.html_title }}
+                    </button>
+                </h2>
+                <div id="accordion-muckenliste-{{ poll.id }}" class="accordion-collapse collapse"
+                     aria-labelledby="heading-accordion-muckenliste-{{ poll.id }}">
+                    <div class="accordion-body">
+                        {% if poll.url %}
+                            <a href="{{ poll.url }}" target="_blank" rel="noopener noreferrer"
+                               class="btn btn-primary w-100">
+                                <span class="icon-text">
+                                    <i class="bi bi-clipboard2-check"></i>
+                                    <span>Hier zur Mucke eintragen</span>
+                                </span>
+                            </a>
+                        {% endif %}
+                        {% if poll.mucken_info.has_any_info or poll.mucken_info.additional %}
+                            <div class="accordion my-3"
+                                 id="accordion-muckeninfo-{{ poll.id }}-container">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header"
+                                        id="heading-accordion-muckeninfo-{{ poll.id }}">
+                                        <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#accordion-muckeninfo-{{ poll.id }}"
+                                                aria-expanded="false"
+                                                aria-controls="accordion-muckeninfo-{{ poll.id }}">
+                                            Mucken-Infos
+                                        </button>
+                                    </h2>
+                                    <div id="accordion-muckeninfo-{{ poll.id }}"
+                                         class="accordion-collapse collapse"
+                                         aria-labelledby="heading-accordion-muckeninfo-{{ poll.id }}">
+                                        <div class="accordion-body">
+                                            {% if poll.mucken_info.has_any_info %}
+                                                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
+                                                    {% if poll.mucken_info.date %}
+                                                        {{ render_info('calendar-event', poll.mucken_info.date.strftime('%d.%m.%Y')) }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.location %}
+                                                        {{ render_info('geo-alt', poll.mucken_info.location) }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.time_m2 %}
+                                                        {{ render_info('truck', "Mensa 2: " + poll.mucken_info.time_m2.strftime('%H:%M') + " Uhr") }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.time_meeting %}
+                                                        {{ render_info('clock', "Direkt: " + poll.mucken_info.time_meeting.strftime('%H:%M') + " Uhr") }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.time_start %}
+                                                        {{ render_info('play', "Start: " + poll.mucken_info.time_start.strftime('%H:%M') + " Uhr") }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.time_end %}
+                                                        {{ render_info('stop', "Ende: " + poll.mucken_info.time_end.strftime('%H:%M') + " Uhr") }}
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                            {% if poll.mucken_info.additional %}
+                                                <div class="card mt-2">
+                                                    <div class="card-header d-flex justify-content-between align-items-center py-2">
+                                                        <span><b>Zusätzliche Informationen</b></span>
+                                                        <i class="bi bi-info-circle fs-5 text-info"></i>
+                                                    </div>
+                                                    <div class="card-body py-2">
+                                                        {{ poll.mucken_info.html_additional }}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
+                                <input type="radio" class="btn-check filter-all"
+                                       name="filter-radio-{{ poll.id }}"
+                                       id="filter-all-{{ poll.id }}" autocomplete="off" checked>
+                                <label class="btn btn-outline-primary d-flex align-items-center"
+                                       for="filter-all-{{ poll.id }}">
+                                    <span class="me-1"><i class="bi bi-people"></i></span>
+                                    Alle
+                                </label>
+
+                                <input type="checkbox" class="btn-check filter-yes"
+                                       id="filter-yes-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-success d-flex align-items-center"
+                                       for="filter-yes-{{ poll.id }}">
+                                    <span class="me-1"><i class="bi bi-hand-thumbs-up"></i></span>
+                                    Dabei
+                                </label>
+
+                                <input type="checkbox" class="btn-check filter-no"
+                                       id="filter-no-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-danger d-flex align-items-center"
+                                       for="filter-no-{{ poll.id }}">
+                                    <span class="me-1"><i class="bi bi-hand-thumbs-down"></i></span>
+                                    Nicht Dabei
+                                </label>
+
+                                <input type="checkbox" class="btn-check filter-maybe"
+                                       id="filter-maybe-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-warning d-flex align-items-center"
+                                       for="filter-maybe-{{ poll.id }}">
+                                    <span class="me-1"><i class="bi bi-question-circle"></i></span>
+                                    Vielleicht Dabei
+                                </label>
+
+                                <input type="checkbox" class="btn-check filter-pending"
+                                       id="filter-pending-{{ poll.id }}" autocomplete="off">
+                                <label class="btn btn-outline-secondary d-flex align-items-center"
+                                       for="filter-pending-{{ poll.id }}">
+                                    <span class="me-1"><i class="bi bi-search"></i></span>
+                                    Keine Antwort
+                                </label>
+                                <!-- Kategorie Dropdown mit Checkboxen -->
+                                <div class="d-flex align-items-center gap-1">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle"
+                                                type="button" id="categoryDropdown-{{ poll.id }}"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                            Kategorien wählen
+                                        </button>
+                                        <ul class="dropdown-menu p-2 category-dropdown-menu"
+                                            aria-labelledby="categoryDropdown-{{ poll.id }}"
+                                            id="category-dropdown-menu-{{ poll.id }}">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-primary w-100 text-center mb-2 category-select-all-btn d-flex justify-content-center align-items-center"
+                                                    data-poll-id="{{ poll.id }}">
+                                                    <span class="icon-text">
+                                                        <i class="bi bi-check2-all me-1"></i>
+                                                        <span class="no-select-text">Alle auswählen</span>
+                                                    </span>
+                                            </button>
+                                            <div class="category-dropdown-scroll">
+                                                {% for option_id, votes in poll_votes[poll.id].options.items() %}
+                                                    <li>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input category-checkbox pointer"
+                                                                   type="checkbox"
+                                                                   value="{{ votes.text }}"
+                                                                   id="category-checkbox-{{ poll.id }}-{{ loop.index }}">
+                                                            <label class="form-check-label category-label-shortcut pointer no-select-text"
+                                                                   for="category-checkbox-{{ poll.id }}-{{ loop.index }}"
+                                                                   data-category-value="{{ votes.text }}">
+                                                                {{ votes.text }}
+                                                            </label>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </div>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <span class="ms-1 d-inline-flex align-items-center">
+                                    <i class="bi bi-info-circle fs-5 text-secondary pointer"
+                                       tabindex="0"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="top"
+                                       title="Kategorien und Filter können durch Klick ausgewählt oder abgewählt werden. Doppelklick (am Handy: langes Drücken) auf eine Kategorie oder einen Filter wählt nur diese(n) aus und alle anderen ab."></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row mx-0 g-3 justify-content-center"
+                             id="muckenliste-columns-{{ poll.id }}">
+                            {% for col_class, col_name, col_icon, attr_name, color in (
+                                    ("yes", "Dabei", "hand-thumbs-up", "sorted_yes", "success"),
+                                    ("no", "Nicht Dabei", "hand-thumbs-down", "sorted_sanitized_no", "danger"),
+                                    ("maybe", "Vielleicht Dabei", "question-circle", "sorted_maybe", "warning"),
+                                    ("pending", "Keine Antwort", "search", "sorted_sanitized_not_voted", "secondary"),
+                                ) %}
+                                <div class="col-md-6 col-lg-4 col-xl-3 column {{ col_class }}">
+                                    <div class="border border-{{ color }} rounded shadow-sm p-3 h-100">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <h2 class="h5 mb-0 text-{{ color }}">
+                                                <span class="icon-text icon-header">
+                                                    <span>{{ col_name }}</span>
+                                                    {% if col_class == "pending" %}
+                                                        <span class="ms-1"
+                                                              data-bs-toggle="tooltip"
+                                                              data-bs-placement="top"
+                                                              title="Diese Info stammt aus der Registerzuteilung in der AkaCloud ist und wahrscheinlich nicht komplett korrekt. Bitte versteh sie als groben Anhaltspunkt.">
+                                                            <i class="bi bi-info-circle fs-6 pointer text-{{ color }}"></i>
+                                                        </span>
+                                                    {% endif %}
+                                                </span>
+                                            </h2>
+                                            <i class="bi bi-{{ col_icon }} ms-2 fs-4 text-{{ color }}"></i>
+                                        </div>
+                                        <hr class="mt-2 mb-3 border-{{ color }}">
+                                        {% for votes in poll_votes[poll.id].options.values() %}
+                                            {{ render_category(votes, attr_name, col_class) }}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}

@@ -1,0 +1,160 @@
+:root {
+    /* initial best guess of the header height */
+    /* will be refined after loading the page using JS */
+    --header-height: 4rem;
+}
+
+
+body, #wp-embedding {
+    padding-top: var(--header-height);
+    transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+body, .custom-navbar, footer, #wp-embedding {
+    transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.custom-navbar {
+    padding: .75rem 0;
+    background-color: var(--bs-body-bg);
+    /*background-color: transparent;*/
+    transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.custom-navbar.scroll-up {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+.custom-navbar.scroll-down {
+    transform: translateY(-100%);
+}
+
+.bi {
+    /*color: var(--bs-primary);*/
+    /*width: 1.25em;*/
+    /*height: 1.25em;*/
+    /*flex: none;*/
+}
+
+.bi.lg {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.bi.sml,
+.bi.fs-6 {
+    font-size: 1rem !important;
+}
+
+.icon-text {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: normal;
+    gap: 0.5ex;
+}
+
+.anchor-link {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+h2:hover .anchor-link,
+h2:focus-within .anchor-link,
+h2 .anchor-link:focus,
+h2 .anchor-link:active {
+    opacity: 1;
+}
+h2:target .anchor-link {
+    opacity: 1;
+}
+
+/*Bootstrap: ab md gibt es zwei Spalten nebeneinander, darunter nur eine */
+@media (max-width: 767.98px) {
+    .fill-entry {
+        display: none !important;
+        margin: 0 !important;
+    }
+    .register-category.fill-entry {
+        margin: 0 !important;
+    }
+}
+
+
+/* Entferne das Margin beim letzten Register-Block in jeder Spalte */
+.column .register-category:last-child {
+    margin-bottom: 0 !important;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+/* Kategorie-Dropdown: Scrollbare Liste, Button bleibt oben */
+.category-dropdown-menu {
+    min-width: 16rem;
+    max-width: 22rem;
+    padding-bottom: 0.5rem !important;
+    /* optional: max-height für das gesamte Menü */
+    /* max-height: 24rem; */
+}
+
+.category-dropdown-scroll {
+    max-height: 25rem;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+.category-select-all-btn {
+    top: 0;
+    z-index: 2;
+}
+
+.alert-entry {
+    padding: .375rem .75rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.no-select-text {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE/Edge */
+}
+
+/* Truncate long text with "Mehr zeigen"/"Weniger zeigen" Button */
+.truncate-box input {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.truncate-box .truncate-text {
+  display: -webkit-box;
+  -webkit-line-clamp: var(--truncate-lines, 3);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.truncate-box input:checked + .truncate-text {
+  -webkit-line-clamp: unset;
+}
+.truncate-box .show-less {
+  display: none;
+}
+.truncate-box input:checked ~ label .show-more {
+  display: none;
+}
+.truncate-box input:checked ~ label .show-less {
+  display: inline;
+}
+/* Ab lg (>=992px): immer alles zeigen, Button ausblenden */
+@media (min-width: 992px) {
+  .truncate-box .truncate-text {
+    -webkit-line-clamp: unset !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+  .truncate-box label {
+    display: none !important;
+  }
+}

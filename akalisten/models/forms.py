@@ -46,6 +46,7 @@ class FormInfo(BaseModel):
 
     @property
     def embed_url(self) -> str | None:
+        # Currently doesn't work. See https://github.com/nextcloud/forms/issues/2931
         if Permission.EMBED not in self.form.permissions:
             return None
         if not (hash_value := self.public_share_hash):
@@ -56,7 +57,7 @@ class FormInfo(BaseModel):
     def is_active_public_form(self) -> bool:
         if self.form.state != FormState.ACTIVE:
             return False
-        if (date := self.form.expires) and date < dtm.datetime.now():  # noqa: DTZ005
+        if (date := self.form.expires) and date < dtm.datetime.now(dtm.UTC):
             return False
         if (access := self.form.access) and access.permitAllUsers:
             return True

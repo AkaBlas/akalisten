@@ -1,0 +1,22 @@
+{% from 'render_card.j2' import render_card %}
+{% macro render_card_grid(cards, label) %}
+    <div class="row g-4">
+        {% set cards_3 = [] %}
+        {% set cards_other = [] %}
+        {% for card in cards %}
+            {% set card = card.copy() %}
+            {% set _ = card.update({'label': label}) %}
+            {% if card.columns is defined and card.columns == 3 %}
+                {% set _ = cards_3.append(card) %}
+            {% else %}
+                {% set _ = cards_other.append(card) %}
+            {% endif %}
+        {% endfor %}
+        {% for card in cards_3 %}
+            {{ render_card(**card) }}
+        {% endfor %}
+        {% for card in cards_other %}
+            {{ render_card(**card) }}
+        {% endfor %}
+    </div>
+{% endmacro %}
