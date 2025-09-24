@@ -5,16 +5,11 @@
 {% from './macros/render_polls.j2' import render_polls %}
 {% from './macros/render_section.j2' import render_section %}
 <!DOCTYPE html>
-<html lang="de" class="h-100" data-bs-theme="auto">
+<html lang="de" class="h-100" data-bs-theme=auto>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AkaListen</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-          crossorigin="anonymous">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script>
@@ -26,86 +21,107 @@
         {% include './scripts/CategoryManager.js' %}
         {% include './scripts/UserHighlightManager.js' %}
         {% include './scripts/main.js' %}
-        {% include './scripts/layout-script.js' %}
+        {% if not wordpress %}
+            {# Layout Script is only about Header & Dark Mode. We Skip this on Wordpress for Simplicity #}
+            {% include './scripts/layout-script.js' %}
+        {% endif %}
     </script>
     <!-- Custom styles -->
     <style>
-        {% include 'layout-styles.css' %}
+        {#
+            For WP, we can't use vanilla Bootstrap because that's modifying global selectors.
+            That's why we need to use modified CSS and wrap everything in the "bootstrap-scope" class.
+        #}
+        {% if wordpress %}
+            {% include './styles/bootstrap5.3.2.wp.min.css' %}
+            {% include './styles/layout-styles.wp.css' %}
+        {% else %}
+            {% include './styles/bootstrap5.3.2.min.css' %}
+            {% include './styles/layout-styles.css' %}
+        {% endif %}
     </style>
 </head>
-<body class="d-flex flex-column h-100">
+{{ "<div class='bootstrap-scope'>" if wordpress }}
+{{ "<div class='bootstrap-scope' data-bs-theme=auto>" if wordpress }}
+<{{ "div class='d-flex flex-column h-100' id='wp-embedding'" if wordpress else 'body class="d-flex flex-column h-100"' }}>
 
-<header>
-    <!-- Fixed navbar -->
-    <nav id="nav-bar" class="navbar navbar-expand-md fixed-top custom-navbar bg-body-tertiary">
-        <div class="container-fluid mx-3">
-            <a class="navbar-brand" href="#">AkaListen</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarCollapse" aria-controls="navbarCollapse"
-                    aria-expanded="false" aria-label="Navigation umschalten">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <hr class="d-md-none my-2 text-body-tertiary">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#muckenlisten">Muckenlisten</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#umfragen">Umfragen</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#formulare">Formulare</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#andere-listen">Andere Listen</a>
-                    </li>
-                    {% if links %}
+{# Header is skipped in wordpress as there's little benefit and getting the layout right is difficult #}
+{% if not wordpress %}
+    <header>
+        <!-- Fixed navbar -->
+        <nav id="nav-bar"
+             class="navbar navbar-expand-md fixed-top custom-navbar bg-body-tertiary">
+            <div class="container-fluid mx-3">
+                <a class="navbar-brand" href="#">AkaListen</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarCollapse" aria-controls="navbarCollapse"
+                        aria-expanded="false" aria-label="Navigation umschalten">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <hr class="d-md-none my-2 text-body-tertiary">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
                         <li class="nav-item">
-                            <a class="nav-link" href="#linksammlung">Link-Sammlung</a>
+                            <a class="nav-link" href="#muckenlisten">Muckenlisten</a>
                         </li>
-                    {% endif %}
-                </ul>
-                <!-- Theme Switcher Dropdown -->
-                <hr class="d-md-none my-2 text-body-tertiary">
-                <div class="dropdown ms-md-auto">
-                    <button class="btn btn-link nav-link px-lg-2 py-2 dropdown-toggle d-flex align-items-center"
-                            id="bd-theme"
-                            type="button"
-                            data-bs-toggle="dropdown" aria-expanded="false"
-                            aria-label="Farbschema (hell/dunkel/auto)">
-                        <i class="bi bi-circle-half theme-icon-active"></i>
-                        <span id="bd-theme-text" class="ms-2"></span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li>
-                            <button type="button" class="dropdown-item d-flex align-items-center"
-                                    data-bs-theme-value="light">
-                                <i class="bi bi-sun-fill me-2"></i>
-                                Hell
-                            </button>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#umfragen">Umfragen</a>
                         </li>
-                        <li>
-                            <button type="button" class="dropdown-item d-flex align-items-center"
-                                    data-bs-theme-value="dark">
-                                <i class="bi bi-moon-stars-fill me-2"></i>
-                                Dunkel
-                            </button>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#formulare">Formulare</a>
                         </li>
-                        <li>
-                            <button type="button"
-                                    class="dropdown-item d-flex align-items-center active"
-                                    data-bs-theme-value="auto">
-                                <i class="bi bi-circle-half me-2"></i>
-                                Automatisch
-                            </button>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#andere-listen">Andere Listen</a>
                         </li>
+                        {% if links %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="#linksammlung">Link-Sammlung</a>
+                            </li>
+                        {% endif %}
                     </ul>
+                    <!-- Theme Switcher Dropdown -->
+                    <hr class="d-md-none my-2 text-body-tertiary">
+                    <div class="dropdown ms-md-auto">
+                        <button class="btn btn-link nav-link px-lg-2 py-2 dropdown-toggle d-flex align-items-center"
+                                id="bd-theme"
+                                type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false"
+                                aria-label="Farbschema (hell/dunkel/auto)">
+                            <i class="bi bi-circle-half theme-icon-active"></i>
+                            <span id="bd-theme-text" class="ms-2"></span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li>
+                                <button type="button"
+                                        class="dropdown-item d-flex align-items-center"
+                                        data-bs-theme-value="light">
+                                    <i class="bi bi-sun-fill me-2"></i>
+                                    Hell
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button"
+                                        class="dropdown-item d-flex align-items-center"
+                                        data-bs-theme-value="dark">
+                                    <i class="bi bi-moon-stars-fill me-2"></i>
+                                    Dunkel
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button"
+                                        class="dropdown-item d-flex align-items-center active"
+                                        data-bs-theme-value="auto">
+                                    <i class="bi bi-circle-half me-2"></i>
+                                    Automatisch
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-    </nav>
-</header>
+        </nav>
+    </header>
+{% endif %}
 
 <main class="flex-shrink-0 py-4 mb-3">
     {{ render_section(
@@ -212,5 +228,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
-</body>
+</{{ "div" if wordpress else "body" }}>
+{{ '</div></div>' if wordpress }}
 </html>
