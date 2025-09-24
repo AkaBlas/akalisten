@@ -112,6 +112,59 @@ class FilterManager {
                     });
                 }
             });
+
+            // Doppelklick/Longpress auf Filter-Labels: Nur diesen Filter aktivieren
+            this.filterTypes.forEach(type => {
+                const label = document.querySelector(`label[for="filter-${type}-${pollId}"]`);
+                if (!label) return;
+                let longPressTimer, isTouch = false, touchMoved = false, longPressTriggered = false;
+                // Closure für Zugriff auf this
+                const self = this;
+
+                function selectOnlyThisFilter() {
+                    // Nur diesen Filter aktivieren, alle anderen deaktivieren
+                    self.filterTypes.forEach(t => self.setButtonsState(t, t === type));
+                    self.setButtonsState('all', false);
+                    self.updateColumnVisibility();
+                }
+
+                label.addEventListener('dblclick', function(e) {
+                    if (isTouch) return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    selectOnlyThisFilter();
+                    return false;
+                });
+
+                label.addEventListener('touchstart', function(e) {
+                    isTouch = true;
+                    touchMoved = false;
+                    longPressTriggered = false;
+                    longPressTimer = setTimeout(() => {
+                        selectOnlyThisFilter();
+                        longPressTriggered = true;
+                    }, 500);
+                });
+
+                label.addEventListener('touchmove', function() {
+                    touchMoved = true;
+                });
+
+                label.addEventListener('touchend', function(e) {
+                    clearTimeout(longPressTimer);
+                    setTimeout(() => { isTouch = false; }, 100);
+                    if (longPressTriggered) {
+                        longPressTriggered = false;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                    }
+                    // Normales Toggle bei einfachem Tap
+                    if (!touchMoved) {
+                        // Nichts tun, normales change-Event übernimmt das
+                    }
+                });
+            });
         });
     }
 }
