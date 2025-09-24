@@ -141,7 +141,7 @@
                                                     data-poll-id="{{ poll.id }}">
                                                     <span class="icon-text">
                                                         <i class="bi bi-check2-all me-1"></i>
-                                                        <span>Alle auswählen</span>
+                                                        <span class="no-select-text">Alle auswählen</span>
                                                     </span>
                                             </button>
                                             <div class="category-dropdown-scroll">
@@ -152,7 +152,7 @@
                                                                    type="checkbox"
                                                                    value="{{ votes.text }}"
                                                                    id="category-checkbox-{{ poll.id }}-{{ loop.index }}">
-                                                            <label class="form-check-label category-label-shortcut pointer"
+                                                            <label class="form-check-label category-label-shortcut pointer no-select-text"
                                                                    for="category-checkbox-{{ poll.id }}-{{ loop.index }}"
                                                                    data-category-value="{{ votes.text }}">
                                                                 {{ votes.text }}

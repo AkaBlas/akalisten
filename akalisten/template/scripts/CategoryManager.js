@@ -118,7 +118,7 @@ class CategoryManager {
             const menu = list.menu;
             if (!menu) return;
             menu.querySelectorAll('.category-label-shortcut').forEach(label => {
-                let longPressTimer, isTouch = false, touchMoved = false;
+                let longPressTimer, isTouch = false, touchMoved = false, longPressTriggered = false;
                 const getCheckbox = () => menu.querySelector(`#${label.getAttribute('for')}`);
 
                 // Toggle: Checkbox umschalten und synchronisieren
@@ -154,24 +154,39 @@ class CategoryManager {
                     return false;
                 });
                 label.addEventListener('touchstart', () => {
+                    console.log('touchstart');
                     isTouch = true;
                     touchMoved = false;
+                    longPressTriggered = false;
                     longPressTimer = setTimeout(() => {
+                        console.log('longpress detected');
                         const cb = getCheckbox();
-                        if (cb) handleSelectOnly(cb);
+                        if (cb) {
+                            handleSelectOnly(cb);
+                            longPressTriggered = true;
+                        }
                     }, 500);
                 });
                 label.addEventListener('touchmove', () => {
                     touchMoved = true;
                 });
                 label.addEventListener('touchend', e => {
+                    console.log('touchend. touchMoved:', touchMoved);
                     clearTimeout(longPressTimer);
                     setTimeout(() => {
                         isTouch = false;
                     }, 100);
+                    if (longPressTriggered) {
+                        // Longpress hat SelectOnly bereits ausgelöst, Toggle NICHT ausführen
+                        longPressTriggered = false;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                    }
                     if (!touchMoved) {
                         e.preventDefault();
                         e.stopPropagation();
+                        console.log('handleToggle on touchend');
                         const cb = getCheckbox();
                         if (cb) handleToggle(cb);
                     }
