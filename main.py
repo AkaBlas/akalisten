@@ -70,7 +70,7 @@ async def main() -> None:
 
         current_content = await wp_client.get_page_raw_content(page_id)
 
-        pattern = re.compile(r"Zuletzt aktualisiert: [\d\.: ]+\n")
+        pattern = re.compile(r"Zuletzt aktualisiert:\s*<br>\s*[\d\.: ]+")
         compare_wp_content = pattern.sub("", wp_content)
         compare_current_content = pattern.sub("", current_content)
 
