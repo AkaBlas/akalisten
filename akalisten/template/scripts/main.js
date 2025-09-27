@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const userHighlightManager = new UserHighlightManager(muckenlistenManager, categoryManager, storageManager);
     const accordionManager = new AccordionManager(storageManager);
     accordionManager.init();
+    const truncateMasonryManager = new TruncateMasonryManager();
+    truncateMasonryManager.init();
 
     // Initialisierung der Kategorie-Checkboxen
     categoryManager.initializeCategoryCheckboxes();
