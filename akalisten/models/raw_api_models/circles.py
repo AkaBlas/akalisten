@@ -10,7 +10,7 @@ from enum import IntEnum, StrEnum
 
 from pydantic import BaseModel
 
-from akalisten.clients._utils import RequiredDateTimeField
+from akalisten.clients._utils import OptionalDateTimeField, RequiredDateTimeField
 
 # ==============================
 # Enums
@@ -82,7 +82,7 @@ class InheritedBy(BaseModel):
 
 class BasedOn(BaseModel):
     config: int
-    creation: RequiredDateTimeField
+    creation: OptionalDateTimeField
     description: str
     displayName: str
     id: str
