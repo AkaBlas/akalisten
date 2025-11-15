@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from .clients.circles import CirclesAPI
 from .clients.forms import FormsAPI
 from .clients.polls import PollAPI
+from .models.chatgroups import ChatGroup, ChatGroups
 from .models.forms import FormInfo
 from .models.links import Link, Links
 from .models.lists import List, Lists
@@ -29,6 +30,7 @@ class TemplateData(BaseModel):
     forms: list[FormInfo]
     links: list[Link] = Field(default_factory=list)
     lists: list[List] = Field(default_factory=list)
+    chat_groups: list[ChatGroup] = Field(default_factory=list)
 
 
 def get_links(path: Path | str) -> list[Link]:
@@ -55,8 +57,22 @@ def get_lists(path: Path | str) -> list[List]:
     ]
 
 
+def get_chat_groups(path: Path | str) -> list[ChatGroup]:
+    effective_path = Path(path)
+    if not effective_path.exists():
+        chatgroups = ChatGroups()
+    else:
+        chatgroups = ChatGroups.model_validate_json(effective_path.read_text(encoding="utf-8"))
+
+    return chatgroups.active_groups
+
+
 async def get_template_data(
-    debug: bool, dummy_data_path: Path, links_path: Path | str, lists_path: Path | str
+    debug: bool,
+    dummy_data_path: Path,
+    links_path: Path | str,
+    lists_path: Path | str,
+    chat_groups_path: Path | str,
 ) -> TemplateData:
     if debug and dummy_data_path.exists():
         template_data = TemplateData.model_validate_json(
@@ -103,4 +119,5 @@ async def get_template_data(
 
     template_data.links = get_links(links_path)
     template_data.lists = get_lists(lists_path)
+    template_data.chat_groups = get_chat_groups(chat_groups_path)
     return template_data

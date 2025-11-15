@@ -23,6 +23,7 @@ INDEX_PATH = OUTPUT_DIR / "index.html"
 DATA_PATH = ROOT / "data"
 LINKS_PATH = DATA_PATH / "links.json"
 LISTS_PATH = DATA_PATH / "lists.json"
+CHAT_GROUPS_PATH = DATA_PATH / "chat_groups.json"
 DEBUG_MODE = os.getenv("DEBUG") is not None
 
 logging.basicConfig(
@@ -36,6 +37,7 @@ async def main() -> None:
         dummy_data_path=DUMMY_DATA_PATH,
         links_path=LINKS_PATH,
         lists_path=LISTS_PATH,
+        chat_groups_path=CHAT_GROUPS_PATH,
     )
 
     environment = RelImportEnvironment(
@@ -51,6 +53,7 @@ async def main() -> None:
         "mucken_listen": template_data.mucken_listen,
         "polls": template_data.polls,
         "forms": template_data.forms,
+        "chat_groups": template_data.chat_groups,
         "now": dtm.datetime.now(timezone),
     }
 

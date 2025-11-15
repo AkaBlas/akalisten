@@ -1,0 +1,53 @@
+{% from 'render_card_grid.j2' import render_card_grid %}
+{% macro render_chatgroups(chatgroups) %}
+    {% set cards = [] %}
+    {% for g in chatgroups %}
+        {% set buttons = [] %}
+        {% if g.signal_url %}
+            {% set _ = buttons.append({
+                "icon": "signal",
+                "text": "Signal",
+                "target": g.signal_url,
+                "css_class": " btn-outline-primary"
+            }) %}
+        {% endif %}
+        {% if g.whatsapp_url %}
+            {% set _ = buttons.append({
+                "icon": "whatsapp",
+                "text": "WhatsApp",
+                "target": g.whatsapp_url,
+                "css_class": " btn-outline-success"
+            }) %}
+        {% endif %}
+        {% if g.html_description %}
+            {% set body = g.html_description %}
+        {% else %}
+            {% set body = "" %}
+        {% endif %}
+        {% set card = {
+            "title": g.html_title,
+            "body": body,
+            "buttons": buttons,
+        } %}
+        {% set _ = cards.append(card) %}
+    {% endfor %}
+
+    {{ render_card_grid(cards, label='chatgroups') }}
+
+    <div class="alert alert-info d-flex align-items-center mt-4" role="alert">
+        <i class="bi bi-info-circle me-3 me-lg-4 fs-4"></i>
+        <div>
+            Bei AkaBlas gibt es neben den Aktivitäten mit dem gesamten Orchester auch in vielen
+            Teil-Konstellationen gemeinsame Interessen und Aktivitäten, für die es teils eigene
+            Chatgruppen gibt.
+            Diese Gruppen können gerne hier gelistet werden, um sie für alle AkaBlasen sichtbar zu
+            machen.
+            <br>
+            <a href="mailto:webmaster@akablas.de"
+               class="btn btn-outline-primary btn-sm mt-2">
+                <i class="bi bi-envelope-at me-1"></i> Neue Gruppe melden
+            </a>
+        </div>
+    </div>
+{% endmacro %}
+

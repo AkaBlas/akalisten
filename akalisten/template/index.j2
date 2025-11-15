@@ -3,6 +3,7 @@
 {% from './macros/render_lists.j2' import render_lists %}
 {% from './macros/render_muckenlisten.j2' import render_muckenlisten %}
 {% from './macros/render_polls.j2' import render_polls %}
+{% from './macros/render_chatgroups.j2' import render_chatgroups %}
 {% from './macros/render_section.j2' import render_section %}
 <!DOCTYPE html>
 <html lang="de" class="h-100" data-bs-theme=auto>
@@ -80,6 +81,9 @@
                                 <a class="nav-link" href="#linksammlung">Link-Sammlung</a>
                             </li>
                         {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="#chatgruppen">Chat Gruppen</a>
+                        </li>
                     </ul>
                     <!-- Theme Switcher Dropdown -->
                     <hr class="d-md-none my-2 text-body-tertiary">
@@ -174,6 +178,15 @@
             ''
         ) }}
     {% endif %}
+
+    {{ render_section(
+        'chatgruppen',
+        'Chat Gruppen',
+        chat_groups,
+        render_chatgroups,
+        '',
+        ''
+    ) }}
 </main>
 
 <footer class="footer mt-auto py-3 bg-body-tertiary text-body-secondary">
