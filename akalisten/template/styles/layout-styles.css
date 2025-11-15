@@ -57,13 +57,13 @@ body, .custom-navbar, footer, #wp-embedding {
     opacity: 0;
     transition: opacity 0.2s;
 }
-h2:hover .anchor-link,
-h2:focus-within .anchor-link,
-h2 .anchor-link:focus,
-h2 .anchor-link:active {
+:is(h1,h2,h3,h4,h5,h6):hover .anchor-link,
+:is(h1,h2,h3,h4,h5,h6):focus-within .anchor-link,
+:is(h1,h2,h3,h4,h5,h6) .anchor-link:focus,
+:is(h1,h2,h3,h4,h5,h6) .anchor-link:active {
     opacity: 1;
 }
-h2:target .anchor-link {
+:is(h1,h2,h3,h4,h5,h6):target .anchor-link {
     opacity: 1;
 }
 
