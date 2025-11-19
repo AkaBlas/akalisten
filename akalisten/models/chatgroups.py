@@ -26,7 +26,7 @@ class ChatGroups(RootModel):
 
     @property
     def active_groups(self) -> list[ChatGroup]:
-        now = dtm.datetime.now(tz=dtm.UTC)
+        now = dtm.datetime.now()  # noqa: DTZ005
         return sorted(
             (g for g in self.root if g.expire_date is None or g.expire_date >= now),
             key=lambda g: g.sorting,
