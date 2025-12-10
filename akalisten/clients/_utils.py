@@ -26,7 +26,7 @@ class BaseAPI(AbstractAsyncContextManager, ABC):
 
     def __init__(self, base_url: str, httpx_kwargs: dict[str, Any] | None = None) -> None:
         self._client = httpx.AsyncClient(
-            timeout=10,
+            timeout=30,
             transport=httpx_retries.RetryTransport(retry=httpx_retries.Retry(total=5)),
             **(httpx_kwargs or {}),
         )
