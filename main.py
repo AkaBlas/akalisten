@@ -62,9 +62,9 @@ async def main() -> None:
         environment.get_template("index.j2").render(wordpress=False, **kwargs), encoding="utf-8"
     )
 
-    # if DEBUG_MODE:
-    #     # Don't update WordPress Page in debug mode
-    #     return
+    if DEBUG_MODE:
+        # Don't update WordPress Page in debug mode
+        return
 
     # Update WordPress Page
     wp_content = environment.get_template("wordpress.j2").render(wordpress=True, **kwargs)
@@ -74,11 +74,11 @@ async def main() -> None:
         current_content = await wp_client.get_page_raw_content(page_id)
 
         pattern = re.compile(r"Zuletzt aktualisiert:\s*<br>\s*[\d\.: ]+")
-        pattern.sub("", wp_content)
-        pattern.sub("", current_content)
+        compare_wp_content = pattern.sub("", wp_content)
+        compare_current_content = pattern.sub("", current_content)
 
-        # if compare_wp_content == compare_current_content:
-        #    return
+        if compare_wp_content == compare_current_content:
+            return
         await wp_client.edit_page(page_id, wp_content)
 
 
