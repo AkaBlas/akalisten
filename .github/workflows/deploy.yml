@@ -27,23 +27,29 @@ jobs:
 
       - name: Retrieve Additional Files via FTPS
         env:
-          FTPS_HOST: ${{ secrets.SFTP_SERVER_HOST }}
-          FTPS_USER: ${{ secrets.SFTP_USER }}
-          FTPS_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          SSH_KEY_PASSPHRASE: ${{ secrets.SSH_KEY_PASSPHRASE }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          lftp <<EOF
-          # Enable SSL/TLS for secure connection
-          set ftp:ssl-force true
-          set ftp:ssl-protect-data true
-      
-          # Connect to the FTPS server
-          open -u $FTPS_USER,$FTPS_PASSWORD ftp://$FTPS_HOST
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
+          chmod 600 key.pem
+
+          # Pre-accept host key and test SSH connection
+          mkdir -p ~/.ssh
+          ssh-keyscan -H $FTP_SERVER >> ~/.ssh/known_hosts
+          
+          eval $(ssh-agent -s)
+          ssh-add key.pem <<< "${{ secrets.SSH_KEY_PASSPHRASE }}"
+
+          lftp -u $FTP_USER, sftp://$FTP_SERVER <<EOF 
+          set sftp:auto-confirm yes
       
           # copy the remote directory /data to the local directory ./data
           mirror \
             --only-newer \
             --parallel=10 \
-            /data \
+            public_html/internal-access/listen.akablas.de/data \
             ./data
       
           # Close the connection
@@ -66,17 +72,23 @@ jobs:
 
       - name: Deploy with FTPS
         env:
-          FTPS_HOST: ${{ secrets.SFTP_SERVER_HOST }}
-          FTPS_USER: ${{ secrets.SFTP_USER }}
-          FTPS_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          SSH_KEY_PASSPHRASE: ${{ secrets.SSH_KEY_PASSPHRASE }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          lftp <<EOF
-          # Enable SSL/TLS for secure connection
-          set ftp:ssl-force true
-          set ftp:ssl-protect-data true
-      
-          # Connect to the FTPS server
-          open -u $FTPS_USER,$FTPS_PASSWORD ftp://$FTPS_HOST
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
+          chmod 600 key.pem
+
+          # Pre-accept host key and test SSH connection
+          mkdir -p ~/.ssh
+          ssh-keyscan -H $FTP_SERVER >> ~/.ssh/known_hosts
+          
+          eval $(ssh-agent -s)
+          ssh-add key.pem <<< "${{ secrets.SSH_KEY_PASSPHRASE }}"
+
+          lftp -u $FTP_USER, sftp://$FTP_SERVER <<EOF 
+          set sftp:auto-confirm yes
       
           # Use the mirror command to sync files
           mirror \
@@ -85,8 +97,7 @@ jobs:
             --exclude '/.htaccess' \
             --exclude '/.htpasswd' \
             --parallel=10 \
-            ./output \
-            /
+            ./output public_html/internal-access/listen.akablas.de
       
           # Close the connection
           bye

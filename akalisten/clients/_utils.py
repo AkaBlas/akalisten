@@ -20,14 +20,20 @@ def _parse_datetime(value: str | int) -> str | int | None:
 OptionalDateTimeField = Annotated[dtm.datetime | None, BeforeValidator(_parse_datetime)]
 RequiredDateTimeField = Annotated[dtm.datetime, BeforeValidator(_parse_datetime)]
 
+_USER_AGENT = "AkalistenClient/1.0 (+htttps://github.com/akablas/akalisten)"
+
 
 class BaseAPI(AbstractAsyncContextManager, ABC):
     """Simple base class for API clients using the `httpx` library."""
 
     def __init__(self, base_url: str, httpx_kwargs: dict[str, Any] | None = None) -> None:
+        headers = httpx_kwargs.pop("headers", {}) if httpx_kwargs else {}
+        headers.setdefault("User-Agent", _USER_AGENT)
+
         self._client = httpx.AsyncClient(
             timeout=30,
             transport=httpx_retries.RetryTransport(retry=httpx_retries.Retry(total=5)),
+            headers=headers,
             **(httpx_kwargs or {}),
         )
         self._base_url: str = base_url

@@ -11,7 +11,7 @@ from akalisten.models.register import RegisterCircle, Registers
 class CirclesAPI(BaseAPI):
     def __init__(self) -> None:
         super().__init__(
-            base_url="https://cloud.akablas.de/ocs/v2.php/apps/circles/",
+            base_url="https://cloud.akablas.de/ocs/v2.php/apps/circles",
             httpx_kwargs={
                 "auth": (os.environ["NC_USERNAME"], os.environ["NC_PASSWORD"]),
                 "headers": {"OCS-APIRequest": "true"},
