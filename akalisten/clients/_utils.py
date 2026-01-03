@@ -61,6 +61,18 @@ class BaseAPI(AbstractAsyncContextManager, ABC):
         response = await self._client.request(
             method, self.build_url(endpoint, params), **(httpx_kwargs or {})
         )
+        from pprint import pprint
+
+        pprint(response.extensions)
+        network_stream = response.extensions.get("network_stream")
+        get_extra_info = getattr(network_stream, "get_extra_info", None)
+        server_addr = get_extra_info("server_addr") if callable(get_extra_info) else None
+
+        if server_addr is not None:
+            ip, port = server_addr
+            print("HTTPX request to %s resolved to %s:%s", response.request.url, ip, port)
+        else:
+            print("HTTPX request to %s (server IP not available)", response.request.url)
         response.raise_for_status()
         return response
 
