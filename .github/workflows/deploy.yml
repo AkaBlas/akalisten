@@ -21,6 +21,15 @@ jobs:
           dig cloud.akablas.de
           dig @1.1.1.1 cloud.akablas.de
 
+      - name: Test endpoint directly
+        run: |
+          echo "=== Raw HEAD request ==="
+          curl -sI "https://cloud.akablas.de/ocs/v2.php/apps/circles/circles?format=json"
+          
+          echo "=== With auth headers ==="
+          curl -sI -u "${{ secrets.NEXTCLOUD_USER }}:${{ secrets.NEXTCLOUD_PASS }}" \
+               "https://cloud.akablas.de/ocs/v2.php/apps/circles/circles?format=json"
+
       - name: Install lftp
         run: sudo apt-get install -y lftp
 
