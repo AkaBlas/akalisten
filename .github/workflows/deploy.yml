@@ -24,10 +24,10 @@ jobs:
       - name: Test endpoint directly
         run: |
           echo "=== Raw HEAD request ==="
-          curl -sI "https://cloud.akablas.de/ocs/v2.php/apps/circles/circles?format=json"
+          curl -I -w "Roslved IP: %{remote_ip}\n" "https://cloud.akablas.de/ocs/v2.php/apps/circles/circles?format=json"
           
           echo "=== With auth headers ==="
-          curl -sI -u "${{ secrets.NEXTCLOUD_USER }}:${{ secrets.NEXTCLOUD_PASS }}" -H "OCS-APIRequest: true" "https://cloud.akablas.de/ocs/v2.php/apps/circles/circles?format=json"
+          curl -I -w "Roslved IP: %{remote_ip}\n" -u "${{ secrets.NEXTCLOUD_USER }}:${{ secrets.NEXTCLOUD_PASS }}" -H "OCS-APIRequest: true" "https://cloud.akablas.de/ocs/v2.php/apps/circles/circles?format=json"
 
       - name: Install lftp
         run: sudo apt-get install -y lftp
