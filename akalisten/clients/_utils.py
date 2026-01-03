@@ -70,9 +70,10 @@ class BaseAPI(AbstractAsyncContextManager, ABC):
 
         if server_addr is not None:
             ip, port = server_addr
-            print("HTTPX request to %s resolved to %s:%s", response.request.url, ip, port)
+            print(f"{ip}:{port}: result for {response.request.url}")
         else:
             print("HTTPX request to %s (server IP not available)", response.request.url)
+        print(response.content)
         response.raise_for_status()
         return response
 
