@@ -27,7 +27,7 @@ jobs:
           curl -I -w "Roslved IP: %{remote_ip}\n" "https://cloud.akablas.de/ocs/v2.php/apps/circles/circles?format=json"
           
           echo "=== With auth headers ==="
-          curl -I -w "Roslved IP: %{remote_ip}\n" -u "${{ secrets.NEXTCLOUD_USER }}:${{ secrets.NEXTCLOUD_PASS }}" -H "OCS-APIRequest: true" "https://cloud.akablas.de/ocs/v2.php/apps/circles/circles?format=json"
+          curl -I -w "Roslved IP: %{remote_ip}\n" -u "${{ secrets.NEXTCLOUD_USER }}:${{ secrets.NEXTCLOUD_PASS }}" -H "OCS-APIRequest: true" -H "User-Agent: AkalistenClient/1.0 (+htttps://github.com/akablas/akalisten)" "https://cloud.akablas.de/ocs/v2.php/apps/circles/circles?format=json"
 
       - name: Install lftp
         run: sudo apt-get install -y lftp

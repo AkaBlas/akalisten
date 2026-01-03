@@ -20,14 +20,20 @@ def _parse_datetime(value: str | int) -> str | int | None:
 OptionalDateTimeField = Annotated[dtm.datetime | None, BeforeValidator(_parse_datetime)]
 RequiredDateTimeField = Annotated[dtm.datetime, BeforeValidator(_parse_datetime)]
 
+_USER_AGENT = "AkalistenClient/1.0 (+htttps://github.com/akablas/akalisten)"
+
 
 class BaseAPI(AbstractAsyncContextManager, ABC):
     """Simple base class for API clients using the `httpx` library."""
 
     def __init__(self, base_url: str, httpx_kwargs: dict[str, Any] | None = None) -> None:
+        headers = httpx_kwargs.pop("headers", {}) if httpx_kwargs else {}
+        headers.setdefault("User-Agent", _USER_AGENT)
+
         self._client = httpx.AsyncClient(
             timeout=30,
             transport=httpx_retries.RetryTransport(retry=httpx_retries.Retry(total=5)),
+            headers=headers,
             **(httpx_kwargs or {}),
         )
         self._base_url: str = base_url
@@ -61,19 +67,6 @@ class BaseAPI(AbstractAsyncContextManager, ABC):
         response = await self._client.request(
             method, self.build_url(endpoint, params), **(httpx_kwargs or {})
         )
-        from pprint import pprint
-
-        pprint(response.extensions)
-        network_stream = response.extensions.get("network_stream")
-        get_extra_info = getattr(network_stream, "get_extra_info", None)
-        server_addr = get_extra_info("server_addr") if callable(get_extra_info) else None
-
-        if server_addr is not None:
-            ip, port = server_addr
-            print(f"{ip}:{port}: result for {response.request.url}")
-        else:
-            print("HTTPX request to %s (server IP not available)", response.request.url)
-        print(response.content)
         response.raise_for_status()
         return response
 
