@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - master
-  # schedule:
+  schedule:
     # run at 30 minute interval with 7 Minute offset to avoid clashing with other workflows
-    # - cron: '7,37 * * * *'
+    - cron: '7,37 * * * *'
 
 jobs:
   build:
