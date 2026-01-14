@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from .clients.circles import CirclesAPI
 from .clients.forms import FormsAPI
 from .clients.polls import PollAPI
+from .datetime import TZ_INFO
 from .models.chatgroups import ChatGroup, ChatGroups
 from .models.forms import FormInfo
 from .models.links import Link, Links
@@ -53,7 +54,7 @@ def get_lists(path: Path | str) -> list[List]:
     return [
         list_
         for list_ in lists.root
-        if list_.expire_date is None or list_.expire_date >= dtm.datetime.now()  # noqa: DTZ005
+        if list_.expire_date is None or list_.expire_date >= dtm.datetime.now(tz=TZ_INFO)
     ]
 
 

@@ -25,7 +25,7 @@
     <p class="mb-2">
                 <span class="d-flex align-items-center">
                     <i class="bi bi-calendar-week me-2"></i>
-                    <b>Formular offen bis:</b>&nbsp;{{ form.expire_date.strftime('%d.%m.%Y %H:%M') }} Uhr
+                    <b>Formular offen bis:</b>&nbsp;{{ strftime(form.expire_date) }} Uhr
                 </span>
     </p>
 {% endif %}

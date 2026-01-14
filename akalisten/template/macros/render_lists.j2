@@ -16,7 +16,7 @@
     <p class="mb-2">
                 <span class="d-flex align-items-center">
                     <i class="bi bi-calendar-week me-2"></i>
-                    <b>Liste verfügbar bis:</b>&nbsp;{{ list.expire_date.strftime('%d.%m.%Y') }}
+                    <b>Liste verfügbar bis:</b>&nbsp;{{ strftime(list.expire_date, '%d.%m.%Y') }}
                 </span>
     </p>
 {% endif %}

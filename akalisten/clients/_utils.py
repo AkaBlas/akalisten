@@ -1,4 +1,3 @@
-import datetime as dtm
 from abc import ABC
 from collections.abc import AsyncIterator
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
@@ -8,7 +7,7 @@ from urllib.parse import urlencode
 
 import httpx
 import httpx_retries
-from pydantic import BeforeValidator
+from pydantic import AwareDatetime, BeforeValidator
 
 
 def _parse_datetime(value: str | int) -> str | int | None:
@@ -17,8 +16,8 @@ def _parse_datetime(value: str | int) -> str | int | None:
     return value
 
 
-OptionalDateTimeField = Annotated[dtm.datetime | None, BeforeValidator(_parse_datetime)]
-RequiredDateTimeField = Annotated[dtm.datetime, BeforeValidator(_parse_datetime)]
+OptionalDateTimeField = Annotated[AwareDatetime | None, BeforeValidator(_parse_datetime)]
+RequiredDateTimeField = Annotated[AwareDatetime, BeforeValidator(_parse_datetime)]
 
 _USER_AGENT = "AkalistenClient/1.0 (+htttps://github.com/akablas/akalisten)"
 

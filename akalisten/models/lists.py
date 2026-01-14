@@ -1,8 +1,9 @@
-import datetime as dtm
 import html
 from typing import Self
 
 from pydantic import AnyUrl, BaseModel, Field, RootModel, model_validator
+
+from ..datetime import AwareDate
 
 
 class List(BaseModel):
@@ -12,7 +13,7 @@ class List(BaseModel):
     available_offline: bool
     basic_url: AnyUrl | None = None
     login_url: AnyUrl | None = None
-    expire_date: dtm.datetime | None = None
+    expire_date: AwareDate | None = None
 
     @model_validator(mode="after")
     def _validate_on_init(self) -> Self:

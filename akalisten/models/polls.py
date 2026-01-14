@@ -9,6 +9,7 @@ import markdown
 from dateutil.parser import ParserError, parse
 from pydantic import BaseModel, Field
 
+from akalisten.datetime import TZ_INFO
 from akalisten.models.general import User
 from akalisten.models.raw_api_models.polls import Poll, PollOption, PollVote
 from akalisten.models.register import Registers
@@ -66,9 +67,9 @@ class MuckenInfo(BaseModel):
         time_string = _CLEAN_TIME_PATTERN.sub("", value).strip()
         # try a few custom formats first
         with contextlib.suppress(ValueError):
-            return dtm.datetime.strptime(time_string, "%H")  # noqa: DTZ007
+            return dtm.datetime.strptime(time_string, "%H").replace(tzinfo=TZ_INFO)
         with contextlib.suppress(ValueError):
-            return dtm.datetime.strptime(time_string, "%H.%M")  # noqa: DTZ007
+            return dtm.datetime.strptime(time_string, "%H.%M").replace(tzinfo=TZ_INFO)
 
         with contextlib.suppress(ParserError):
             return parse(time_string, dayfirst=True)
@@ -176,7 +177,7 @@ class PollInfo(BaseModel):
     def is_active_mucken_liste(self) -> bool:
         if self.poll.status.deleted:
             return False
-        if (date := self.mucken_info.date) and date < dtm.date.today():  # noqa: DTZ011
+        if (date := self.mucken_info.date) and date < dtm.datetime.now(tz=TZ_INFO).date():
             return False
         if "mensaflyern" in self.poll.configuration.title.lower():
             return False
@@ -196,7 +197,9 @@ class PollInfo(BaseModel):
     def is_active_poll(self) -> bool:
         if self.poll.status.deleted:
             return False
-        if (date := self.poll.status.relevantThreshold.date()) and date <= dtm.date.today():  # noqa: DTZ011
+        if (date := self.poll.status.relevantThreshold.date()) and date <= dtm.datetime.now(
+            tz=TZ_INFO
+        ).date():
             return False
 
         return self.poll.configuration.access != "private"

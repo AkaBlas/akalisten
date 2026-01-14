@@ -3,7 +3,6 @@ import datetime as dtm
 import logging
 import os
 import re
-import zoneinfo
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -11,6 +10,7 @@ from jinja2 import FileSystemLoader, StrictUndefined
 
 from akalisten.clients.wordpress import WordPressAPI
 from akalisten.crawl import get_template_data
+from akalisten.datetime import TZ_INFO, strftime
 from akalisten.jinja2 import RelImportEnvironment
 
 load_dotenv(override=True)
@@ -46,7 +46,7 @@ async def main() -> None:
         trim_blocks=True,
         undefined=StrictUndefined,
     )
-    timezone = zoneinfo.ZoneInfo("Europe/Berlin")
+    environment.globals["strftime"] = strftime
     kwargs = {
         "links": template_data.links,
         "lists": template_data.lists,
@@ -54,7 +54,7 @@ async def main() -> None:
         "polls": template_data.polls,
         "forms": template_data.forms,
         "chat_groups": template_data.chat_groups,
-        "now": dtm.datetime.now(timezone),
+        "now": dtm.datetime.now(TZ_INFO),
     }
 
     # Write to file

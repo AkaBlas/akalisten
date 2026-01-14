@@ -3,6 +3,8 @@ import html
 
 from pydantic import BaseModel, Field, RootModel
 
+from akalisten.datetime import TZ_INFO, AwareDate
+
 
 class ChatGroup(BaseModel):
     title: str
@@ -10,7 +12,7 @@ class ChatGroup(BaseModel):
     description: str | None = None
     signal_url: str | None = None
     whatsapp_url: str | None = None
-    expire_date: dtm.datetime | None = None
+    expire_date: AwareDate | None = None
 
     @property
     def html_title(self) -> str:
@@ -26,7 +28,7 @@ class ChatGroups(RootModel):
 
     @property
     def active_groups(self) -> list[ChatGroup]:
-        now = dtm.datetime.now()  # noqa: DTZ005
+        now = dtm.datetime.now(tz=TZ_INFO)
         return sorted(
             (g for g in self.root if g.expire_date is None or g.expire_date >= now),
             key=lambda g: g.sorting,

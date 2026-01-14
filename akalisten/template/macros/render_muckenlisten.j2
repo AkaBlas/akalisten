@@ -47,22 +47,22 @@
                                             {% if poll.mucken_info.has_any_info %}
                                                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-2">
                                                     {% if poll.mucken_info.date %}
-                                                        {{ render_info('calendar-event', poll.mucken_info.date.strftime('%d.%m.%Y')) }}
+                                                        {{ render_info('calendar-event', strftime(poll.mucken_info.date, '%d.%m.%Y')) }}
                                                     {% endif %}
                                                     {% if poll.mucken_info.location %}
                                                         {{ render_info('geo-alt', poll.mucken_info.location) }}
                                                     {% endif %}
                                                     {% if poll.mucken_info.time_m2 %}
-                                                        {{ render_info('truck', "Mensa 2: " + poll.mucken_info.time_m2.strftime('%H:%M') + " Uhr") }}
+                                                        {{ render_info('truck', "Mensa 2: " + strftime(poll.mucken_info.time_m2, '%H:%M') + " Uhr") }}
                                                     {% endif %}
                                                     {% if poll.mucken_info.time_meeting %}
-                                                        {{ render_info('clock', "Direkt: " + poll.mucken_info.time_meeting.strftime('%H:%M') + " Uhr") }}
+                                                        {{ render_info('clock', "Direkt: " + strftime(poll.mucken_info.time_meeting, '%H:%M') + " Uhr") }}
                                                     {% endif %}
                                                     {% if poll.mucken_info.time_start %}
-                                                        {{ render_info('play', "Start: " + poll.mucken_info.time_start.strftime('%H:%M') + " Uhr") }}
+                                                        {{ render_info('play', "Start: " + strftime(poll.mucken_info.time_start, '%H:%M') + " Uhr") }}
                                                     {% endif %}
                                                     {% if poll.mucken_info.time_end %}
-                                                        {{ render_info('stop', "Ende: " + poll.mucken_info.time_end.strftime('%H:%M') + " Uhr") }}
+                                                        {{ render_info('stop', "Ende: " + strftime(poll.mucken_info.time_end, '%H:%M') + " Uhr") }}
                                                     {% endif %}
                                                 </div>
                                             {% endif %}
