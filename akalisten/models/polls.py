@@ -367,3 +367,39 @@ class PollVotes(BaseModel):
             if register is None:
                 continue
             option.add_register_users(register.members)
+
+    @property
+    def _total_sanitized_yes_users(self) -> set[User]:
+        return set.union(*(option.yes for option in self.options.values()))
+
+    @property
+    def _total_sanitized_no_users(self) -> set[User]:
+        return set.union(*(option.sanitized_no for option in self.options.values()))
+
+    @property
+    def _total_sanitized_maybe_users(self) -> set[User]:
+        return set.union(*(option.maybe for option in self.options.values()))
+
+    @property
+    def _total_sanitized_not_voted_users(self) -> set[User]:
+        return set.union(*(option.sanitized_not_voted for option in self.options.values()))
+
+    @property
+    def total_sanitized_yes_votes(self) -> int:
+        return len(self._total_sanitized_yes_users)
+
+    @property
+    def total_sanitized_no_votes(self) -> int:
+        return len(
+            self._total_sanitized_no_users
+            - self._total_sanitized_yes_users
+            - self._total_sanitized_maybe_users
+        )
+
+    @property
+    def total_sanitized_maybe_votes(self) -> int:
+        return len(self._total_sanitized_maybe_users - self._total_sanitized_yes_users)
+
+    @property
+    def total_sanitized_pending_votes(self) -> int:
+        return len(set.union(*(option.sanitized_not_voted for option in self.options.values())))

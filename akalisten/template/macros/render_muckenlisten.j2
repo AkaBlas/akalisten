@@ -182,12 +182,13 @@
                                     ("maybe", "Vielleicht Dabei", "question-circle", "sorted_maybe", "warning"),
                                     ("pending", "Keine Antwort", "search", "sorted_sanitized_not_voted", "secondary"),
                                 ) %}
+                                {% set attribute = "total_sanitized_" + col_class + "_votes" %}
                                 <div class="col-md-6 col-lg-4 col-xl-3 column {{ col_class }}">
                                     <div class="border border-{{ color }} rounded shadow-sm p-3 h-100">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <h2 class="h5 mb-0 text-{{ color }}">
                                                 <span class="icon-text icon-header">
-                                                    <span>{{ col_name }}</span>
+                                                    <span>{{ col_name }} - {{ poll_votes[poll.id][attribute] }}</span>
                                                     {% if col_class == "pending" %}
                                                         <span class="ms-1"
                                                               data-bs-toggle="tooltip"
