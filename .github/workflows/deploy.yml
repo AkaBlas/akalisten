@@ -5,8 +5,8 @@ on:
     branches:
       - master
   schedule:
-    # run at 30 minute interval with 7 Minute offset to avoid clashing with other workflows
-    - cron: '7,37 * * * *'
+    # run at 10 past every hour
+    - cron: '10 * * * *'
 
 jobs:
   build:
