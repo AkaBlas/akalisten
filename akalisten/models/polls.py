@@ -5,11 +5,11 @@ import re
 from collections.abc import Collection, Sequence
 from typing import Literal
 
-import markdown
 from dateutil.parser import ParserError, parse
 from pydantic import BaseModel, Field
 
 from akalisten.datetime import TZ_INFO
+from akalisten.markdown import render_markdown
 from akalisten.models.general import User
 from akalisten.models.raw_api_models.polls import Poll, PollOption, PollVote
 from akalisten.models.register import Registers
@@ -60,7 +60,7 @@ class MuckenInfo(BaseModel):
     def html_additional(self) -> str | None:
         if self.additional is None:
             return None
-        return markdown.markdown(self.additional)
+        return render_markdown(self.additional)
 
     @staticmethod
     def _parse_date_or_time(value: str) -> dtm.datetime | None:
@@ -167,7 +167,7 @@ class PollInfo(BaseModel):
 
     @property
     def html_description(self) -> str:
-        return markdown.markdown(self.poll.descriptionSafe)
+        return render_markdown(self.poll.descriptionSafe)
 
     @property
     def expire_date(self) -> dtm.datetime | None:

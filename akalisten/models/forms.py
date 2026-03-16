@@ -3,6 +3,7 @@ import html
 
 from pydantic import BaseModel
 
+from akalisten.markdown import render_markdown
 from akalisten.models.raw_api_models.forms import FormState, FullForm, Permission, ShareType
 
 
@@ -19,7 +20,7 @@ class FormInfo(BaseModel):
 
     @property
     def html_description(self) -> str | None:
-        return html.escape(self.form.description) if self.form.description else None
+        return render_markdown(self.form.description) if self.form.description else None
 
     @property
     def html_title(self) -> str:

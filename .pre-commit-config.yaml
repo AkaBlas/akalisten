@@ -24,6 +24,8 @@ repos:
           - httpx-retries~=0.4.2
           - jinja2~=3.1.4
           - markdown~=3.7
+          - bleach~=6.2.0
+          - types-bleach
           - types-Markdown
           - pydantic~=2.9.2
           - python-dateutil~=2.9

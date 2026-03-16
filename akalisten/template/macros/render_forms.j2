@@ -33,9 +33,9 @@
     {% if columns >= 2 %}
         {{ render_truncate_text(form.html_description, 'form-' ~ loop.index) }}
     {% else %}
-        <p class="card-text mb-0">
-            {{ form.html_description }}
-        </p>
+        <div class="card-text mb-0">
+            {{ form.html_description|safe }}
+        </div>
     {% endif %}
 {% endif %}
 {% endset %}
