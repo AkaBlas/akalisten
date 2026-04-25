@@ -24,9 +24,9 @@
         {% endif %}
         {% if has_description %}
             {% if desc_len > 500 %}
-                {% set body = render_truncate_text(link.html_description, 'link-' ~ loop.index) %}
+                {% set body = render_truncate_text(link.html_description|safe, 'link-' ~ loop.index) %}
             {% else %}
-                {% set body = link.html_description %}
+                {% set body = link.html_description|safe %}
             {% endif %}
         {% else %}
             {% set body = "" %}

@@ -3,6 +3,8 @@ from typing import Self
 
 from pydantic import AnyUrl, BaseModel, Field, RootModel, model_validator
 
+from akalisten.markdown import render_markdown
+
 
 class Link(BaseModel):
     display_title: str
@@ -23,7 +25,7 @@ class Link(BaseModel):
 
     @property
     def html_description(self) -> str:
-        return html.escape(self.description) if self.description else ""
+        return render_markdown(self.description) if self.description else ""
 
 
 class Links(RootModel):
