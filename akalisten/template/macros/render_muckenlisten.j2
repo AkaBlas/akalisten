@@ -50,7 +50,7 @@
                                                         {{ render_info('calendar-event', strftime(poll.mucken_info.date, '%d.%m.%Y')) }}
                                                     {% endif %}
                                                     {% if poll.mucken_info.location %}
-                                                        {{ render_info('geo-alt', poll.mucken_info.location) }}
+                                                        {{ render_info('geo-alt', poll.mucken_info.location, 'https://www.google.com/maps/search/?api=1&query=' ~ (poll.mucken_info.location|urlencode)) }}
                                                     {% endif %}
                                                     {% if poll.mucken_info.time_m2 %}
                                                         {{ render_info('truck', "Mensa 2: " + strftime(poll.mucken_info.time_m2, '%H:%M') + " Uhr") }}
@@ -63,6 +63,9 @@
                                                     {% endif %}
                                                     {% if poll.mucken_info.time_end %}
                                                         {{ render_info('stop', "Ende: " + strftime(poll.mucken_info.time_end, '%H:%M') + " Uhr") }}
+                                                    {% endif %}
+                                                    {% if poll.mucken_info.setlist %}
+                                                        {{ render_info('music-note-list', "Setlist", poll.mucken_info.setlist.url) }}
                                                     {% endif %}
                                                 </div>
                                             {% endif %}

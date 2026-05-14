@@ -13,6 +13,7 @@ from akalisten.markdown import render_markdown
 from akalisten.models.general import User
 from akalisten.models.raw_api_models.polls import Poll, PollOption, PollVote
 from akalisten.models.register import Registers
+from akalisten.models.setlists import Setlist
 
 _INFO_PATTERN = re.compile(r"(?P<header>#+ Infos\n+)(?P<items>(\* [^:]+ ?[^\n]+(\n|$))+)")
 _INFO_ITEM_PATTERN = re.compile(r"\* (?P<key>[^:]+): ?(?P<value>[^\n]+)(\n|$)")
@@ -27,6 +28,7 @@ class MuckenInfo(BaseModel):
     time_start: dtm.time | None = None
     time_end: dtm.time | None = None
     additional: str | None = None
+    setlist: Setlist | None = None
 
     def is_complete(self) -> bool:
         return all(
@@ -52,6 +54,7 @@ class MuckenInfo(BaseModel):
                     self.time_start,
                     self.time_end,
                     self.additional,
+                    self.setlist,
                 ),
             )
         )
@@ -146,6 +149,7 @@ class MuckenInfo(BaseModel):
 class PollInfo(BaseModel):
     poll: Poll
     public_tokens: set[str] = Field(default_factory=set)
+    setlist: Setlist | None = None
     _mucken_info: MuckenInfo | Literal["not-computed"] = "not-computed"
 
     @property
@@ -159,6 +163,7 @@ class PollInfo(BaseModel):
 
         mucken_info = MuckenInfo.from_string(self.poll.descriptionSafe)
         self._mucken_info = mucken_info
+        self._mucken_info.setlist = self.setlist
         return mucken_info
 
     @property
@@ -216,6 +221,18 @@ class PollInfo(BaseModel):
             )
         except StopIteration:
             return None
+
+    def register_setlist(self, setlists: Sequence[Setlist]) -> None:
+        mucken_date = self.mucken_info.date
+        candidates: list[Setlist] = [
+            s
+            for s in setlists
+            if (s.startDateTime.date() if s.startDateTime else None) == mucken_date
+        ]
+        if len(candidates) != 1:
+            return
+        self.setlist = candidates[0]
+        self._mucken_info = "not-computed"
 
 
 class PollOptionVotes(BaseModel):

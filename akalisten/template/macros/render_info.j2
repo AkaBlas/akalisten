@@ -1,9 +1,14 @@
-{% macro render_info(icon_name, text) %}
+{% macro render_info(icon_name, text, link = None) %}
+    {% set element = 'a' if link else 'span' %}
     <div class="col mb-2">
         <div class="input-group">
-            <span class="input-group-text p-1">
+            <{{ element }} class="input-group-text p-1 {{ 'btn btn-outline-primary' if link else '' }}"
+                {% if link %}
+                    href="{{ link }}" target="_blank" rel="noopener noreferrer"
+                {% endif %}
+            >
                 <i class="bi bi-{{ icon_name }} fs-5 mx-2"></i>
-            </span>
+            </{{ element }}>
             <input type="text" class="form-control form-control-sm" value="{{ text }}" readonly
                    disabled>
         </div>

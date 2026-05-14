@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from .clients.circles import CirclesAPI
 from .clients.forms import FormsAPI
 from .clients.polls import PollAPI
+from .clients.setlists import SetlistAPI
 from .datetime import TZ_INFO
 from .models.chatgroups import ChatGroup, ChatGroups
 from .models.forms import FormInfo
@@ -82,10 +83,11 @@ async def get_template_data(
         for poll_votes in template_data.mucken_listen.poll_votes.values():
             poll_votes.sanitize_votes()
     else:
-        async with CirclesAPI() as circles_client:
+        async with CirclesAPI() as circles_client, SetlistAPI() as setlist_client:
             mucken_listen_data = MuckenListenData(
                 polls={}, poll_votes={}, registers=await circles_client.aggregate_registers()
             )
+            setlists = await setlist_client.get_setlists()
 
         async with PollAPI() as poll_client:
             other_polls: list[PollInfo] = []
@@ -94,6 +96,7 @@ async def get_template_data(
                     votes = await poll_client.aggregate_poll_votes(poll.id)
                     mucken_listen_data.poll_votes[poll.id] = votes
                     mucken_listen_data.polls[poll.id] = poll
+                    mucken_listen_data.polls[poll.id].register_setlist(setlists)
                 elif poll.is_active_poll:
                     poll.public_tokens.update(await poll_client.get_public_share_token(poll.id))
                     other_polls.append(poll)
