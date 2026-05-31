@@ -3,7 +3,7 @@
     {% from 'render_category.j2' import render_category %}
     {% set polls, poll_votes = data %}
     <div class="accordion" id="accordion-muckenlisten">
-        {% for poll in polls.values() %}
+        {% for poll in polls.values()|sort(attribute='mucken_info.date') %}
             <div class="accordion-item" id="muckenliste-{{ poll.id }}">
                 <h2 class="accordion-header" id="heading-accordion-muckenliste-{{ poll.id }}">
                     <button class="accordion-button collapsed" type="button"

@@ -17,7 +17,7 @@ class SetlistAPI(BaseAPI):
         )
 
     async def get_setlists(
-        self, query_filter: Literal["all", "future", "past"] = "past"
+        self, query_filter: Literal["all", "future", "past"] = "future"
     ) -> Sequence[Setlist]:
         async with self.json_content("setlists", {"filter": query_filter}) as json:
             return [Setlist(**setlist) for setlist in json["ocs"]["data"]]
