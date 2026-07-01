@@ -144,7 +144,7 @@ class Circle(BaseModel):
     owner: Member
     population: int
     sanitizedName: str
-    settings: Settings
+    settings: Settings | None = None
     source: CircleSource
     url: str
 

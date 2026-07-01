@@ -4,7 +4,13 @@ from collections.abc import Sequence
 
 from akalisten.clients._utils import BaseAPI
 from akalisten.models.general import User
-from akalisten.models.raw_api_models.circles import Circle, CircleMember, MemberStatus, UserType
+from akalisten.models.raw_api_models.circles import (
+    Circle,
+    CircleMember,
+    MemberLevel,
+    MemberStatus,
+    UserType,
+)
 from akalisten.models.register import RegisterCircle, Registers
 
 
@@ -54,6 +60,7 @@ class CirclesAPI(BaseAPI):
                         for member in members[circle.id].result()
                         if member.status == MemberStatus.MEMBER
                         and member.userType == UserType.USER
+                        and member.level == MemberLevel.MEMBER
                     },
                 )
                 for circle in relevant_circles.values()
