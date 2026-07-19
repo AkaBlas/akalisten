@@ -49,7 +49,7 @@ jobs:
           mirror \
             --only-newer \
             --parallel=10 \
-            public_html/internal-access/listen.akablas.de/data \
+            public_html/internal-sso/listen.akablas.de/data \
             ./data
       
           # Close the connection
@@ -97,7 +97,7 @@ jobs:
             --exclude '/.htaccess' \
             --exclude '/.htpasswd' \
             --parallel=10 \
-            ./output public_html/internal-access/listen.akablas.de
+            ./output public_html/internal-sso/listen.akablas.de
       
           # Close the connection
           bye
