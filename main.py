@@ -2,13 +2,11 @@ import asyncio
 import datetime as dtm
 import logging
 import os
-import re
 from pathlib import Path
 
 from dotenv import load_dotenv
 from jinja2 import FileSystemLoader, StrictUndefined
 
-from akalisten.clients.wordpress import WordPressAPI
 from akalisten.crawl import get_template_data
 from akalisten.datetime import TZ_INFO, strftime
 from akalisten.jinja2 import RelImportEnvironment
@@ -20,6 +18,7 @@ OUTPUT_DIR = ROOT / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 DUMMY_DATA_PATH = OUTPUT_DIR / "dummy_data.json"
 INDEX_PATH = OUTPUT_DIR / "index.html"
+WP_INDEX_PATH = OUTPUT_DIR / "wordpress.html"
 DATA_PATH = ROOT / "data"
 LINKS_PATH = DATA_PATH / "links.json"
 LISTS_PATH = DATA_PATH / "lists.json"
@@ -62,24 +61,10 @@ async def main() -> None:
         environment.get_template("index.j2").render(wordpress=False, **kwargs), encoding="utf-8"
     )
 
-    if DEBUG_MODE:
-        # Don't update WordPress Page in debug mode
-        return
-
-    # Update WordPress Page
-    wp_content = environment.get_template("wordpress.j2").render(wordpress=True, **kwargs)
-    async with WordPressAPI() as wp_client:
-        page_id = int(os.getenv("WP_PAGE_ID"))  # type: ignore[arg-type]
-
-        current_content = await wp_client.get_page_raw_content(page_id)
-
-        pattern = re.compile(r"Zuletzt aktualisiert:\s*<br>\s*[\d\.: ]+")
-        compare_wp_content = pattern.sub("", wp_content)
-        compare_current_content = pattern.sub("", current_content)
-
-        if compare_wp_content == compare_current_content:
-            return
-        await wp_client.edit_page(page_id, wp_content)
+    # Write to wordpress file
+    WP_INDEX_PATH.write_text(
+        environment.get_template("wordpress.j2").render(wordpress=True, **kwargs), encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":
