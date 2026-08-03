@@ -137,9 +137,13 @@ class Muckenliste {
         if (allSelected) {
             categories.forEach(cat => cat.classList.remove("d-none"));
         } else {
+            const normalizedActiveCategories = new Set(
+                activeCategories.map(name => this.normalizeCategoryName(name))
+            );
             categories.forEach(cat => {
                 const catName = cat.getAttribute("data-category-name");
-                cat.classList.toggle("d-none", !activeCategories.includes(catName));
+                const normalizedCatName = this.normalizeCategoryName(catName);
+                cat.classList.toggle("d-none", !normalizedActiveCategories.has(normalizedCatName));
             });
         }
     }
@@ -159,5 +163,15 @@ class Muckenliste {
      */
     clearUserHighlight() {
         document.querySelectorAll(`#muckenliste-columns-${this.pollId} .alert[data-user-id]`).forEach(e => e.classList.remove('alert-info'));
+    }
+
+    /**
+     * Normalisiert einen Kategorienamen fuer Vergleiche (z.B. 'Tuba (1)' -> 'Tuba').
+     * @param {string|null} name
+     * @returns {string}
+     */
+    normalizeCategoryName(name) {
+        if (!name) return '';
+        return name.trim().replace(/\s+\([\d-]+\)$/, '');
     }
 }
