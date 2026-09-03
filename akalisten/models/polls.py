@@ -202,9 +202,7 @@ class PollInfo(BaseModel):
     def is_active_poll(self) -> bool:
         if self.poll.status.deleted:
             return False
-        if (date := self.poll.status.relevantThreshold.date()) and date <= dtm.datetime.now(
-            tz=TZ_INFO
-        ).date():
+        if self.poll.status.deleted or self.poll.status.expired:
             return False
 
         return self.poll.configuration.access != "private"
