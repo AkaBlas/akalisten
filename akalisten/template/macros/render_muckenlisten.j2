@@ -66,6 +66,8 @@
                                                     {% endif %}
                                                     {% if poll.mucken_info.setlist %}
                                                         {{ render_info('music-note-list', "Setlist", poll.mucken_info.setlist.url) }}
+                                                    {% else %}
+                                                        {{ render_info('music-note-list', "Keine Setlist gefunden", "https://cloud.akablas.de/index.php/apps/orchestrascoresmanager/setlists") }}
                                                     {% endif %}
                                                 </div>
                                             {% endif %}
