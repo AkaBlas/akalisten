@@ -9,7 +9,13 @@
 
     <div class="mb-3 register-category"
          data-category-name="{{ votes.text }}">
-        <div class="fw-bold mb-2 ms-1">{{ votes.text }}</div>
+        <div class="fw-bold mb-2 ms-1">
+          {% if votes.text == 'TenBarEuph' %}
+            Kindertuba
+          {% else %}
+            {{ votes.text }}
+          {% endif %}
+        </div>
         <div class="d-flex flex-column">
             {% for user in users %}
                 <div class="alert alert-secondary alert-sm alert-entry mb-1"
