@@ -179,11 +179,7 @@ class PollInfo(BaseModel):
         return self.poll.configuration.expire
 
     @property
-    def is_active_mucken_liste(self) -> bool:
-        if self.poll.status.deleted:
-            return False
-        if (date := self.mucken_info.date) and date < dtm.datetime.now(tz=TZ_INFO).date():
-            return False
+    def is_mucken_liste(self) -> bool:
         if "mensaflyern" in self.poll.configuration.title.lower():
             return False
 
@@ -193,19 +189,36 @@ class PollInfo(BaseModel):
             "m2" in self.poll.descriptionSafe.lower(),
             "direkt" in self.poll.descriptionSafe.lower(),
         )
-        if not any(text_conditions):
+        return any(text_conditions)
+
+    @property
+    def is_public(self) -> bool:
+        return self.poll.configuration.access != "private"
+
+    @property
+    def is_active(self) -> bool:
+        if self.poll.status.deleted:
+            return False
+        if self.poll.status.expired:
+            return False
+        if (datetime := self.poll.configuration.expire) and datetime <= dtm.datetime.now(
+            tz=TZ_INFO
+        ):
             return False
 
         return self.poll.configuration.access != "private"
 
     @property
-    def is_active_poll(self) -> bool:
+    def is_active_mucken_liste(self) -> bool:
+        if not self.is_public or not self.is_mucken_liste:
+            return False
         if self.poll.status.deleted:
             return False
-        if self.poll.status.deleted or self.poll.status.expired:
-            return False
+        return not ((date := self.mucken_info.date) and date < dtm.datetime.now(tz=TZ_INFO).date())
 
-        return self.poll.configuration.access != "private"
+    @property
+    def is_active_poll(self) -> bool:
+        return self.is_public and not self.is_mucken_liste and self.is_active
 
     @property
     def url(self) -> str:
