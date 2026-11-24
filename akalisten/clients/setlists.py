@@ -20,4 +20,4 @@ class SetlistAPI(BaseAPI):
         self, query_filter: Literal["all", "future", "past"] = "future"
     ) -> Sequence[Setlist]:
         async with self.json_content("setlists", {"filter": query_filter}) as json:
-            return [Setlist(**setlist) for setlist in json["ocs"]["data"]]
+            return [Setlist(**setlist) for setlist in json["ocs"]["data"] if setlist.isPublished]
